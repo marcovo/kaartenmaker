@@ -147,18 +147,18 @@ class PDF_map {
 		$y_res2 = $y_high - ($this->y+$ih*$this->scale)/1000;
 
 		// Place the squares
-		$i_row = 0;
-		for($iy=$y_high-$i_sep;$iy>=$y_low;$iy-=$i_sep) {
-			$i_col = 0;
-			for($ix=$x_low;$ix<$x_high;$ix+=$i_sep) {
+		for($iy=$y_high-$i_sep, $i_row = 0;$iy>=$y_low;$iy-=$i_sep, $i_row++) {
+			
+			for($ix=$x_low, $i_col = 0;$ix<$x_high;$ix+=$i_sep, $i_col++) {
 				$s_filename = 'kaart/'.$this->a_sourceMap['file_prefix'].''.$ix.'-'.$iy.'.png';
 				if(!file_exists($s_filename)) {
 					continue;
 				}
-				$this->obj_pdf->Image($s_filename, (($i_col*$i_sep-$x_res)*1000/$this->scale+$ml), (($i_row*$i_sep-$y_res2)*1000/$this->scale+$mt), 40*$i_sep, 40*$i_sep, 'PNG', '', '', true, $this->i_ppi, '', false, false, 0, false, false, false);
-				$i_col++;
-				}
-			$i_row++;
+				$i_pdfCoord_x = ($i_col*$i_sep-$x_res)*1000/$this->scale+$ml;
+				$i_pdfCoord_y = ($i_row*$i_sep-$y_res2)*1000/$this->scale+$mt;
+				$this->obj_pdf->Image($s_filename, $i_pdfCoord_x, $i_pdfCoord_y, 40*$i_sep, 40*$i_sep, 'PNG', '', '', true, $this->i_ppi, '', false, false, 0, false, false, false);
+				
+			}
 		}
 
 		// Draw the margin-borders
@@ -168,6 +168,31 @@ class PDF_map {
 		$this->obj_pdf->Rect(0,			$h-$mb,	$w,		$mb,	'F', array(), array(255,255,255));
 
 		$this->obj_pdf->Rect($ml-$bw, $mt-$bw, $iw+2*$bw, $ih+2*$bw, 'S', array('all'=>array('width'=>$bw,'color'=>array(0,0,0))));
+		
+		// Draw the coordinates
+		$this->obj_pdf->SetFont('helvetica', '', 7);
+		// X-coordinates
+		$i_pdfCoord_yBot = $h - $mb;
+		$i_pdfCoord_yTop = $mt;
+		for($ix=$x_low, $i_col = 0;$ix<$x_high;$ix+=$i_sep, $i_col++) {
+			$i_pdfCoord_x = ($i_col*$i_sep-$x_res)*1000/$this->scale+$ml - 3;
+			if($i_pdfCoord_x < $ml || $i_pdfCoord_x > $w - $mr) {
+				continue;
+			}
+			$this->obj_pdf->Text($i_pdfCoord_x, $i_pdfCoord_yBot, $ix);
+			$this->obj_pdf->Text($i_pdfCoord_x, $i_pdfCoord_yTop, $ix, false, false, true, 0, 0, '', false, '', 0, false, 'B');
+		}
+		// Y-coordinates
+		$i_pdfCoord_xLeft = $ml - 6;
+		$i_pdfCoord_xRight = $w - $mr;
+		for($iy=$y_high-$i_sep, $i_row = 0;$iy>=$y_low;$iy-=$i_sep, $i_row++) {
+			$i_pdfCoord_y = ($i_row*$i_sep-$y_res2)*1000/$this->scale+$mt - 1.5;
+			if($i_pdfCoord_y < $mt || $i_pdfCoord_y > $h - $mb) {
+				continue;
+			}
+			$this->obj_pdf->Text($i_pdfCoord_xLeft, $i_pdfCoord_y, $iy+$i_sep);
+			$this->obj_pdf->Text($i_pdfCoord_xRight, $i_pdfCoord_y, $iy+$i_sep);
+		}
 	}
 	
 	protected function downloadPDF() {
