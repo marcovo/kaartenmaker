@@ -26,6 +26,8 @@ class PDF_map {
 	protected $s_scale;
 	protected $a_margins;
 	protected $i_ppi;
+	protected $b_coords;
+	protected $a_coords;
 
 	protected $obj_pdf;
 	protected $a_paper;
@@ -50,6 +52,18 @@ class PDF_map {
 			'bottom' => floatval($_GET['mb']),
 			'left' => floatval($_GET['ml']),
 		);
+		
+		// Draw coordinates?
+		$s_coords = (isset($_GET['c']) && strlen($_GET['c']) == 4)?$_GET['c']:'0000';
+		$this->b_coords = ($s_coords != '0000');
+		$this->a_coords = array('t'=>(bool)$s_coords{0},'r'=>(bool)$s_coords{1},'b'=>(bool)$s_coords{2},'l'=>(bool)$s_coords{3});
+		
+		// Rotate y-coordinates or not?
+		$this->b_rotateYcoords = (isset($_GET['rotYc']) && $_GET['rotYc'] == 1);
+		
+		// Draw ticks?
+		$this->b_coordTicks = (isset($_GET['cTck']) && $_GET['cTck'] == 1);
+		$this->b_tenthTicks = (isset($_GET['tTck']) && $_GET['tTck'] == 1);
 		
 		if(!isset($this->a_paperSizes[$this->s_paperSize])) {
 			$this->s_paperSize = 'A4L';
@@ -121,6 +135,7 @@ class PDF_map {
 		// Border width
 		$bw = 0.1;
 		
+		// The amount of kilometers covered by one maptile
 		$i_sep = $this->a_sourceMap['sep'];
 
 		// The 'lower' coordinates are the coordinates of the lower-left square
@@ -169,29 +184,108 @@ class PDF_map {
 
 		$this->obj_pdf->Rect($ml-$bw, $mt-$bw, $iw+2*$bw, $ih+2*$bw, 'S', array('all'=>array('width'=>$bw,'color'=>array(0,0,0))));
 		
-		// Draw the coordinates
-		$this->obj_pdf->SetFont('helvetica', '', 7);
-		// X-coordinates
-		$i_pdfCoord_yBot = $h - $mb;
-		$i_pdfCoord_yTop = $mt;
-		for($ix=$x_low, $i_col = 0;$ix<$x_high;$ix+=$i_sep, $i_col++) {
-			$i_pdfCoord_x = ($i_col*$i_sep-$x_res)*1000/$this->scale+$ml - 3;
-			if($i_pdfCoord_x < $ml || $i_pdfCoord_x > $w - $mr) {
-				continue;
+		if($this->b_coords) {
+			$i_tickSpace = 0;
+			if($this->b_coordTicks) {
+				$i_tickSpace = 1;
+				if($this->b_tenthTicks) {
+					$i_tickSpace = 3;
+				}
 			}
-			$this->obj_pdf->Text($i_pdfCoord_x, $i_pdfCoord_yBot, $ix);
-			$this->obj_pdf->Text($i_pdfCoord_x, $i_pdfCoord_yTop, $ix, false, false, true, 0, 0, '', false, '', 0, false, 'B');
+			
+			
+			// Draw the coordinates
+			$this->obj_pdf->SetFont('helvetica', '', 7);
+			// X-coordinates
+			$i_pdfCoord_yBot = $h - $mb + $i_tickSpace;
+			$i_pdfCoord_yTop = $mt - $i_tickSpace;
+			for($ix=$x_low, $i_col = 0;$ix<$x_high;$ix+=$i_sep, $i_col++) {
+				$i_pdfCoord_x = ($i_col*$i_sep-$x_res)*1000/$this->scale+$ml - 3;
+				if($i_pdfCoord_x < $ml || $i_pdfCoord_x > $w - $mr) {
+					continue;
+				}
+				if($this->a_coords['b'])	$this->obj_pdf->Text($i_pdfCoord_x, $i_pdfCoord_yBot, $ix);
+				if($this->a_coords['t'])	$this->obj_pdf->Text($i_pdfCoord_x, $i_pdfCoord_yTop, $ix, false, false, true, 0, 0, '', false, '', 0, false, 'B');
+			}
+			// Y-coordinates
+			$i_pdfCoord_xLeft = $ml - 6 - $i_tickSpace;
+			$i_pdfCoord_xRight = $w - $mr + $i_tickSpace;
+			for($iy=$y_high-$i_sep, $i_row = 0;$iy>=$y_low;$iy-=$i_sep, $i_row++) {
+				$i_pdfCoord_y = ($i_row*$i_sep-$y_res2)*1000/$this->scale+$mt - 1.5;
+				if($i_pdfCoord_y < $mt || $i_pdfCoord_y > $h - $mb) {
+					continue;
+				}
+				
+				if($this->b_rotateYcoords) {
+					if($this->a_coords['l']) {
+						$this->obj_pdf->startTransform();
+						$this->obj_pdf->Rotate(90, $i_pdfCoord_xLeft+3.25, $i_pdfCoord_y+1.25);
+						$this->obj_pdf->TranslateY(1.0);
+						$this->obj_pdf->Text($i_pdfCoord_xLeft, $i_pdfCoord_y, $iy+$i_sep);
+						$this->obj_pdf->stopTransform();
+					}
+					if($this->a_coords['r']) {
+						$this->obj_pdf->startTransform();
+						$this->obj_pdf->Rotate(-90, $i_pdfCoord_xRight+2.75, $i_pdfCoord_y+1.25);
+						$this->obj_pdf->TranslateY(1.0);
+						$this->obj_pdf->Text($i_pdfCoord_xRight, $i_pdfCoord_y, $iy+$i_sep);
+						$this->obj_pdf->stopTransform();
+					}
+				}
+				else {
+					if($this->a_coords['l'])	$this->obj_pdf->Text($i_pdfCoord_xLeft, $i_pdfCoord_y, $iy+$i_sep);
+					if($this->a_coords['r'])	$this->obj_pdf->Text($i_pdfCoord_xRight, $i_pdfCoord_y, $iy+$i_sep);
+				}
+			}
 		}
-		// Y-coordinates
-		$i_pdfCoord_xLeft = $ml - 6;
-		$i_pdfCoord_xRight = $w - $mr;
-		for($iy=$y_high-$i_sep, $i_row = 0;$iy>=$y_low;$iy-=$i_sep, $i_row++) {
-			$i_pdfCoord_y = ($i_row*$i_sep-$y_res2)*1000/$this->scale+$mt - 1.5;
-			if($i_pdfCoord_y < $mt || $i_pdfCoord_y > $h - $mb) {
-				continue;
+		
+		if($this->b_coordTicks) {
+			// Draw the ticks
+			$this->obj_pdf->SetLineStyle(array('width'=>$bw, 'color'=>array(0,0,0)));
+			// X-ticks
+			$i_pdfCoord_yBot = $h - $mb;
+			$i_pdfCoord_yTop = $mt;
+			for($ix=$x_low, $i_col = 0;$ix<$x_high+$i_sep;$ix+=$i_sep/10, $i_col++) {
+				$i_pdfCoord_x = ($i_col/10*$i_sep-$x_res)*1000/$this->scale+$ml;
+				if($i_pdfCoord_x < $ml || $i_pdfCoord_x > $w - $mr) {
+					continue;
+				}
+				
+				if($this->b_tenthTicks) {
+					$f_lineHeight = ($i_col%10 == 0)?3:((($i_col+5)%10 == 0)?1.8:1);
+				}
+				else {
+					if($i_col%10 != 0) {
+						continue;
+					}
+					$f_lineHeight = 1;
+				}
+				
+				$this->obj_pdf->Line($i_pdfCoord_x, $i_pdfCoord_yBot, $i_pdfCoord_x, $i_pdfCoord_yBot+$f_lineHeight);
+				$this->obj_pdf->Line($i_pdfCoord_x, $i_pdfCoord_yTop, $i_pdfCoord_x, $i_pdfCoord_yTop-$f_lineHeight);
 			}
-			$this->obj_pdf->Text($i_pdfCoord_xLeft, $i_pdfCoord_y, $iy+$i_sep);
-			$this->obj_pdf->Text($i_pdfCoord_xRight, $i_pdfCoord_y, $iy+$i_sep);
+			// Y-ticks
+			$i_pdfCoord_xLeft = $ml;
+			$i_pdfCoord_xRight = $w - $mr;
+			for($iy=$y_high-$i_sep, $i_row = 0;$iy>=$y_low-$i_sep;$iy-=$i_sep/10, $i_row++) {
+				$i_pdfCoord_y = ($i_row/10*$i_sep-$y_res2)*1000/$this->scale+$mt;
+				if($i_pdfCoord_y < $mt || $i_pdfCoord_y > $h - $mb) {
+					continue;
+				}
+				
+				if($this->b_tenthTicks) {
+					$f_lineHeight = ($i_row%10 == 0)?3:((($i_row+5)%10 == 0)?1.8:1);
+				}
+				else {
+					if($i_row%10 != 0) {
+						continue;
+					}
+					$f_lineHeight = 1;
+				}
+				
+				$this->obj_pdf->Line($i_pdfCoord_xLeft, $i_pdfCoord_y, $i_pdfCoord_xLeft-$f_lineHeight, $i_pdfCoord_y);
+				$this->obj_pdf->Line($i_pdfCoord_xRight, $i_pdfCoord_y, $i_pdfCoord_xRight+$f_lineHeight, $i_pdfCoord_y);
+			}
 		}
 	}
 	

@@ -36,7 +36,16 @@ var Config = {
 			bottom: 10,
 			left: 10
 		},
-		sourceMap: 'OT400'
+		sourceMap: 'OT400',
+		coords: {
+			top: true,
+			right: true,
+			bottom: true,
+			left: true
+		},
+		rotateYcoords: true,
+		coordTicks: true,
+		tenthTicks: true
 	}
 };
 
@@ -96,7 +105,7 @@ function Cutout(properties) {
 	this.cutoutId	= (typeof(properties.cutoutId)	== 'undefined')?0:properties.cutoutId;
 	this.size		= (typeof(properties.size)		== 'undefined')?{w:6000, h:4000}:properties.size;
 	this.scale		= 25000;
-	this.sourceMap	= 'OT400';
+	this.sourceMap	= Config.defaultSettings.sourceMap;
 	
 	var center = Map.mapObject.getCenter();
 	var centerRD = conversie_RD_WGS84.WGS84_2_RD({N:center.lat,E:center.lng});
@@ -115,6 +124,17 @@ function Cutout(properties) {
 		bottom: Config.defaultSettings.margins.bottom,
 		left: Config.defaultSettings.margins.left
 	};
+	
+	this.coords = {
+		top: Config.defaultSettings.coords.top,
+		right: Config.defaultSettings.coords.right,
+		bottom: Config.defaultSettings.coords.bottom,
+		left: Config.defaultSettings.coords.left
+	};
+	
+	this.rotateYcoords = Config.defaultSettings.rotateYcoords;
+	this.coordTicks = Config.defaultSettings.coordTicks;
+	this.tenthTicks = Config.defaultSettings.tenthTicks;
 	
 	this.recalculateSize();
 	
@@ -238,6 +258,9 @@ var Cutouts = {
 	
 	Cutouts.download = function(cutoutId) {
 		var cutout = this.cutouts[cutoutId];
+		
+		var c = (cutout.coords.top?'1':'0')+(cutout.coords.right?'1':'0')+(cutout.coords.bottom?'1':'0')+(cutout.coords.left?'1':'0');
+		
 		var url = 'download.php'+
 				'?x='+cutout.anchor.X+
 				'&y='+cutout.anchor.Y+
@@ -246,7 +269,11 @@ var Cutouts = {
 				'&mr='+cutout.margins.right+
 				'&mb='+cutout.margins.bottom+
 				'&ml='+cutout.margins.left+
-				'&sm='+cutout.sourceMap;
+				'&sm='+cutout.sourceMap+
+				'&c='+c+
+				'&rotYc='+(cutout.rotateYcoords?'1':'0')+
+				'&cTck='+(cutout.coordTicks?'1':'0')+
+				'&tTck='+(cutout.tenthTicks?'1':'0');
 		
 		$('#cutout_'+cutoutId+' .loading_icon').show();
 		$("<iframe>")
