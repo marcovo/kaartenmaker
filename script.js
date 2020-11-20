@@ -27,6 +27,84 @@ function resize() {
 	$('.map').width($(window).width() - $('.rightBar').outerWidth());
 }
 
+
+function Wms(url) {
+	this.url = url;
+}
+
+Wms.prototype.buildUrl = function(params) {
+	params = params || {};
+	params.version = params.version || '1.3.0';
+	params.service = params.service || 'WMS';
+
+	return this.url + '?' + $.param(params);
+}
+
+Wms.prototype.mapUrl = function(params) {
+	params = params || {};
+	params.request = params.request || 'GetMap';
+	params.CRS = params.CRS || 'EPSG:25832';
+	params.styles = params.styles || 'default';
+	params.layers = params.layers || 'rp_dtk25';
+	params.format = params.format || 'image/png';
+
+	return this.buildUrl(params);
+}
+
+Wms.doGetMapUrl = function() {
+	return (new Wms('https://geo4.service24.rlp.de/wms/rp_dtk25.fcgi')).mapUrl({
+		'bbox' : '437000,5446000,439000,5448000',
+		'width' : '50',
+		'height' : '50',
+	})
+}
+
+const { jsPDF } = window.jspdf;
+Wms.pdf = function() {
+	$.get(Wms.doGetMapUrl(), function(data) {console.log(data);
+		var img = document.createElement('img');
+		//img.src = 'data:image/png;base64,' + Base64.encodeURI(data);
+		//img.src = URL.createObjectURL(new Blob(data, {type : 'image/png'}));
+		//$('.cutoutList')[0].appendChild(img);
+
+		//var fr = new FileReader();
+		//fr.onload = function(e) {console.log(fr.result);
+		//	img.src = fr.result; //Display saved icon
+		//	$('.cutoutList')[0].appendChild(img);
+		//};
+		//fr.readAsDataURL(new Blob([data], {type : 'image/png'}));
+
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', Wms.doGetMapUrl(), true);
+		xhr.responseType = 'blob';
+		xhr.onload = function (e) {
+			var icon_blob = xhr.response; //That can be saved to db
+
+
+			var fr = new FileReader();
+			fr.onload = function(e) {
+				img.src = fr.result; //Display saved icon
+				$('.cutoutList')[0].appendChild(img);
+			};
+			fr.readAsDataURL(icon_blob);
+		};
+		xhr.send(null);
+
+	}, 'text')
+
+	//var img = new Image();
+	//img.src = Wms.doGetMapUrl();
+	//img.onload = function () {
+	//	const doc = new jsPDF();
+	//	doc.addImage(img, 'PNG', 10, 20, 50, 50);
+	//	doc.save("a4.pdf");
+	//};
+
+	//const doc = new jsPDF();
+	//doc.addImage(Wms.doGetMapUrl(), 'PNG', 10, 20, 50, 50);
+	//doc.save("a4.pdf");
+}
+
 var Config = {
 	defaultColor: -1, // -1 for random
 	defaultSettings: {
@@ -192,13 +270,13 @@ function Cutout(properties) {
 
 	Cutout.prototype.createPolygon = function() {
 		var coords = this.calculatePolygonCoords();
-		
+
 		// Create polygon
-		this.polygon = L.polygon(coords, {color:this.colour, weight: 3});
+		this.polygon = L.polygon(coords, {color:this.colour, weight: 3, draggable: true});
 		
 		// Enable dragging
-		this.polygon.dragging = new L.Handler.PolyDrag(this.polygon);
-		this.polygon.dragging.cutoutId = this.cutoutId;
+		//this.polygon.dragging = new L.Handler.PolyDrag(this.polygon);
+		//this.polygon.dragging.cutoutId = this.cutoutId;
 		
 		// Add to map
 		this.polygon.addTo(Map.mapObject);
