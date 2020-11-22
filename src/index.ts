@@ -4,6 +4,7 @@ import DutchGrid, {DutchGridSystem} from "./Coordinates/DutchGrid";
 import WGS84_DutchGrid from "./Conversion/WGS84_DutchGrid";
 import Cutout from "./Util/Cutout";
 import {A4L} from "./Util/Paper";
+import {polygonsOverlap} from "./Util/Math";
 
 const greeting = (person: string) => {
     console.log('Good day ' + person);
@@ -43,3 +44,19 @@ const cutout = new Cutout(
 console.log(cutout);
 cutout.determineUiMapPolygon();
 console.log(cutout.mapPolygonUi);
+
+const pa = [
+    new DutchGrid(1, 1),
+    new DutchGrid(2, 1),
+    new DutchGrid(2, 2),
+    new DutchGrid(1, 2),
+];
+
+const pb = [
+    new DutchGrid(0.5, 0.5),
+    new DutchGrid(4, 3),
+    new DutchGrid(4, 4),
+    new DutchGrid(3, 4),
+];
+
+console.log(polygonsOverlap(pa, pb));
