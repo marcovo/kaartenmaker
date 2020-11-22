@@ -39,7 +39,7 @@ export function dot<C extends Coordinate>(a: C, b: C): number {
 export function polygonsOverlap<C extends Coordinate>(a: C[], b: C[]) {
     // http://web.archive.org/web/20141127210836/http://content.gpwiki.org/index.php/Polygon_Collision
     // Only works for convex polygons
-    // TODO: is this more efficient than naively checking whether any edge of a intersects any edge of b?
+    // TODO: is this more efficient than naively checking whether any edge of a intersects any edge of b + checking b contained in a or a contained in b?
 
     const findSeparatingAxis = (a: C[], b: C[]): boolean => {
         for(let i=0; i<a.length; i++) {
