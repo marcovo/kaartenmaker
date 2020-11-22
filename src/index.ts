@@ -1,7 +1,6 @@
-import "reflect-metadata";
 import Wms from './Util/Wms';
-import WGS84 from "./Coordinates/WGS84";
-import DutchGrid from "./Coordinates/DutchGrid";
+import WGS84, {WGS84System} from "./Coordinates/WGS84";
+import DutchGrid, {DutchGridSystem} from "./Coordinates/DutchGrid";
 import WGS84_DutchGrid from "./Conversion/WGS84_DutchGrid";
 import Cutout from "./Util/Cutout";
 import {A4L} from "./Util/Paper";
@@ -30,6 +29,17 @@ console.log(a, b, c);
 require('leaflet');
 require('leaflet-path-drag')
 
-const cutout = new Cutout<DutchGrid, WGS84, DutchGrid>(1, new A4L(), new WGS84(51, 4));
+const cutout = new Cutout(
+    1,
+    new A4L(),
+    new WGS84(51, 4),
+    new WGS84System(),
+    new DutchGridSystem(),
+    new DutchGridSystem(),
+    new WGS84_DutchGrid(),
+    new WGS84_DutchGrid()
+);
 
-console.log(cutout.anchorProjection);
+console.log(cutout);
+cutout.determineUiMapPolygon();
+console.log(cutout.mapPolygonUi);

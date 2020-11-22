@@ -2,7 +2,6 @@ import Conversion from "./Conversion";
 import WGS84 from "../Coordinates/WGS84";
 import DutchGrid from "../Coordinates/DutchGrid";
 import Coordinate from "../Coordinates/Coordinate";
-import {injectable} from "inversify";
 
 /**
  * Functions to convert coordinates:
@@ -20,9 +19,16 @@ class Bessel implements Coordinate {
         this.lat = lat;
         this.lng = lng;
     }
+
+    getX(): number {
+        return this.lng;
+    }
+
+    getY(): number {
+        return this.lat;
+    }
 }
 
-@injectable()
 export default class WGS84_DutchGrid implements Conversion<WGS84, DutchGrid> {
 
     // Constants neccessary Projection translation

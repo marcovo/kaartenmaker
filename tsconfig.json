@@ -4,9 +4,7 @@
     "allowJs": true,
     "target": "es5",
     "lib": ["es6", "dom"],
-    "types": ["reflect-metadata", "node"],
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "types": ["node"]
   },
   "include": ["./src/**/*"]
 }

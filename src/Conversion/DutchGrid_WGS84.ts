@@ -2,9 +2,7 @@ import Conversion from "./Conversion";
 import WGS84 from "../Coordinates/WGS84";
 import DutchGrid from "../Coordinates/DutchGrid";
 import WGS84_DutchGrid from "./WGS84_DutchGrid";
-import {injectable} from "inversify";
 
-@injectable()
 export default class DutchGrid_WGS84 implements Conversion<DutchGrid, WGS84> {
     private baseConverter;
     constructor() {

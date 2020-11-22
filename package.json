@@ -17,11 +17,9 @@
     "webpack-cli": "^4.2.0"
   },
   "dependencies": {
-    "inversify": "^5.0.1",
     "jquery": "^3.5.1",
     "leaflet": "^1.7.1",
     "leaflet-path-drag": "^1.1.0",
-    "lodash": "^4.17.20",
-    "reflect-metadata": "^0.1.13"
+    "lodash": "^4.17.20"
   }
 }
