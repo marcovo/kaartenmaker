@@ -8,6 +8,7 @@ import {walkLine} from "../Util/Math";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
 import Map from "./Map";
 import * as _ from "lodash";
+import LeafletConvertibleCoordinateSystem from "../Coordinates/LeafletConvertibleCoordinateSystem";
 
 export type CutoutOptions = {
     margin_top: millimeter,
@@ -29,7 +30,7 @@ export default class Cutout<
     UiMapCoordinate extends Coordinate & LeafletConvertibleCoordinate,
     ProjectionCoordinate extends Coordinate,
     GridCoordinate extends Coordinate,
-    UiMapCoordinateSystem extends CoordinateSystem<UiMapCoordinate>,
+    UiMapCoordinateSystem extends CoordinateSystem<UiMapCoordinate> & LeafletConvertibleCoordinateSystem<UiMapCoordinate>,
     ProjectionCoordinateSystem extends CoordinateSystem<ProjectionCoordinate>,
     GridCoordinateSystem extends CoordinateSystem<GridCoordinate>,
     > {
@@ -83,7 +84,6 @@ export default class Cutout<
         this.id = id;
         this.paper = paper;
         this.options = Object.assign({}, Cutout.defaultCutoutOptions);
-        this.anchorUiMapCoordinate = anchorUiMap;
 
         this.uiMapCoordinateSystem = uiMapCoordinateSystem;
         this.projectionCoordinateSystem = projectionCoordinateSystem;
@@ -92,9 +92,14 @@ export default class Cutout<
         this.conversionProjection = conversionProjection;
         this.conversionGrid = conversionGrid;
 
-        this.anchorProjection = this.conversionProjection.convert(this.anchorUiMapCoordinate);
+        this.setAnchorUiMapCoordinate(anchorUiMap);
 
         this.color = 'red';
+    }
+
+    setAnchorUiMapCoordinate(c: UiMapCoordinate) {
+        this.anchorUiMapCoordinate = c;
+        this.anchorProjection = this.conversionProjection.convert(this.anchorUiMapCoordinate);
     }
 
     determineMapPolygon(): void {
@@ -149,32 +154,26 @@ export default class Cutout<
             return c.toLeaflet();
         });
 
-        this.leafletPolygon = L.polygon(coords, {color: this.color, weight: 3});
+        this.leafletPolygon = L.polygon(coords, {color: this.color, weight: 3, draggable: true});
 
         this.leafletPolygon.addTo(map.getLeafletMap());
-
-        // Enable dragging
-        //this.polygon.dragging = new L.Handler.PolyDrag(this.polygon);
-        //this.polygon.dragging.cutoutId = this.cutoutId;
-/*
-        // Add to map
-        this.leafletPolygon.addTo(Map.mapObject);
         this.leafletPolygon.dragging.enable();
 
         // Events
-        this.leafletPolygon.on('mouseover', function() {
+        /*this.leafletPolygon.on('mouseover', () => {
             $('#cutout_'+this.cutoutId).addClass('hover');
             this.mouseover();
-        }.bind(this));
+        });
 
-        this.leafletPolygon.on('mouseout', function() {
+        this.leafletPolygon.on('mouseout', () => {
             $('#cutout_'+this.cutoutId).removeClass('hover');
             this.mouseout();
-        }.bind(this));
+        });*/
 
-        this.leafletPolygon.on('dragend', function () {
-            this.updatePolygonCoords();
-        }.bind(this));*/
+        this.leafletPolygon.on('dragend', () => {
+            this.setAnchorUiMapCoordinate(this.leafletPolygon.getLatLngs()[0][0]);
+            this.updateMap();
+        });
     }
 
     updateMap() {

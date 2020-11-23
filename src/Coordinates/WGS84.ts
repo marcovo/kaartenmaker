@@ -1,11 +1,16 @@
 import Coordinate from "./Coordinate";
-import { LatLng } from 'leaflet';
+import * as L from 'leaflet';
 import CoordinateSystem from "./CoordinateSystem";
 import LeafletConvertibleCoordinate from "./LeafletConvertibleCoordinate";
+import LeafletConvertibleCoordinateSystem from "./LeafletConvertibleCoordinateSystem";
 
-export class WGS84System implements CoordinateSystem<WGS84> {
+export class WGS84System implements CoordinateSystem<WGS84>, LeafletConvertibleCoordinateSystem<WGS84> {
     make(lat: number, lng: number): WGS84 {
         return new WGS84(lat, lng);
+    }
+
+    fromLeaflet(source: L.LatLng): WGS84 {
+        return this.make(source.lat, source.lng);
     }
 }
 
@@ -26,12 +31,8 @@ export default class WGS84 implements Coordinate, LeafletConvertibleCoordinate {
         return this.lat;
     }
 
-    static fromLeaflet(source: LatLng): WGS84 {
-        return new WGS84(source.lat, source.lng);
-    }
-
-    toLeaflet(): LatLng {
-        return new LatLng(this.lat, this.lng);
+    toLeaflet(): L.LatLng {
+        return new L.LatLng(this.lat, this.lng);
     }
 
     withinBounds(): boolean {

@@ -1,8 +1,8 @@
 import Coordinate from "./Coordinate";
-import { LatLng } from 'leaflet';
+import * as L from 'leaflet';
 
 export default interface LeafletConvertibleCoordinate extends Coordinate {
 
-    toLeaflet(): LatLng;
+    toLeaflet(): L.LatLng;
 
 }
