@@ -1,10 +1,10 @@
 import Coordinate from "../Coordinates/Coordinate";
 import Conversion from "../Conversion/Conversion";
-import {millimeter, Paper} from "./Paper";
+import {millimeter, Paper} from "../Util/Paper";
 import DutchGrid from "../Coordinates/DutchGrid";
 import { Map, polygon, LatLng } from 'leaflet';
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
-import {walkLine} from "./Math";
+import {walkLine} from "../Util/Math";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
 import * as _ from "lodash";
 

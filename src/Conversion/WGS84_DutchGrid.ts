@@ -27,6 +27,11 @@ class Bessel implements Coordinate {
     getY(): number {
         return this.lat;
     }
+
+    withinBounds(): boolean {
+        // TODO: Is this correct?
+        return -180 <= this.lng && this.lng <= 180 && -90 <= this.lat && this.lat <= 90;
+    }
 }
 
 export default class WGS84_DutchGrid implements Conversion<WGS84, DutchGrid> {

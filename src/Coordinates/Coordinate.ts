@@ -5,4 +5,5 @@ export default interface Coordinate {
 
     getY(): number;
 
+    withinBounds(): boolean;
 }

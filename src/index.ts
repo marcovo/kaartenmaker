@@ -2,7 +2,7 @@ import Wms from './Util/Wms';
 import WGS84, {WGS84System} from "./Coordinates/WGS84";
 import DutchGrid, {DutchGridSystem} from "./Coordinates/DutchGrid";
 import WGS84_DutchGrid from "./Conversion/WGS84_DutchGrid";
-import Cutout from "./Util/Cutout";
+import Cutout from "./Main/Cutout";
 import {A4L} from "./Util/Paper";
 import {polygonsOverlap} from "./Util/Math";
 

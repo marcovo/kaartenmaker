@@ -23,4 +23,9 @@ export default class DutchGrid implements Coordinate {
     getY(): number {
         return this.y;
     }
+
+    withinBounds(): boolean {
+        // TODO: Check with polygon; https://nl.wikipedia.org/wiki/Rijksdriehoeksco%C3%B6rdinaten#Geldigheid
+        return -7000 <= this.x && this.x <= 300000 && 289000 <= this.y && this.y <= 629000;
+    }
 }

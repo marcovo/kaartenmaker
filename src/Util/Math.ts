@@ -17,6 +17,10 @@ export class Point implements Coordinate {
     getY(): number {
         return this.y;
     }
+
+    withinBounds(): boolean {
+        return true;
+    }
 }
 
 export function walkLine<C extends Coordinate, S extends CoordinateSystem<C>>(s: S, a: C, b: C, steps: number, callback: (c: C, step: number) => void) {
