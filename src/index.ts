@@ -6,6 +6,8 @@ import Cutout from "./Main/Cutout";
 import {A4L} from "./Util/Paper";
 import {polygonsOverlap} from "./Util/Math";
 
+import './style.css';
+
 const greeting = (person: string) => {
     console.log('Good day ' + person);
 };
