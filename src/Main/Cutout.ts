@@ -2,10 +2,11 @@ import Coordinate from "../Coordinates/Coordinate";
 import Conversion from "../Conversion/Conversion";
 import {millimeter, Paper} from "../Util/Paper";
 import DutchGrid from "../Coordinates/DutchGrid";
-import { Map, polygon, LatLng } from 'leaflet';
+import * as L from 'leaflet';
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import {walkLine} from "../Util/Math";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
+import Map from "./Map";
 import * as _ from "lodash";
 
 export type CutoutOptions = {
@@ -49,7 +50,7 @@ export default class Cutout<
     mapPolygonUi: UiMapCoordinate[];
     mapPolygonProjection: ProjectionCoordinate[];
 
-    leafletPolygon: polygon;
+    leafletPolygon: L.polygon;
 
     paper: Paper;
     color: Color;
@@ -76,7 +77,8 @@ export default class Cutout<
         projectionCoordinateSystem: ProjectionCoordinateSystem,
         gridCoordinateSystem: GridCoordinateSystem,
         conversionProjection: Conversion<UiMapCoordinate, ProjectionCoordinate>,
-        conversionGrid: Conversion<UiMapCoordinate, GridCoordinate>
+        conversionGrid: Conversion<UiMapCoordinate, GridCoordinate>,
+        private scale: number
     ) {
         this.id = id;
         this.paper = paper;
@@ -104,9 +106,9 @@ export default class Cutout<
             throw new Error();
         }
 
-        const topRight = new DutchGrid(this.anchorProjection.x + width, this.anchorProjection.y);
-        const bottomRight = new DutchGrid(this.anchorProjection.x + width, this.anchorProjection.y + height);
-        const bottomLeft = new DutchGrid(this.anchorProjection.x, this.anchorProjection.y + height);
+        const topRight = new DutchGrid(this.anchorProjection.x + width*this.scale/1000, this.anchorProjection.y);
+        const bottomRight = new DutchGrid(this.anchorProjection.x + width*this.scale/1000, this.anchorProjection.y + height*this.scale/1000);
+        const bottomLeft = new DutchGrid(this.anchorProjection.x, this.anchorProjection.y + height*this.scale/1000);
 
         this.mapPolygonProjection = [
             this.anchorProjection,
@@ -143,19 +145,42 @@ export default class Cutout<
     addToMap(map: Map) {
         this.determineUiMapPolygon();
 
-        const coords = _.map(this.mapPolygonUi, (c: UiMapCoordinate): LatLng => {
+        const coords = _.map(this.mapPolygonUi, (c: UiMapCoordinate): L.LatLng => {
             return c.toLeaflet();
         });
 
-        this.leafletPolygon = polygon(coords, {color: this.color, weight: 3});
+        this.leafletPolygon = L.polygon(coords, {color: this.color, weight: 3});
 
-        this.leafletPolygon.addTo(map);
+        this.leafletPolygon.addTo(map.getLeafletMap());
+
+        // Enable dragging
+        //this.polygon.dragging = new L.Handler.PolyDrag(this.polygon);
+        //this.polygon.dragging.cutoutId = this.cutoutId;
+/*
+        // Add to map
+        this.leafletPolygon.addTo(Map.mapObject);
+        this.leafletPolygon.dragging.enable();
+
+        // Events
+        this.leafletPolygon.on('mouseover', function() {
+            $('#cutout_'+this.cutoutId).addClass('hover');
+            this.mouseover();
+        }.bind(this));
+
+        this.leafletPolygon.on('mouseout', function() {
+            $('#cutout_'+this.cutoutId).removeClass('hover');
+            this.mouseout();
+        }.bind(this));
+
+        this.leafletPolygon.on('dragend', function () {
+            this.updatePolygonCoords();
+        }.bind(this));*/
     }
 
     updateMap() {
         this.determineUiMapPolygon();
 
-        const coords = _.map(this.mapPolygonUi, (c: UiMapCoordinate): LatLng => {
+        const coords = _.map(this.mapPolygonUi, (c: UiMapCoordinate): L.LatLng => {
             return c.toLeaflet();
         });
 

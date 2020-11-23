@@ -5,8 +5,14 @@ import WGS84_DutchGrid from "./Conversion/WGS84_DutchGrid";
 import Cutout from "./Main/Cutout";
 import {A4L} from "./Util/Paper";
 import {polygonsOverlap} from "./Util/Math";
-
+import UserInterface from "./Main/UserInterface";
 import './style.css';
+
+
+const userInterface = new UserInterface();
+
+
+
 
 const greeting = (person: string) => {
     console.log('Good day ' + person);
@@ -40,7 +46,8 @@ const cutout = new Cutout(
     new DutchGridSystem(),
     new DutchGridSystem(),
     new WGS84_DutchGrid(),
-    new WGS84_DutchGrid()
+    new WGS84_DutchGrid(),
+    25000
 );
 
 console.log(cutout);

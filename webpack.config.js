@@ -1,5 +1,5 @@
 
-var MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
     entry: "./src/index.ts",
@@ -25,7 +25,20 @@ module.exports = {
 
             {
                 test: /\.css$/,
-                use: [MiniCssExtractPlugin.loader, 'css-loader'],
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: ''
+                        }
+                    },
+                    'css-loader'
+                ],
+            },
+
+            {
+                test: /\.(ttf|eot|svg|png|jpg|gif|ico)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: 'file-loader'
             }
         ]
     },

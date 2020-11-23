@@ -3,4 +3,28 @@ html, body {
     margin: 0;
     border: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+.website {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+}
+
+.website > .map {
+    flex: 1;
+}
+
+.website > .rightBar {
+    width: 300px;
+}
+
+.website > .map > #map-canvas {
+    width: 100%;
+    height: 100%;
 }
