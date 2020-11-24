@@ -10,7 +10,6 @@ import Map from "./Map";
 import * as _ from "lodash";
 import LeafletConvertibleCoordinateSystem from "../Coordinates/LeafletConvertibleCoordinateSystem";
 import Projection from "./Projection";
-import * as $ from 'jquery';
 import { jsPDF } from "jspdf";
 import {Point} from "../Util/Math";
 import {WmsParams} from "../Util/Wms";
