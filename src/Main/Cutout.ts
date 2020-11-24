@@ -241,6 +241,94 @@ export default class Cutout<
         }
 
         Promise.all(promises).then(() => {
+            const getXY = (c: ProjectionCoordinate, [x, y]): [number, number] => {
+                const paperCoord = toPaperCoord(c);
+                return [paperCoord.getX() + x, paperCoord.getY() + y];
+            }
+
+            const diffs = (coords: [number, number][]): [number, number][] => {
+                const res = [];
+                for(let i=0; i<coords.length-1; i++) {
+                    res.push([coords[i+1][0] - coords[i][0], coords[i+1][1] - coords[i][1]]);
+                }
+                return res;
+            };
+
+            doc.setFillColor(255, 255, 255);
+
+            const paperCoordTopLeft = toPaperCoord(this.mapPolygonProjection[3]);
+            const paperCoordTopRight = toPaperCoord(this.mapPolygonProjection[2]);
+            const paperCoordBottomRight = toPaperCoord(this.mapPolygonProjection[1]);
+            const paperCoordBottomLeft = toPaperCoord(this.mapPolygonProjection[0]);
+
+            doc.lines(
+                diffs([
+                    [paperCoordTopLeft.getX(), paperCoordTopLeft.getY()],
+                    [paperCoordTopRight.getX(), paperCoordTopRight.getY()],
+                    [this.paper.width, paperCoordTopRight.getY()],
+                    [this.paper.width, 0],
+                    [0, 0],
+                    [0, paperCoordTopLeft.getY()],
+                    [paperCoordTopLeft.getX(), paperCoordTopLeft.getY()],
+                ]),
+                paperCoordTopLeft.getX(),
+                paperCoordTopLeft.getY(),
+                null,
+                'F',
+                true
+            );
+
+            doc.lines(
+                diffs([
+                    [paperCoordTopRight.getX(), paperCoordTopRight.getY()],
+                    [paperCoordBottomRight.getX(), paperCoordBottomRight.getY()],
+                    [paperCoordBottomRight.getX(), this.paper.height],
+                    [this.paper.width, this.paper.height],
+                    [this.paper.width, 0],
+                    [paperCoordTopRight.getX(), 0],
+                    [paperCoordTopRight.getX(), paperCoordTopRight.getY()],
+                ]),
+                paperCoordTopRight.getX(),
+                paperCoordTopRight.getY(),
+                null,
+                'F',
+                true
+            );
+
+            doc.lines(
+                diffs([
+                    [paperCoordBottomRight.getX(), paperCoordBottomRight.getY()],
+                    [paperCoordBottomLeft.getX(), paperCoordBottomLeft.getY()],
+                    [0, paperCoordBottomLeft.getY()],
+                    [0, this.paper.height],
+                    [this.paper.width, this.paper.height],
+                    [this.paper.width, paperCoordBottomRight.getY()],
+                    [paperCoordBottomRight.getX(), paperCoordBottomRight.getY()],
+                ]),
+                paperCoordBottomRight.getX(),
+                paperCoordBottomRight.getY(),
+                null,
+                'F',
+                true
+            );
+
+            doc.lines(
+                diffs([
+                    [paperCoordBottomLeft.getX(), paperCoordBottomLeft.getY()],
+                    [paperCoordTopLeft.getX(), paperCoordTopLeft.getY()],
+                    [paperCoordTopLeft.getX(), 0],
+                    [0, 0],
+                    [0, this.paper.height],
+                    [paperCoordBottomLeft.getX(), this.paper.height],
+                    [paperCoordBottomLeft.getX(), paperCoordBottomLeft.getY()],
+                ]),
+                paperCoordBottomLeft.getX(),
+                paperCoordBottomLeft.getY(),
+                null,
+                'F',
+                true
+            );
+
             doc.save("a4.pdf");
         });
     }
