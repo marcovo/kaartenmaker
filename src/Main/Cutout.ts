@@ -241,11 +241,6 @@ export default class Cutout<
         }
 
         Promise.all(promises).then(() => {
-            const getXY = (c: ProjectionCoordinate, [x, y]): [number, number] => {
-                const paperCoord = toPaperCoord(c);
-                return [paperCoord.getX() + x, paperCoord.getY() + y];
-            }
-
             const diffs = (coords: [number, number][]): [number, number][] => {
                 const res = [];
                 for(let i=0; i<coords.length-1; i++) {
