@@ -9,6 +9,11 @@ import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoord
 import Map from "./Map";
 import * as _ from "lodash";
 import LeafletConvertibleCoordinateSystem from "../Coordinates/LeafletConvertibleCoordinateSystem";
+import Projection from "./Projection";
+import * as $ from 'jquery';
+import { jsPDF } from "jspdf";
+import {Point} from "../Util/Math";
+import {WmsParams} from "../Util/Wms";
 
 export type CutoutOptions = {
     margin_top: millimeter,
@@ -79,7 +84,7 @@ export default class Cutout<
         gridCoordinateSystem: GridCoordinateSystem,
         conversionProjection: Conversion<UiMapCoordinate, ProjectionCoordinate>,
         conversionGrid: Conversion<UiMapCoordinate, GridCoordinate>,
-        private scale: number
+        private projection: Projection<ProjectionCoordinate>
     ) {
         this.id = id;
         this.paper = paper;
@@ -111,9 +116,10 @@ export default class Cutout<
             throw new Error();
         }
 
-        const topRight = new DutchGrid(this.anchorProjection.x + width*this.scale/1000, this.anchorProjection.y);
-        const bottomRight = new DutchGrid(this.anchorProjection.x + width*this.scale/1000, this.anchorProjection.y + height*this.scale/1000);
-        const bottomLeft = new DutchGrid(this.anchorProjection.x, this.anchorProjection.y + height*this.scale/1000);
+        const scale = this.projection.getScale();
+        const topRight = new DutchGrid(this.anchorProjection.x + width*scale/1000, this.anchorProjection.y);
+        const bottomRight = new DutchGrid(this.anchorProjection.x + width*scale/1000, this.anchorProjection.y + height*scale/1000);
+        const bottomLeft = new DutchGrid(this.anchorProjection.x, this.anchorProjection.y + height*scale/1000);
 
         this.mapPolygonProjection = [
             this.anchorProjection,
@@ -184,6 +190,85 @@ export default class Cutout<
         });
 
         this.leafletPolygon.setLatLngs(coords);
+    }
+
+    print(): void {
+        const scale = this.projection.getScale();
+
+        const tileSize = 1000000 / scale;
+
+        const toPaperCoord = (c: ProjectionCoordinate): Point => {
+            const diffX = c.getX() - this.anchorProjection.getX();
+            const diffY = c.getY() - this.anchorProjection.getY();
+
+            return new Point(
+                this.options.margin_left + diffX / (scale / 1000),
+                this.paper.height - this.options.margin_bottom - diffY / (scale / 1000)
+            );
+        };
+
+        const doc = new jsPDF({
+            orientation: (this.paper.width >= this.paper.height) ? 'landscape' : 'portrait',
+            format: [this.paper.width, this.paper.height],
+        });
+
+        const p = this.mapPolygonProjection;
+        const minX = Math.floor(Math.min(p[0].getX(), p[1].getX(), p[2].getX(), p[3].getX())/1000)*1000;
+        const maxX = Math.ceil(Math.max(p[0].getX(), p[1].getX(), p[2].getX(), p[3].getX())/1000)*1000;
+        const minY = Math.floor(Math.min(p[0].getY(), p[1].getY(), p[2].getY(), p[3].getY())/1000)*1000;
+        const maxY = Math.ceil(Math.max(p[0].getY(), p[1].getY(), p[2].getY(), p[3].getY())/1000)*1000;
+
+        const promises: Promise<HTMLImageElement>[] = [];
+        for(let x=minX; x<maxX; x+= 1000) {
+            for(let y=minY; y<maxY; y+= 1000) {
+                const imagePromise: Promise<HTMLImageElement> = this.downloadPrintImage([
+                    this.projectionCoordinateSystem.make(x, y+1000),
+                    this.projectionCoordinateSystem.make(x+1000, y+1000),
+                    this.projectionCoordinateSystem.make(x+1000, y),
+                    this.projectionCoordinateSystem.make(x, y),
+                ], {
+                    width: '400',
+                    height: '400',
+                });
+
+                const paperCoord = toPaperCoord(this.projectionCoordinateSystem.make(x, y+1000));
+
+                imagePromise.then((img) => {
+                    doc.addImage(img, 'PNG', paperCoord.getX(), paperCoord.getY(), tileSize, tileSize);
+                })
+
+                promises.push(imagePromise);
+            }
+        }
+
+        Promise.all(promises).then(() => {
+            doc.save("a4.pdf");
+        });
+    }
+
+    private downloadPrintImage(coords: ProjectionCoordinate[], params: WmsParams = {}): Promise<HTMLImageElement> {
+        return new Promise((resolve, reject) => {
+            const img = document.createElement('img');
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', this.projection.getWmsUrl(coords, params), true);
+            xhr.responseType = 'blob';
+            xhr.onload = function (e) {
+                const blob = xhr.response;
+
+                const fr = new FileReader();
+                fr.onload = function(e) {
+                    // @ts-ignore
+                    img.src = fr.result;
+
+                    img.onload = function () {
+                        resolve(img);
+                    };
+                };
+                fr.readAsDataURL(blob);
+            };
+            xhr.send(null);
+        });
     }
 
 }

@@ -14,27 +14,48 @@ export type WmsParams = {
 };
 
 export default class Wms {
-    url: string;
+    private params: WmsParams;
 
-    constructor(url: string) {
-        this.url = url;
+    constructor(readonly url: string, params: WmsParams = {}) {
+        this.params = Object.assign({
+            version: '1.3.0',
+            service: 'WMS',
+        }, params);
     }
 
     buildUrl(params: WmsParams) {
-        params.version = params.version || '1.3.0';
-        params.service = params.service || 'WMS';
+        params = Object.assign({}, this.params, params);
 
         return this.url + '?' + $.param(params);
     }
 
     mapUrl(params: WmsParams) {
-        params.request = params.request || 'GetMap';
-        params.CRS = params.CRS || 'EPSG:25832';
-        params.styles = params.styles || 'default';
-        params.layers = params.layers || 'rp_dtk25';
-        params.format = params.format || 'image/png';
+        params = Object.assign({}, {
+            request: 'GetMap',
+            CRS: 'EPSG:25832',
+            styles: 'default',
+            layers: 'rp_dtk25',
+            format: 'image/png',
+        }, params);
 
         return this.buildUrl(params);
+    }
+}
+
+export class WmsKadaster25 extends Wms {
+    constructor() {
+        super('https://geodata.nationaalgeoregister.nl/top25raster/wms');
+    }
+
+    mapUrl(params: WmsParams) {
+        params = Object.assign({}, {
+            CRS: 'EPSG:28992',
+            width: '2000',
+            height: '2000',
+            layers: 'top25raster',
+        }, params);
+
+        return super.mapUrl(params);
     }
 }
 

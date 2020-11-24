@@ -1,4 +1,4 @@
-import Wms from './Util/Wms';
+import Wms, {WmsKadaster25} from './Util/Wms';
 import WGS84, {WGS84System} from "./Coordinates/WGS84";
 import DutchGrid, {DutchGridSystem} from "./Coordinates/DutchGrid";
 import WGS84_DutchGrid from "./Conversion/WGS84_DutchGrid";
@@ -7,6 +7,7 @@ import {A4L} from "./Util/Paper";
 import {polygonsOverlap} from "./Util/Math";
 import UserInterface from "./Main/UserInterface";
 import './style.css';
+import Projection from "./Main/Projection";
 
 
 const userInterface = new UserInterface();
@@ -47,7 +48,7 @@ const cutout = new Cutout(
     new DutchGridSystem(),
     new WGS84_DutchGrid(),
     new WGS84_DutchGrid(),
-    25000
+    new Projection(new WmsKadaster25(), 25000),
 );
 
 console.log(cutout);

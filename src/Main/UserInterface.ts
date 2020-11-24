@@ -3,8 +3,10 @@ import Cutout from "./Cutout";
 import {A4L, Paper} from "../Util/Paper";
 import Conversion from "../Conversion/Conversion";
 import WGS84, {WGS84System} from "../Coordinates/WGS84";
-import {DutchGridSystem} from "../Coordinates/DutchGrid";
+import DutchGrid, {DutchGridSystem} from "../Coordinates/DutchGrid";
 import WGS84_DutchGrid from "../Conversion/WGS84_DutchGrid";
+import Projection from "./Projection";
+import {WmsKadaster25} from "../Util/Wms";
 const $ = require( 'jquery' );
 
 export default class UserInterface {
@@ -24,6 +26,10 @@ export default class UserInterface {
     onLoad() {
         this.map = new Map('map-canvas');
         this.addCutout();
+
+        $('#print').on('click', () => {
+            this.print();
+        });
     }
 
     addCutout() {
@@ -37,10 +43,14 @@ export default class UserInterface {
             new DutchGridSystem(),
             new WGS84_DutchGrid(),
             new WGS84_DutchGrid(),
-            25000
+            new Projection<DutchGrid>(new WmsKadaster25(), 25000),
         );
 
         this.cutouts[id].addToMap(this.map);
+    }
+
+    print(): void {
+        this.cutouts[0].print();
     }
 
 }
