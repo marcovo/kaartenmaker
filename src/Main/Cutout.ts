@@ -13,6 +13,7 @@ import Projection from "./Projection";
 import { jsPDF } from "jspdf";
 import {Point} from "../Util/Math";
 import {WmsParams} from "../Util/Wms";
+import Cache from "../Util/Cache";
 
 export type CutoutOptions = {
     margin_top: millimeter,
@@ -329,27 +330,35 @@ export default class Cutout<
     }
 
     private downloadPrintImage(coords: ProjectionCoordinate[], params: WmsParams = {}): Promise<HTMLImageElement> {
-        return new Promise((resolve, reject) => {
-            const img = document.createElement('img');
+        const cache = new Cache('cutout-img_');
+        const url = this.projection.getWmsUrl(coords, params);
 
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', this.projection.getWmsUrl(coords, params), true);
-            xhr.responseType = 'blob';
-            xhr.onload = function (e) {
-                const blob = xhr.response;
+        return cache.fetchPromise(url, () => {
+            return new Promise((resolve, reject) => {
 
-                const fr = new FileReader();
-                fr.onload = function(e) {
-                    // @ts-ignore
-                    img.src = fr.result;
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.responseType = 'blob';
+                xhr.onload = function (e) {
+                    const blob = xhr.response;
 
-                    img.onload = function () {
-                        resolve(img);
+                    const fr = new FileReader();
+                    fr.onload = function(e) {
+                        // @ts-ignore
+                        resolve(fr.result);
                     };
+                    fr.readAsDataURL(blob);
                 };
-                fr.readAsDataURL(blob);
-            };
-            xhr.send(null);
+                xhr.send(null);
+            });
+        }).then((result) => {
+            return new Promise((resolve, reject) => {
+                const img = document.createElement('img');
+                img.src = result;
+                img.onload = function () {
+                    resolve(img);
+                };
+            });
         });
     }
 
