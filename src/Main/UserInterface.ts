@@ -7,6 +7,7 @@ import DutchGrid, {DutchGridSystem} from "../Coordinates/DutchGrid";
 import WGS84_DutchGrid from "../Conversion/WGS84_DutchGrid";
 import Projection from "./Projection";
 import {WmsKadaster25} from "../Util/Wms";
+import Cache from "../Util/Cache";
 const $ = require( 'jquery' );
 
 export default class UserInterface {
@@ -50,7 +51,10 @@ export default class UserInterface {
     }
 
     print(): void {
-        this.cutouts[0].print();
+        const cache = new Cache('image_cache');
+        cache.initialize().then(() => {
+            this.cutouts[0].print(cache);
+        });
     }
 
 }

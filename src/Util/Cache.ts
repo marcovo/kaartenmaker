@@ -1,71 +1,127 @@
 
 type cacheObject = {
+    key: string,
     value: string|null,
-    expires: number,
+    expires_at: number,
 };
 
 export default class Cache {
 
-    constructor(private readonly prefix: string) {
+    // https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
+    private db: IDBDatabase;
+
+    constructor(private readonly cache_name: string) {
 
     }
 
-    get(key: string, def: any = null): any {
-        const objString = window.localStorage.getItem(this.prefix + key);
-
-        if(objString === null) {
-            return def;
-        }
-
-        const obj: cacheObject = JSON.parse(objString);
-
-        if(obj.expires < +(new Date())) {
-            return def;
-        }
-
-        return obj.value;
-    }
-
-    set(key: string, value: string, ttl: number): void {
-        const obj: cacheObject = {
-            value: value,
-            expires: +(new Date()) + ttl,
-        }
-        window.localStorage.setItem(this.prefix + key, JSON.stringify(obj))
-    }
-
-    delete(key: string): void {
-        window.localStorage.removeItem(this.prefix + key);
-    }
-
-    clear(): void {
-        for(let i=window.localStorage.length-1; i>=0; i--) {
-            const storageKey = window.localStorage.key(i);
-            if(storageKey === null) {
-                throw new Error('Cache element not found');
-            }
-
-            if(storageKey.substr(0, this.prefix.length) === this.prefix) {
-                window.localStorage.removeItem(storageKey);
-            }
-        }
-    }
-
-    has(key: string): boolean {
-        return this.get(key) !== null;
-    }
-
-    fetchPromise(key: string, callback: () => Promise<string>, ttl: number = 24 * 60 * 60 * 1000): Promise<string> {
+    initialize(): Promise<void> {
         return new Promise((resolve, reject) => {
-            const value = this.get(key, this);
+            const dbRequest = window.indexedDB.open('kaartenmaker', 1);
+
+            dbRequest.onerror = (event) => {
+                reject(event);
+            };
+
+            dbRequest.onblocked = (event) => {
+                reject(event);
+            };
+
+            dbRequest.onupgradeneeded = (event) => {
+                // @ts-ignore
+                const db = event.target.result;
+
+                const objectStore = db.createObjectStore(this.cache_name, { keyPath: 'key'});
+                objectStore.createIndex('expires_at', 'expires_at', { unique: false });
+
+                // objectStore.transaction.oncomplete = (event) => {};
+            };
+
+            dbRequest.onsuccess = (event) => {
+                this.db = dbRequest.result;
+
+                resolve();
+            };
+        });
+    }
+
+    get(key: string, def: any = null): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const cacheObjectStore = this.db.transaction([this.cache_name], 'readonly').objectStore(this.cache_name);
+
+            const request = cacheObjectStore.get(key);
+
+            request.onsuccess = (event) => {
+                const obj: cacheObject = request.result;
+
+                if(obj === undefined || obj === null || obj.expires_at < +(new Date())) {
+                    resolve(def);
+                } else {
+                    resolve(obj.value);
+                }
+            };
+
+            request.onerror = (event) => {
+                reject();
+            };
+        });
+    }
+
+    set(key: string, value: string, ttl: number): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const cacheObjectStore = this.db.transaction([this.cache_name], 'readwrite').objectStore(this.cache_name);
+
+            const obj: cacheObject = {
+                key: key,
+                value: value,
+                expires_at: +(new Date()) + ttl,
+            }
+
+            const request = cacheObjectStore.put(obj);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject();
+        });
+    }
+
+    delete(key: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const cacheObjectStore = this.db.transaction([this.cache_name], 'readwrite').objectStore(this.cache_name);
+
+            const request = cacheObjectStore.delete(key);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject();
+        });
+    }
+
+    clear(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const cacheObjectStore = this.db.transaction([this.cache_name], 'readwrite').objectStore(this.cache_name);
+
+            const request = cacheObjectStore.clear();
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject();
+        });
+    }
+
+    hasGet(key: string): Promise<[boolean, string]> {
+        return this.get(key, this).then((value) => {
             if(value !== this) {
-                return resolve(value);
+                return [true, value];
+            } else {
+                return [false, undefined];
+            }
+        });
+    }
+
+    fetch(key: string, callback: () => Promise<string>, ttl: number = 24 * 60 * 60 * 1000): Promise<string> {
+        return this.hasGet(key).then(([has, value]) => {
+            if(has) {
+                return value;
             }
 
             return callback().then((value) => {
-                this.set(key, value, ttl);
-
-                resolve(value);
+                return this.set(key, value, ttl).then(() => {
+                    return value;
+                });
             });
         });
     }

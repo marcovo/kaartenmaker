@@ -192,7 +192,7 @@ export default class Cutout<
         this.leafletPolygon.setLatLngs(coords);
     }
 
-    print(): void {
+    print(cache: Cache): void {
         const scale = this.projection.getScale();
 
         const tileSize = 1000000 / scale;
@@ -221,7 +221,7 @@ export default class Cutout<
         const promises: Promise<HTMLImageElement>[] = [];
         for(let x=minX; x<maxX; x+= 1000) {
             for(let y=minY; y<maxY; y+= 1000) {
-                const imagePromise: Promise<HTMLImageElement> = this.downloadPrintImage([
+                const imagePromise: Promise<HTMLImageElement> = this.downloadPrintImage(cache, [
                     this.projectionCoordinateSystem.make(x, y+1000),
                     this.projectionCoordinateSystem.make(x+1000, y+1000),
                     this.projectionCoordinateSystem.make(x+1000, y),
@@ -329,11 +329,10 @@ export default class Cutout<
         });
     }
 
-    private downloadPrintImage(coords: ProjectionCoordinate[], params: WmsParams = {}): Promise<HTMLImageElement> {
-        const cache = new Cache('cutout-img_');
+    private downloadPrintImage(cache: Cache, coords: ProjectionCoordinate[], params: WmsParams = {}): Promise<HTMLImageElement> {
         const url = this.projection.getWmsUrl(coords, params);
 
-        return cache.fetchPromise(url, () => {
+        return cache.fetch(url, () => {
             return new Promise((resolve, reject) => {
 
                 const xhr = new XMLHttpRequest();
