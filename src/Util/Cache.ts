@@ -28,7 +28,7 @@ export default class Cache {
 
             dbRequest.onupgradeneeded = (event) => {
                 // @ts-ignore
-                const db = event.target.result;
+                const db: IDBDatabase = event.target.result;
 
                 const objectStore = db.createObjectStore(this.cache_name, { keyPath: 'key'});
                 objectStore.createIndex('expires_at', 'expires_at', { unique: false });
@@ -44,11 +44,13 @@ export default class Cache {
         });
     }
 
+    private getObjectStore(mode: IDBTransactionMode): IDBObjectStore {
+        return this.db.transaction([this.cache_name], mode).objectStore(this.cache_name);
+    }
+
     get(key: string, def: any = null): Promise<any> {
         return new Promise((resolve, reject) => {
-            const cacheObjectStore = this.db.transaction([this.cache_name], 'readonly').objectStore(this.cache_name);
-
-            const request = cacheObjectStore.get(key);
+            const request = this.getObjectStore('readonly').get(key);
 
             request.onsuccess = (event) => {
                 const obj: cacheObject = request.result;
@@ -68,15 +70,13 @@ export default class Cache {
 
     set(key: string, value: string, ttl: number): Promise<void> {
         return new Promise((resolve, reject) => {
-            const cacheObjectStore = this.db.transaction([this.cache_name], 'readwrite').objectStore(this.cache_name);
-
             const obj: cacheObject = {
                 key: key,
                 value: value,
                 expires_at: +(new Date()) + ttl,
             }
 
-            const request = cacheObjectStore.put(obj);
+            const request = this.getObjectStore('readwrite').put(obj);
             request.onsuccess = () => resolve();
             request.onerror = () => reject();
         });
@@ -84,9 +84,7 @@ export default class Cache {
 
     delete(key: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            const cacheObjectStore = this.db.transaction([this.cache_name], 'readwrite').objectStore(this.cache_name);
-
-            const request = cacheObjectStore.delete(key);
+            const request = this.getObjectStore('readwrite').delete(key);
             request.onsuccess = () => resolve();
             request.onerror = () => reject();
         });
@@ -94,11 +92,33 @@ export default class Cache {
 
     clear(): Promise<void> {
         return new Promise((resolve, reject) => {
-            const cacheObjectStore = this.db.transaction([this.cache_name], 'readwrite').objectStore(this.cache_name);
-
-            const request = cacheObjectStore.clear();
+            const request = this.getObjectStore('readwrite').clear();
             request.onsuccess = () => resolve();
             request.onerror = () => reject();
+        });
+    }
+
+    clean(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const cacheObjectStore = this.getObjectStore('readwrite');
+
+            const cursorRequest = cacheObjectStore
+                .index('expires_at')
+                .openKeyCursor(IDBKeyRange.upperBound(+new Date(), true));
+
+            cursorRequest.onsuccess = (event) => {
+                // @ts-ignore
+                const cursor: IDBCursor = event.target.result;
+                if(cursor) {
+                    const request = cacheObjectStore.delete(cursor.primaryKey);
+                    request.onsuccess = () => cursor.continue();
+                    request.onerror = () => reject();
+                } else {
+                    resolve();
+                }
+            };
+
+            cursorRequest.onerror = () => reject();
         });
     }
 

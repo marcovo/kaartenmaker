@@ -192,7 +192,7 @@ export default class Cutout<
         this.leafletPolygon.setLatLngs(coords);
     }
 
-    print(cache: Cache): void {
+    print(cache: Cache): Promise<void> {
         const scale = this.projection.getScale();
 
         const tileSize = 1000000 / scale;
@@ -241,7 +241,7 @@ export default class Cutout<
             }
         }
 
-        Promise.all(promises).then(() => {
+        return Promise.all(promises).then(() => {
             const diffs = (coords: [number, number][]): [number, number][] => {
                 const res = [];
                 for(let i=0; i<coords.length-1; i++) {

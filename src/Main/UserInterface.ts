@@ -53,7 +53,9 @@ export default class UserInterface {
     print(): void {
         const cache = new Cache('image_cache');
         cache.initialize().then(() => {
-            this.cutouts[0].print(cache);
+           this.cutouts[0].print(cache).then(() => {
+               return cache.clean();
+           });
         });
     }
 
