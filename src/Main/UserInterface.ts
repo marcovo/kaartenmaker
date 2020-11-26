@@ -9,6 +9,7 @@ import Projection from "./Projection";
 import {WmsKadaster25} from "../Util/Wms";
 import Cache from "../Util/Cache";
 const $ = require( 'jquery' );
+import Vue from 'vue/dist/vue.esm.js';
 
 export default class UserInterface {
 
@@ -31,6 +32,13 @@ export default class UserInterface {
         $('#print').on('click', () => {
             this.print();
         });
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue!'
+            }
+        })
     }
 
     addCutout() {
