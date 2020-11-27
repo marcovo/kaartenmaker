@@ -14,13 +14,23 @@
     <div class="rightBar">
         <div class="rightBarContent">
             <div class="cutoutTools">
+                <button class="w-6 p-0.5 rounded-md border border-blue-500 bg-blue-300 text-blue-50" id="addButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
                 <span class="mouseCoord">
                 </span>
             </div>
-            <div class="cutoutList">
-                <span id="print">Print</span>
-                <div id="app">
-                    {{ message }}
+            <div id="cutoutList">
+                <div v-for="cutout in cutouts">
+                    <div class="text-lg text-black">{{ cutout.name }}</div>
+                    <button class="w-6 p-0.5 rounded-l-md border border-r-0 border-blue-500 bg-blue-300 text-blue-50" v-on:click="print(cutout)">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>

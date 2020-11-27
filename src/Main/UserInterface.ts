@@ -17,6 +17,8 @@ export default class UserInterface {
     private cutouts: Cutout<any, any, any, any, any, any>[] = [];
     private cutoutsCounter = 0;
 
+    private cutoutList: Vue;
+
     constructor() {
 
         $(() => {
@@ -27,23 +29,29 @@ export default class UserInterface {
 
     onLoad() {
         this.map = new Map('map-canvas');
-        this.addCutout();
 
-        $('#print').on('click', () => {
-            this.print();
+        $('#addButton').on('click', () => {
+            this.addCutout();
         });
 
-        var app = new Vue({
-            el: '#app',
+        this.cutoutList = new Vue({
+            el: '#cutoutList',
             data: {
-                message: 'Hello Vue!'
+                cutouts: this.cutouts,
+            },
+            methods: {
+                print: (cutout: Cutout<any, any, any, any, any, any>) => {
+                    this.print(cutout);
+                }
             }
-        })
+        });
+
+        this.addCutout();
     }
 
     addCutout() {
         const id = this.cutoutsCounter++;
-        this.cutouts[id] = new Cutout(
+        const cutout = new Cutout(
             id,
             new A4L(),
             new WGS84(52, 5),
@@ -55,13 +63,16 @@ export default class UserInterface {
             new Projection<DutchGrid>(new WmsKadaster25(), 25000),
         );
 
-        this.cutouts[id].addToMap(this.map);
+        cutout.name = 'Mijn kaart ' + (id+1);
+        cutout.addToMap(this.map);
+
+        this.cutouts.push(cutout);
     }
 
-    print(): void {
+    print(cutout: Cutout<any, any, any, any, any, any>): void {
         const cache = new Cache('image_cache');
         cache.initialize().then(() => {
-           this.cutouts[0].print(cache).then(() => {
+           cutout.print(cache).then(() => {
                return cache.clean();
            });
         });
