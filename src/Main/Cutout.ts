@@ -182,6 +182,12 @@ export default class Cutout<
         });
     }
 
+    removeFromMap(map: Map) {
+        if(this.leafletPolygon !== null) {
+            map.getLeafletMap().removeLayer(this.leafletPolygon);
+        }
+    }
+
     updateMap() {
         this.determineUiMapPolygon();
 

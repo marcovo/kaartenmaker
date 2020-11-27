@@ -42,6 +42,9 @@ export default class UserInterface {
             methods: {
                 print: (cutout: Cutout<any, any, any, any, any, any>) => {
                     this.print(cutout);
+                },
+                deleteCutout: (cutout: Cutout<any, any, any, any, any, any>) => {
+                    this.deleteCutout(cutout);
                 }
             }
         });
@@ -72,10 +75,18 @@ export default class UserInterface {
     print(cutout: Cutout<any, any, any, any, any, any>): void {
         const cache = new Cache('image_cache');
         cache.initialize().then(() => {
-           cutout.print(cache).then(() => {
-               return cache.clean();
-           });
+            cutout.print(cache).then(() => {
+                return cache.clean();
+            });
         });
+    }
+
+    deleteCutout(cutout: Cutout<any, any, any, any, any, any>): void {
+        const index = this.cutouts.indexOf(cutout);
+        if(index > -1) {
+            cutout.removeFromMap(this.map);
+            this.cutouts.splice(index, 1);
+        }
     }
 
 }
