@@ -98,8 +98,6 @@ export default class Cutout<
         this.conversionGrid = conversionGrid;
 
         this.setAnchorUiMapCoordinate(anchorUiMap);
-
-        this.color = 'red';
     }
 
     setAnchorUiMapCoordinate(c: UiMapCoordinate) {

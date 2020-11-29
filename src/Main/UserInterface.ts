@@ -19,7 +19,11 @@ export default class UserInterface {
 
     private cutoutList: Vue;
 
+    readonly colors: string[];
+
     constructor() {
+
+        this.colors = ['#03f', 'aqua', 'black', 'blue', 'fuchsia', 'green', 'lime', 'maroon', 'navy', 'olive', 'orange', 'purple', 'red', 'teal', 'yellow'];
 
         $(() => {
             this.onLoad();
@@ -67,6 +71,7 @@ export default class UserInterface {
         );
 
         cutout.name = 'Mijn kaart ' + (id+1);
+        cutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
         cutout.addToMap(this.map);
 
         this.cutouts.push(cutout);
