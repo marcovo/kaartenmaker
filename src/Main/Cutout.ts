@@ -8,6 +8,7 @@ import {walkLine} from "../Util/Math";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
 import Map from "./Map";
 import * as _ from "lodash";
+import * as $ from "jquery";
 import LeafletConvertibleCoordinateSystem from "../Coordinates/LeafletConvertibleCoordinateSystem";
 import Projection from "./Projection";
 import { jsPDF } from "jspdf";
@@ -164,20 +165,20 @@ export default class Cutout<
         this.leafletPolygon.dragging.enable();
 
         // Events
-        /*this.leafletPolygon.on('mouseover', () => {
-            $('#cutout_'+this.cutoutId).addClass('hover');
+        this.leafletPolygon.on('mouseover', () => {
             this.mouseover();
         });
 
         this.leafletPolygon.on('mouseout', () => {
-            $('#cutout_'+this.cutoutId).removeClass('hover');
             this.mouseout();
-        });*/
+        });
 
         this.leafletPolygon.on('dragend', () => {
             this.setAnchorUiMapCoordinate(this.leafletPolygon.getLatLngs()[0][0]);
             this.updateMap();
         });
+
+        this.mouseout();
     }
 
     removeFromMap(map: Map) {
@@ -364,5 +365,16 @@ export default class Cutout<
             });
         });
     }
+
+    mouseover() {
+        this.leafletPolygon.setStyle({weight: 5, opacity: 0.7, fillOpacity: 0.3});
+        $('#cutout_' + this.id).addClass('bg-gray-100');
+    };
+
+    mouseout() {
+        this.leafletPolygon.setStyle({weight: 3, opacity: 0.5, fillOpacity: 0.2});
+        $('#cutout_' + this.id).removeClass('bg-gray-100');
+    };
+
 
 }

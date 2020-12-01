@@ -49,6 +49,12 @@ export default class UserInterface {
                 },
                 deleteCutout: (cutout: Cutout<any, any, any, any, any, any>) => {
                     this.deleteCutout(cutout);
+                },
+                mouseover: (cutout: Cutout<any, any, any, any, any, any>) => {
+                    cutout.mouseover();
+                },
+                mouseout: (cutout: Cutout<any, any, any, any, any, any>) => {
+                    cutout.mouseout();
                 }
             }
         });

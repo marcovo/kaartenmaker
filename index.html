@@ -24,7 +24,14 @@
                 </span>
             </div>
             <div id="cutoutList">
-                <div v-for="cutout in cutouts" class="border-t-2 mb-2" v-bind:style="{ borderColor: cutout.color }">
+                <div
+                        v-for="cutout in cutouts"
+                        class="border-t-2 mb-2"
+                        v-bind:style="{ borderColor: cutout.color }"
+                        v-bind:id="'cutout_' + cutout.id"
+                        v-on:mouseover="mouseover(cutout)"
+                        v-on:mouseout="mouseout(cutout)"
+                >
                     <div class="flex">
                         <div class="flex-none" style="width: 12px;">
                             <div class="w-0 h-0" v-bind:style="{ borderWidth: '6px', borderColor: cutout.color + ' transparent transparent ' + cutout.color }"></div>
