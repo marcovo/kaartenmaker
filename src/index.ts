@@ -37,24 +37,6 @@ const b:DutchGrid = (new WGS84_DutchGrid()).convert(a);
 const c = a.toLeaflet();
 
 console.log(a, b, c);
-require('leaflet');
-require('leaflet-path-drag')
-
-const cutout = new Cutout(
-    1,
-    new A4L(),
-    new WGS84(51, 4),
-    new WGS84System(),
-    new DutchGridSystem(),
-    new DutchGridSystem(),
-    new WGS84_DutchGrid(),
-    new WGS84_DutchGrid(),
-    new Projection(new WmsKadaster25(), 25000),
-);
-
-console.log(cutout);
-cutout.determineUiMapPolygon();
-console.log(cutout.mapPolygonUi);
 
 const pa = [
     new DutchGrid(1, 1),

@@ -15,6 +15,7 @@ import { jsPDF } from "jspdf";
 import {Point} from "../Util/Math";
 import {WmsParams} from "../Util/Wms";
 import Cache from "../Util/Cache";
+import UserInterface from "./UserInterface";
 
 export type CutoutOptions = {
     margin_top: millimeter,
@@ -77,6 +78,7 @@ export default class Cutout<
     };
 
     constructor(
+        private userInterface: UserInterface,
         id: number,
         paper: Paper,
         anchorUiMap: UiMapCoordinate,
@@ -106,22 +108,22 @@ export default class Cutout<
         this.anchorProjection = this.conversionProjection.convert(this.anchorUiMapCoordinate);
     }
 
-    determineMapPolygon(): void {
+    computeMapPolygon(anchorProjection: ProjectionCoordinate): ProjectionCoordinate[] {
         const width: millimeter = this.paper.width - this.options.margin_left - this.options.margin_right;
         const height: millimeter = this.paper.height - this.options.margin_top - this.options.margin_bottom;
 
-        if(!(this.anchorProjection instanceof DutchGrid)) {
+        if(!(anchorProjection instanceof DutchGrid)) {
             // Only for dutch grid at the moment...
             throw new Error();
         }
 
         const scale = this.projection.getScale();
-        const topRight = new DutchGrid(this.anchorProjection.x + width*scale/1000, this.anchorProjection.y);
-        const bottomRight = new DutchGrid(this.anchorProjection.x + width*scale/1000, this.anchorProjection.y + height*scale/1000);
-        const bottomLeft = new DutchGrid(this.anchorProjection.x, this.anchorProjection.y + height*scale/1000);
+        const topRight = new DutchGrid(anchorProjection.x + width*scale/1000, anchorProjection.y);
+        const bottomRight = new DutchGrid(anchorProjection.x + width*scale/1000, anchorProjection.y + height*scale/1000);
+        const bottomLeft = new DutchGrid(anchorProjection.x, anchorProjection.y + height*scale/1000);
 
-        this.mapPolygonProjection = [
-            this.anchorProjection,
+        return [
+            anchorProjection,
             // @ts-ignore
             topRight,
             // @ts-ignore
@@ -131,25 +133,30 @@ export default class Cutout<
         ];
     }
 
-    determineUiMapPolygon(): void {
-        this.determineMapPolygon();
-
+    computeUiMapPolygon(mapPolygonProjection): UiMapCoordinate[] {
         const pointsOnEdge = 5;
-        this.mapPolygonUi = [];
+        const mapPolygonUi = [];
 
         for(let i=0; i<4; i++) {
             walkLine(
                 this.projectionCoordinateSystem,
-                this.mapPolygonProjection[i],
-                this.mapPolygonProjection[(i+1) % 4],
+                mapPolygonProjection[i],
+                mapPolygonProjection[(i+1) % 4],
                 pointsOnEdge,
                 (c: ProjectionCoordinate, step): void => {
                     if(step < pointsOnEdge-1) {
-                        this.mapPolygonUi.push(this.conversionProjection.inverse(c));
+                        mapPolygonUi.push(this.conversionProjection.inverse(c));
                     }
                 }
             );
         }
+        return mapPolygonUi;
+    }
+
+    determineUiMapPolygon(): void {
+        this.mapPolygonProjection = this.computeMapPolygon(this.anchorProjection);
+
+        this.mapPolygonUi = this.computeUiMapPolygon(this.mapPolygonProjection);
     }
 
     addToMap(map: Map) {
@@ -163,6 +170,34 @@ export default class Cutout<
 
         this.leafletPolygon.addTo(map.getLeafletMap());
         this.leafletPolygon.dragging.enable();
+
+        this.leafletPolygon.on('prelatlng', (evt) => {
+            const cornerLL = this.conversionProjection.convert(evt.latlngs[0]);
+
+            let diffX = null;
+
+            this.userInterface.getCutouts().forEach((cutout) => {
+                if(cutout.id === this.id) {
+                    return;
+                }
+
+                if(Math.abs(cutout.mapPolygonProjection[0].getX() - cornerLL.getX()) < 100) {
+                    diffX = cutout.mapPolygonProjection[0].getX() - cornerLL.getX();
+                }
+            });
+
+            if(diffX) {
+                const newCorner = this.projectionCoordinateSystem.make(cornerLL.getX() + diffX, cornerLL.getY());
+
+                const newPolygon = this.computeUiMapPolygon(this.computeMapPolygon(newCorner));
+
+                const leafletPolygon = _.map(newPolygon, (c: UiMapCoordinate): L.LatLng => {
+                    return c.toLeaflet();
+                });
+
+                evt.latlngs.splice(0, evt.latlngs.length, ...leafletPolygon);
+            }
+        });
 
         // Events
         this.leafletPolygon.on('mouseover', () => {

@@ -10,6 +10,8 @@ import {WmsKadaster25} from "../Util/Wms";
 import Cache from "../Util/Cache";
 const $ = require( 'jquery' );
 import Vue from 'vue/dist/vue.esm.js';
+import * as L from 'leaflet';
+require('../Lib/LeafletDrag');
 
 export default class UserInterface {
 
@@ -65,6 +67,7 @@ export default class UserInterface {
     addCutout() {
         const id = this.cutoutsCounter++;
         const cutout = new Cutout(
+            this,
             id,
             new A4L(),
             new WGS84(52, 5),
@@ -81,6 +84,10 @@ export default class UserInterface {
         cutout.addToMap(this.map);
 
         this.cutouts.push(cutout);
+    }
+
+    getCutouts() {
+        return this.cutouts;
     }
 
     print(cutout: Cutout<any, any, any, any, any, any>): void {
