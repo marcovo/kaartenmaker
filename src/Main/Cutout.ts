@@ -214,38 +214,42 @@ export default class Cutout<
                 const minDiffVer = Math.min(outDiffTop, outDiffBottom, inDiffTop, inDiffBottom);
                 const minDiffHor = Math.min(outDiffLeft, outDiffRight, inDiffLeft, inDiffRight);
 
-                if(outDiffTop < diffY && minDiffHor < maxDiffPerpHor) {
-                    newCornerY = otherBottom - (thisTop - thisBottom);
-                    diffY = outDiffTop;
-                }
-                if(outDiffBottom < diffY && minDiffHor < maxDiffPerpHor) {
-                    newCornerY = otherTop;
-                    diffY = outDiffBottom;
-                }
-                if(outDiffLeft < diffX && minDiffVer < maxDiffPerpVer) {
-                    newCornerX = otherRight;
-                    diffX = outDiffLeft;
-                }
-                if(outDiffRight < diffX && minDiffVer < maxDiffPerpVer) {
-                    newCornerX = otherLeft - (thisRight - thisLeft);
-                    diffX = outDiffRight;
+                if(minDiffHor < maxDiffPerpHor) {
+                    if(outDiffTop < diffY) {
+                        newCornerY = otherBottom - (thisTop - thisBottom);
+                        diffY = outDiffTop;
+                    }
+                    if(outDiffBottom < diffY) {
+                        newCornerY = otherTop;
+                        diffY = outDiffBottom;
+                    }
+                    if(inDiffTop < diffY) {
+                        newCornerY = otherTop - (thisTop - thisBottom);
+                        diffY = inDiffTop;
+                    }
+                    if(inDiffBottom < diffY) {
+                        newCornerY = otherBottom;
+                        diffY = inDiffBottom;
+                    }
                 }
 
-                if(inDiffTop < diffY && minDiffHor < maxDiffPerpHor) {
-                    newCornerY = otherTop - (thisTop - thisBottom);
-                    diffY = inDiffTop;
-                }
-                if(inDiffBottom < diffY && minDiffHor < maxDiffPerpHor) {
-                    newCornerY = otherBottom;
-                    diffY = inDiffBottom;
-                }
-                if(inDiffLeft < diffX && minDiffVer < maxDiffPerpVer) {
-                    newCornerX = otherLeft;
-                    diffX = inDiffLeft;
-                }
-                if(inDiffRight < diffX && minDiffVer < maxDiffPerpVer) {
-                    newCornerX = otherRight - (thisRight - thisLeft);
-                    diffX = inDiffRight;
+                if(minDiffVer < maxDiffPerpVer) {
+                    if(outDiffLeft < diffX) {
+                        newCornerX = otherRight;
+                        diffX = outDiffLeft;
+                    }
+                    if(outDiffRight < diffX) {
+                        newCornerX = otherLeft - (thisRight - thisLeft);
+                        diffX = outDiffRight;
+                    }
+                    if(inDiffLeft < diffX) {
+                        newCornerX = otherLeft;
+                        diffX = inDiffLeft;
+                    }
+                    if(inDiffRight < diffX) {
+                        newCornerX = otherRight - (thisRight - thisLeft);
+                        diffX = inDiffRight;
+                    }
                 }
             });
 
