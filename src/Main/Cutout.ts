@@ -63,6 +63,8 @@ export default class Cutout<
     paper: Paper;
     color: Color;
 
+    static readonly pointsOnEdge = 5;
+
     static defaultCutoutOptions: CutoutOptions = {
         margin_top: 10,
         margin_right: 10,
@@ -134,7 +136,6 @@ export default class Cutout<
     }
 
     computeUiMapPolygon(mapPolygonProjection): UiMapCoordinate[] {
-        const pointsOnEdge = 5;
         const mapPolygonUi = [];
 
         for(let i=0; i<4; i++) {
@@ -142,9 +143,9 @@ export default class Cutout<
                 this.projectionCoordinateSystem,
                 mapPolygonProjection[i],
                 mapPolygonProjection[(i+1) % 4],
-                pointsOnEdge,
+                Cutout.pointsOnEdge,
                 (c: ProjectionCoordinate, step): void => {
-                    if(step < pointsOnEdge-1) {
+                    if(step < Cutout.pointsOnEdge-1) {
                         mapPolygonUi.push(this.conversionProjection.inverse(c));
                     }
                 }
@@ -172,30 +173,95 @@ export default class Cutout<
         this.leafletPolygon.dragging.enable();
 
         this.leafletPolygon.on('prelatlng', (evt) => {
-            const cornerLL = this.conversionProjection.convert(evt.latlngs[0]);
+            const thisCornerLL = this.conversionProjection.convert(evt.latlngs[0]);
+            const thisCornerHH = this.conversionProjection.convert(evt.latlngs[(Cutout.pointsOnEdge - 1) * 2]);
+            const thisLeft = thisCornerLL.getX();
+            const thisRight = thisCornerHH.getX();
+            const thisBottom = thisCornerLL.getY();
+            const thisTop = thisCornerHH.getY();
 
-            let diffX = null;
+            const factor = Math.pow(2,map.getLeafletMap().getZoom()-12);
+            let diffX = 1000/factor;
+            let diffY = 1000/factor;
+            let maxDiffPerpHor = (thisRight - thisLeft)/2;
+            let maxDiffPerpVer = (thisTop - thisBottom)/2;
+
+            let newCornerX = null;
+            let newCornerY = null;
 
             this.userInterface.getCutouts().forEach((cutout) => {
                 if(cutout.id === this.id) {
                     return;
                 }
 
-                if(Math.abs(cutout.mapPolygonProjection[0].getX() - cornerLL.getX()) < 100) {
-                    diffX = cutout.mapPolygonProjection[0].getX() - cornerLL.getX();
+                const otherLeft = cutout.mapPolygonProjection[0].getX();
+                const otherRight = cutout.mapPolygonProjection[2].getX();
+                const otherBottom = cutout.mapPolygonProjection[0].getY();
+                const otherTop = cutout.mapPolygonProjection[2].getY();
+
+                // Opposite-edge diffs ('outer')
+                const outDiffTop = Math.abs(otherBottom - thisTop);
+                const outDiffBottom = Math.abs(otherTop - thisBottom);
+                const outDiffLeft = Math.abs(otherRight - thisLeft);
+                const outDiffRight = Math.abs(otherLeft - thisRight);
+
+                // Same-edge diffs ('inner')
+                const inDiffTop = Math.abs(otherTop - thisTop);
+                const inDiffBottom = Math.abs(otherBottom - thisBottom);
+                const inDiffLeft = Math.abs(otherLeft - thisLeft);
+                const inDiffRight = Math.abs(otherRight - thisRight);
+
+                const minDiffVer = Math.min(outDiffTop, outDiffBottom, inDiffTop, inDiffBottom);
+                const minDiffHor = Math.min(outDiffLeft, outDiffRight, inDiffLeft, inDiffRight);
+
+                if(outDiffTop < diffY && minDiffHor < maxDiffPerpHor) {
+                    newCornerY = otherBottom - (thisTop - thisBottom);
+                    diffY = outDiffTop;
+                }
+                if(outDiffBottom < diffY && minDiffHor < maxDiffPerpHor) {
+                    newCornerY = otherTop;
+                    diffY = outDiffBottom;
+                }
+                if(outDiffLeft < diffX && minDiffVer < maxDiffPerpVer) {
+                    newCornerX = otherRight;
+                    diffX = outDiffLeft;
+                }
+                if(outDiffRight < diffX && minDiffVer < maxDiffPerpVer) {
+                    newCornerX = otherLeft - (thisRight - thisLeft);
+                    diffX = outDiffRight;
+                }
+
+                if(inDiffTop < diffY && minDiffHor < maxDiffPerpHor) {
+                    newCornerY = otherTop - (thisTop - thisBottom);
+                    diffY = inDiffTop;
+                }
+                if(inDiffBottom < diffY && minDiffHor < maxDiffPerpHor) {
+                    newCornerY = otherBottom;
+                    diffY = inDiffBottom;
+                }
+                if(inDiffLeft < diffX && minDiffVer < maxDiffPerpVer) {
+                    newCornerX = otherLeft;
+                    diffX = inDiffLeft;
+                }
+                if(inDiffRight < diffX && minDiffVer < maxDiffPerpVer) {
+                    newCornerX = otherRight - (thisRight - thisLeft);
+                    diffX = inDiffRight;
                 }
             });
 
-            if(diffX) {
-                const newCorner = this.projectionCoordinateSystem.make(cornerLL.getX() + diffX, cornerLL.getY());
+            if(newCornerX || newCornerY) {
+                newCornerX = newCornerX || thisLeft;
+                newCornerY = newCornerY || thisBottom;
+
+                const newCorner = this.projectionCoordinateSystem.make(newCornerX, newCornerY);
 
                 const newPolygon = this.computeUiMapPolygon(this.computeMapPolygon(newCorner));
 
-                const leafletPolygon = _.map(newPolygon, (c: UiMapCoordinate): L.LatLng => {
+                const newLeafletPolygon = _.map(newPolygon, (c: UiMapCoordinate): L.LatLng => {
                     return c.toLeaflet();
                 });
 
-                evt.latlngs.splice(0, evt.latlngs.length, ...leafletPolygon);
+                evt.latlngs.splice(0, evt.latlngs.length, ...newLeafletPolygon);
             }
         });
 
