@@ -206,6 +206,8 @@ export default class Cutout<
                 const minDiffVer = Math.min(outDiffTop, outDiffBottom, inDiffTop, inDiffBottom);
                 const minDiffHor = Math.min(outDiffLeft, outDiffRight, inDiffLeft, inDiffRight);
 
+                // TODO: In cases we subtract something ( e.g. - (thisTop - thisBottom) ) a snap at high
+                // zoom level leads to a non-exact snap when looking at a low zoom level.
                 if(minDiffHor < maxDiffPerpHor) {
                     if(outDiffTop < diffY) {
                         newCornerY = otherBottom - (thisTop - thisBottom);
