@@ -14,11 +14,31 @@
     <div class="rightBar">
         <div class="rightBarContent">
             <div class="cutoutTools">
-                <button class="w-6 p-0.5 rounded-md border border-blue-500 bg-blue-300 text-blue-50" id="addButton">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                </button>
+                <div class="flex">
+                    <button class="h-6 w-6 px-0.5 rounded-l-md border border-blue-500 bg-blue-300 text-blue-50" id="addButton">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+
+                    <!-- This example requires Tailwind CSS v2.0+ -->
+                    <div class="relative inline-block text-left">
+                        <div>
+                            <button id="add_button" type="button" class="h-6 inline-flex justify-center w-6 rounded-r-md border border-blue-500 shadow-sm p-0.5 bg-blue-300 text-sm font-medium text-blue-50" aria-haspopup="true" aria-expanded="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div id="add_menu" style="display: none;" class="origin-top-right absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                            <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" id="add_nl" role="menuitem">Nederland</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" id="add_de_rp" role="menuitem">Rheinland-Pfalz</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <span class="mouseCoord">
                 </span>

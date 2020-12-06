@@ -22,6 +22,7 @@ export default class UserInterface {
     private cutoutsCounter = 0;
 
     private cutoutList: Vue;
+    private lastAddedMapType = null;
 
     readonly colors: string[];
 
@@ -31,6 +32,28 @@ export default class UserInterface {
 
         $(() => {
             this.onLoad();
+
+            let add_menu_showing = false;
+            const toggle_menu = (show: boolean = null) => {
+                if(show === null) {
+                    show = !add_menu_showing;
+                }
+                $('#add_menu').toggle(show);
+                add_menu_showing = show;
+            };
+            $('#add_button').on('click', () => {
+                toggle_menu();
+            });
+
+            $('#add_nl').on('click', () => {
+                this.addCutout('nl');
+                toggle_menu(false);
+            });
+
+            $('#add_de_rp').on('click', () => {
+                this.addCutout('de_rp');
+                toggle_menu(false);
+            });
         });
 
     }
@@ -66,10 +89,12 @@ export default class UserInterface {
         this.addCutout();
     }
 
-    addCutout() {
+    addCutout(type: string = null) {
+        type = type || this.lastAddedMapType;
+        type = (type === 'de_rp') ? 'de_rp' : 'nl';
         const id = this.cutoutsCounter++;
         let cutout;
-        if(id % 2) {
+        if(type === 'nl') {
             cutout = new Cutout(
                 this,
                 id,
@@ -98,6 +123,7 @@ export default class UserInterface {
                 new Projection<UTM>(new WmsGermanyRP(), 25000),
             );
         }
+        this.lastAddedMapType = type;
 
 
         cutout.name = 'Mijn kaart ' + (id+1);
