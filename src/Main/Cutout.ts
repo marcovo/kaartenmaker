@@ -114,23 +114,15 @@ export default class Cutout<
         const width: millimeter = this.paper.width - this.options.margin_left - this.options.margin_right;
         const height: millimeter = this.paper.height - this.options.margin_top - this.options.margin_bottom;
 
-        if(!(anchorProjection instanceof DutchGrid)) {
-            // Only for dutch grid at the moment...
-            throw new Error();
-        }
-
         const scale = this.projection.getScale();
-        const topRight = new DutchGrid(anchorProjection.x + width*scale/1000, anchorProjection.y);
-        const bottomRight = new DutchGrid(anchorProjection.x + width*scale/1000, anchorProjection.y + height*scale/1000);
-        const bottomLeft = new DutchGrid(anchorProjection.x, anchorProjection.y + height*scale/1000);
+        const topRight = this.projectionCoordinateSystem.make(anchorProjection.getX() + width*scale/1000, anchorProjection.getY());
+        const bottomRight = this.projectionCoordinateSystem.make(anchorProjection.getX() + width*scale/1000, anchorProjection.getY() + height*scale/1000);
+        const bottomLeft = this.projectionCoordinateSystem.make(anchorProjection.getX(), anchorProjection.getY() + height*scale/1000);
 
         return [
             anchorProjection,
-            // @ts-ignore
             topRight,
-            // @ts-ignore
             bottomRight,
-            // @ts-ignore
             bottomLeft,
         ];
     }

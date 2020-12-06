@@ -6,11 +6,13 @@ import WGS84, {WGS84System} from "../Coordinates/WGS84";
 import DutchGrid, {DutchGridSystem} from "../Coordinates/DutchGrid";
 import WGS84_DutchGrid from "../Conversion/WGS84_DutchGrid";
 import Projection from "./Projection";
-import {WmsKadaster25} from "../Util/Wms";
+import {WmsGermanyRP, WmsKadaster25} from "../Util/Wms";
 import Cache from "../Util/Cache";
 const $ = require( 'jquery' );
 import Vue from 'vue/dist/vue.esm.js';
 import * as L from 'leaflet';
+import UTM, {UTMSystem} from "../Coordinates/UTM";
+import WGS84_UTM from "../Conversion/WGS84_UTM";
 require('../Lib/LeafletDrag');
 
 export default class UserInterface {
@@ -66,18 +68,37 @@ export default class UserInterface {
 
     addCutout() {
         const id = this.cutoutsCounter++;
-        const cutout = new Cutout(
-            this,
-            id,
-            new A4L(),
-            new WGS84(52, 5),
-            new WGS84System(),
-            new DutchGridSystem(),
-            new DutchGridSystem(),
-            new WGS84_DutchGrid(),
-            new WGS84_DutchGrid(),
-            new Projection<DutchGrid>(new WmsKadaster25(), 25000),
-        );
+        let cutout;
+        if(id % 2) {
+            cutout = new Cutout(
+                this,
+                id,
+                new A4L(),
+                new WGS84(52, 5),
+                new WGS84System(),
+                new DutchGridSystem(),
+                new DutchGridSystem(),
+                new WGS84_DutchGrid(),
+                new WGS84_DutchGrid(),
+                new Projection<DutchGrid>(new WmsKadaster25(), 25000),
+            );
+        } else {
+            const wgs = new WGS84(50, 7);
+            const utm = (new WGS84_UTM()).convert(wgs);
+            cutout = new Cutout(
+                this,
+                id,
+                new A4L(),
+                wgs,
+                new WGS84System(),
+                new UTMSystem(utm.zone, utm.hemi),
+                new UTMSystem(utm.zone, utm.hemi),
+                new WGS84_UTM(),
+                new WGS84_UTM(),
+                new Projection<UTM>(new WmsGermanyRP(), 25000),
+            );
+        }
+
 
         cutout.name = 'Mijn kaart ' + (id+1);
         cutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
