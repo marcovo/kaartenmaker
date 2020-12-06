@@ -1,4 +1,4 @@
-import Wms, {WmsKadaster25} from './Util/Wms';
+import Wms, {WmsGermanyRP, WmsKadaster25} from './Util/Wms';
 import WGS84, {WGS84System} from "./Coordinates/WGS84";
 import DutchGrid, {DutchGridSystem} from "./Coordinates/DutchGrid";
 import WGS84_DutchGrid from "./Conversion/WGS84_DutchGrid";
@@ -9,6 +9,8 @@ import UserInterface from "./Main/UserInterface";
 import "tailwindcss/tailwind.css"
 import './style.css';
 import Projection from "./Main/Projection";
+import WGS84_UTM from "./Conversion/WGS84_UTM";
+import UTM from "./Coordinates/UTM";
 
 
 const userInterface = new UserInterface();
@@ -31,6 +33,13 @@ const url = WmsGermany.mapUrl({
 })
 
 console.log(url);
+
+const c1 = new WGS84_UTM();
+const proj = new Projection<UTM>(new WmsGermanyRP(), 25000);
+//const url2 = proj.getWmsUrl([null, c1.convert(new WGS84(49.018895, 8.344384)), null, c1.convert(new WGS84(49.002492, 8.288909))]);
+const url2 = proj.getWmsUrl([null, c1.convert(new WGS84(49.19894, 7.99911)), null, c1.convert(new WGS84(48.99894, 7.66581))]);
+console.log(url2);
+console.log(c1.inverse(c1.convert(new WGS84(49.19894, 7.99911))));
 
 const a:WGS84 = new WGS84(51, 4);
 const b:DutchGrid = (new WGS84_DutchGrid()).convert(a);

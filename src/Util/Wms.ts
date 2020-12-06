@@ -59,6 +59,31 @@ export class WmsKadaster25 extends Wms {
     }
 }
 
+export class WmsGermanyRP extends Wms {
+    constructor() {
+        super('https://geo4.service24.rlp.de/wms/rp_dtk25.fcgi');
+    }
+
+    mapUrl(params: WmsParams) {
+        // Wanted to use EPSG:4258 (ETRS89) here as that is used in the original maps in germany. However,
+        // the WMS data is returned in a rectangular grid while the original maps obey the distortion introduced
+        // by the ETRS89 system; making the map 1mm smaller in both the top left and top right corner when compared to
+        // the bottom left and bottom right corner. The WMS point seems to return exactly the same area, but in a
+        // rectangular fashion instead of the trapezium(-ish?) shape we desire. This may distort our maps, so we do
+        // not (yet) do down that path.
+
+        // Instead, we choose to use UTM as our base, making the maps more like the dutch maps; rectangular maps
+        // containing a grid parallel to the map.
+        params = Object.assign({}, {
+            CRS: 'EPSG:25832',
+            width: '2000',
+            height: '2000',
+        }, params);
+
+        return super.mapUrl(params);
+    }
+}
+
 
 
 
