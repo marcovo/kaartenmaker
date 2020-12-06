@@ -2,9 +2,9 @@
 export type millimeter = number;
 
 export abstract class Paper {
-    public readonly name: string;
-    public readonly width: millimeter;
-    public readonly height: millimeter;
+    public name: string;
+    public width: millimeter;
+    public height: millimeter;
 }
 
 export class A3P extends Paper {
@@ -45,9 +45,9 @@ export class A5L extends Paper {
 
 export class CustomPaper extends Paper {
     constructor(
-        public readonly width: millimeter,
-        public readonly height: millimeter,
-        public readonly name: string = 'Custom'
+        public width: millimeter,
+        public height: millimeter,
+        public name: string = 'Custom'
     ) {
         super();
     }
