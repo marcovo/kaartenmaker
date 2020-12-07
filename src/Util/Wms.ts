@@ -34,7 +34,6 @@ export default class Wms {
             request: 'GetMap',
             CRS: 'EPSG:25832',
             styles: 'default',
-            layers: 'rp_dtk25',
             format: 'image/png',
         }, params);
 
@@ -53,6 +52,91 @@ export class WmsKadaster25 extends Wms {
             width: '2000',
             height: '2000',
             layers: 'top25raster',
+        }, params);
+
+        return super.mapUrl(params);
+    }
+}
+
+export class WmsKadaster50 extends Wms {
+    constructor() {
+        super('https://geodata.nationaalgeoregister.nl/top50raster/wms');
+    }
+
+    mapUrl(params: WmsParams) {
+        params = Object.assign({}, {
+            CRS: 'EPSG:28992',
+            width: '2000',
+            height: '2000',
+            layers: 'top50raster',
+        }, params);
+
+        return super.mapUrl(params);
+    }
+}
+
+export class WmsKadaster100 extends Wms {
+    constructor() {
+        super('https://geodata.nationaalgeoregister.nl/top100raster/wms');
+    }
+
+    mapUrl(params: WmsParams) {
+        params = Object.assign({}, {
+            CRS: 'EPSG:28992',
+            width: '2000',
+            height: '2000',
+            layers: 'top100raster',
+        }, params);
+
+        return super.mapUrl(params);
+    }
+}
+
+export class WmsKadaster250 extends Wms {
+    constructor() {
+        super('https://geodata.nationaalgeoregister.nl/top250raster/wms');
+    }
+
+    mapUrl(params: WmsParams) {
+        params = Object.assign({}, {
+            CRS: 'EPSG:28992',
+            width: '2000',
+            height: '2000',
+            layers: 'top250raster',
+        }, params);
+
+        return super.mapUrl(params);
+    }
+}
+
+export class WmsKadaster500 extends Wms {
+    constructor() {
+        super('https://geodata.nationaalgeoregister.nl/top500raster/wms');
+    }
+
+    mapUrl(params: WmsParams) {
+        params = Object.assign({}, {
+            CRS: 'EPSG:28992',
+            width: '2000',
+            height: '2000',
+            layers: 'top500raster',
+        }, params);
+
+        return super.mapUrl(params);
+    }
+}
+
+export class WmsKadaster1000 extends Wms {
+    constructor() {
+        super('https://geodata.nationaalgeoregister.nl/top1000raster/wms');
+    }
+
+    mapUrl(params: WmsParams) {
+        params = Object.assign({}, {
+            CRS: 'EPSG:28992',
+            width: '2000',
+            height: '2000',
+            layers: 'top1000raster',
         }, params);
 
         return super.mapUrl(params);
@@ -78,6 +162,7 @@ export class WmsGermanyRP extends Wms {
             CRS: 'EPSG:25832',
             width: '2000',
             height: '2000',
+            layers: 'rp_dtk25',
         }, params);
 
         return super.mapUrl(params);
