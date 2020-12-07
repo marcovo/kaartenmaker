@@ -1,7 +1,6 @@
 import Coordinate from "../Coordinates/Coordinate";
 import Conversion from "../Conversion/Conversion";
 import {millimeter, Paper} from "../Util/Paper";
-import DutchGrid from "../Coordinates/DutchGrid";
 import * as L from 'leaflet';
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import {walkLine} from "../Util/Math";
@@ -34,33 +33,24 @@ export type CutoutOptions = {
 type Color = string;
 
 export default class Cutout<
-    UiMapCoordinate extends Coordinate & LeafletConvertibleCoordinate,
+    WorkspaceCoordinate extends Coordinate & LeafletConvertibleCoordinate,
     ProjectionCoordinate extends Coordinate,
     GridCoordinate extends Coordinate,
-    UiMapCoordinateSystem extends CoordinateSystem<UiMapCoordinate> & LeafletConvertibleCoordinateSystem<UiMapCoordinate>,
+    WorkspaceCoordinateSystem extends CoordinateSystem<WorkspaceCoordinate> & LeafletConvertibleCoordinateSystem<WorkspaceCoordinate>,
     ProjectionCoordinateSystem extends CoordinateSystem<ProjectionCoordinate>,
     GridCoordinateSystem extends CoordinateSystem<GridCoordinate>,
     > {
-    readonly id: number;
     name: string;
     options: CutoutOptions;
 
-    anchorUiMapCoordinate: UiMapCoordinate;
+    anchorWorkspaceCoordinate: WorkspaceCoordinate;
     anchorProjection: ProjectionCoordinate;
 
-    uiMapCoordinateSystem: UiMapCoordinateSystem;
-    projectionCoordinateSystem: ProjectionCoordinateSystem;
-    gridCoordinateSystem: GridCoordinateSystem;
-
-    conversionProjection: Conversion<UiMapCoordinate, ProjectionCoordinate>;
-    conversionGrid: Conversion<UiMapCoordinate, GridCoordinate>;
-
-    mapPolygonUi: UiMapCoordinate[];
+    mapPolygonWorkspace: WorkspaceCoordinate[];
     mapPolygonProjection: ProjectionCoordinate[];
 
     leafletPolygon: L.polygon;
 
-    paper: Paper;
     color: Color;
 
     static readonly pointsOnEdge = 5;
@@ -81,36 +71,27 @@ export default class Cutout<
 
     constructor(
         private userInterface: UserInterface,
-        id: number,
-        paper: Paper,
-        anchorUiMap: UiMapCoordinate,
-        uiMapCoordinateSystem: UiMapCoordinateSystem,
-        projectionCoordinateSystem: ProjectionCoordinateSystem,
-        gridCoordinateSystem: GridCoordinateSystem,
-        conversionProjection: Conversion<UiMapCoordinate, ProjectionCoordinate>,
-        conversionGrid: Conversion<UiMapCoordinate, GridCoordinate>,
+        readonly id: number,
+        private paper: Paper,
+        anchorWorkspace: WorkspaceCoordinate,
+        readonly workspaceCoordinateSystem: WorkspaceCoordinateSystem,
+        readonly projectionCoordinateSystem: ProjectionCoordinateSystem,
+        readonly gridCoordinateSystem: GridCoordinateSystem,
+        readonly conversionProjection: Conversion<WorkspaceCoordinate, ProjectionCoordinate>,
+        readonly conversionGrid: Conversion<WorkspaceCoordinate, GridCoordinate>,
         private projection: Projection<ProjectionCoordinate>
     ) {
-        this.id = id;
-        this.paper = paper;
         this.options = Object.assign({}, Cutout.defaultCutoutOptions);
 
-        this.uiMapCoordinateSystem = uiMapCoordinateSystem;
-        this.projectionCoordinateSystem = projectionCoordinateSystem;
-        this.gridCoordinateSystem = gridCoordinateSystem;
-
-        this.conversionProjection = conversionProjection;
-        this.conversionGrid = conversionGrid;
-
-        this.setAnchorUiMapCoordinate(anchorUiMap);
+        this.setAnchorWorkspaceCoordinate(anchorWorkspace);
     }
 
-    setAnchorUiMapCoordinate(c: UiMapCoordinate) {
-        this.anchorUiMapCoordinate = c;
-        this.anchorProjection = this.conversionProjection.convert(this.anchorUiMapCoordinate);
+    setAnchorWorkspaceCoordinate(c: WorkspaceCoordinate) {
+        this.anchorWorkspaceCoordinate = c;
+        this.anchorProjection = this.conversionProjection.convert(this.anchorWorkspaceCoordinate);
     }
 
-    computeMapPolygon(anchorProjection: ProjectionCoordinate): ProjectionCoordinate[] {
+    computeProjectionPolygon(anchorProjection: ProjectionCoordinate): ProjectionCoordinate[] {
         const width: millimeter = this.paper.width - this.options.margin_left - this.options.margin_right;
         const height: millimeter = this.paper.height - this.options.margin_top - this.options.margin_bottom;
 
@@ -127,8 +108,8 @@ export default class Cutout<
         ];
     }
 
-    computeUiMapPolygon(mapPolygonProjection): UiMapCoordinate[] {
-        const mapPolygonUi = [];
+    computeWorkspacePolygon(mapPolygonProjection): WorkspaceCoordinate[] {
+        const mapPolygonWorkspace = [];
 
         for(let i=0; i<4; i++) {
             walkLine(
@@ -138,24 +119,24 @@ export default class Cutout<
                 Cutout.pointsOnEdge,
                 (c: ProjectionCoordinate, step): void => {
                     if(step < Cutout.pointsOnEdge-1) {
-                        mapPolygonUi.push(this.conversionProjection.inverse(c));
+                        mapPolygonWorkspace.push(this.conversionProjection.inverse(c));
                     }
                 }
             );
         }
-        return mapPolygonUi;
+        return mapPolygonWorkspace;
     }
 
-    determineUiMapPolygon(): void {
-        this.mapPolygonProjection = this.computeMapPolygon(this.anchorProjection);
+    determineWorkspacePolygon(): void {
+        this.mapPolygonProjection = this.computeProjectionPolygon(this.anchorProjection);
 
-        this.mapPolygonUi = this.computeUiMapPolygon(this.mapPolygonProjection);
+        this.mapPolygonWorkspace = this.computeWorkspacePolygon(this.mapPolygonProjection);
     }
 
     addToMap(map: Map) {
-        this.determineUiMapPolygon();
+        this.determineWorkspacePolygon();
 
-        const coords = _.map(this.mapPolygonUi, (c: UiMapCoordinate): L.LatLng => {
+        const coords = _.map(this.mapPolygonWorkspace, (c: WorkspaceCoordinate): L.LatLng => {
             return c.toLeaflet();
         });
 
@@ -253,9 +234,9 @@ export default class Cutout<
 
                 const newCorner = this.projectionCoordinateSystem.make(newCornerX, newCornerY);
 
-                const newPolygon = this.computeUiMapPolygon(this.computeMapPolygon(newCorner));
+                const newPolygon = this.computeWorkspacePolygon(this.computeProjectionPolygon(newCorner));
 
-                const newLeafletPolygon = _.map(newPolygon, (c: UiMapCoordinate): L.LatLng => {
+                const newLeafletPolygon = _.map(newPolygon, (c: WorkspaceCoordinate): L.LatLng => {
                     return c.toLeaflet();
                 });
 
@@ -273,7 +254,7 @@ export default class Cutout<
         });
 
         this.leafletPolygon.on('dragend', () => {
-            this.setAnchorUiMapCoordinate(this.leafletPolygon.getLatLngs()[0][0]);
+            this.setAnchorWorkspaceCoordinate(this.leafletPolygon.getLatLngs()[0][0]);
             this.updateMap();
         });
 
@@ -287,9 +268,9 @@ export default class Cutout<
     }
 
     updateMap() {
-        this.determineUiMapPolygon();
+        this.determineWorkspacePolygon();
 
-        const coords = _.map(this.mapPolygonUi, (c: UiMapCoordinate): L.LatLng => {
+        const coords = _.map(this.mapPolygonWorkspace, (c: WorkspaceCoordinate): L.LatLng => {
             return c.toLeaflet();
         });
 
