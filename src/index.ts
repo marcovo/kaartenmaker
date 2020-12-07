@@ -6,7 +6,8 @@ import Cutout from "./Main/Cutout";
 import {A4L} from "./Util/Paper";
 import {polygonsOverlap} from "./Util/Math";
 import UserInterface from "./Main/UserInterface";
-import "tailwindcss/tailwind.css"
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 import Projection from "./Main/Projection";
 import WGS84_UTM from "./Conversion/WGS84_UTM";

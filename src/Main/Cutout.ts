@@ -467,12 +467,12 @@ export default class Cutout<
 
     mouseover() {
         this.leafletPolygon.setStyle({weight: 5, opacity: 0.7, fillOpacity: 0.3});
-        $('#cutout_' + this.id).addClass('bg-gray-100');
+        $('#cutout_' + this.id).addClass('hover');
     };
 
     mouseout() {
         this.leafletPolygon.setStyle({weight: 3, opacity: 0.5, fillOpacity: 0.2});
-        $('#cutout_' + this.id).removeClass('bg-gray-100');
+        $('#cutout_' + this.id).removeClass('hover');
     };
 
 
