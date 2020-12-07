@@ -1,4 +1,4 @@
-
+//const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
@@ -7,13 +7,28 @@ module.exports = {
         filename: "bundle.js"
     },
 
+    //watch: true,
+
+    //watchOptions: {
+    //    ignored: /node_modules/
+    //},
+
     // Enable sourcemaps for debugging webpack's output.
-    devtool: "source-map",
+    //devtool: "source-map",
+    devtool: "eval-cheap-source-map",
+
+    //optimization: {
+    //    removeAvailableModules: false,
+    //    removeEmptyChunks: false,
+    //    splitChunks: false,
+    //},
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
     },
+
+    //stats: 'verbose',
 
     module: {
         rules: [
@@ -37,6 +52,11 @@ module.exports = {
                         loader: 'postcss-loader'
                     }
                 ],
+                //include: [
+                //    path.resolve(__dirname, 'node_modules/bootstrap/dist/css'),
+                //    path.resolve(__dirname, 'node_modules/leaflet/dist'),
+                //    path.resolve(__dirname, 'src'),
+                //]
             },
 
             {
