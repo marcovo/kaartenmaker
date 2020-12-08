@@ -1,7 +1,8 @@
 
-import WGS84 from "../Coordinates/WGS84";
-import UTM from "../Coordinates/UTM";
+import WGS84, {WGS84System} from "../Coordinates/WGS84";
+import UTM, {UTMSystem} from "../Coordinates/UTM";
 import Conversion from "./Conversion";
+import CoordinateSystem from "../Coordinates/CoordinateSystem";
 
 /**
  * Actually, projecting WGS84 to UTM amounts to going through:
@@ -15,6 +16,14 @@ import Conversion from "./Conversion";
  * https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=2ahUKEwi6-YPWgYvmAhWQalAKHVuSAD0QFjAAegQIBRAC&url=https%3A%2F%2Ficaci.org%2Ffiles%2Fdocuments%2FICC_proceedings%2FICC2007%2Fdocuments%2Fdoc%2FTHEME%25202%2Foral%25201%2F2.1.2%2520A%2520HIGHLY%2520ACCURATE%2520WORLD%2520WIDE%2520ALGORITHM%2520FOR%2520THE%2520TRANSVE.doc&usg=AOvVaw3Rl9gJJSqRaYbjCM1SI_ul
  */
 export default class WGS84_UTM implements Conversion<WGS84, UTM> {
+
+    sourceSystem(): CoordinateSystem<WGS84> {
+        return new WGS84System();
+    }
+
+    targetSystem(): CoordinateSystem<UTM> {
+        return new UTMSystem(0, 0); // TODO Dummy parameters
+    }
 
     public k: number;
     public gamma: number;

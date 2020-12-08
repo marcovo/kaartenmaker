@@ -1,5 +1,6 @@
 
 export default interface Coordinate {
+    readonly name: string;
 
     getX(): number;
 

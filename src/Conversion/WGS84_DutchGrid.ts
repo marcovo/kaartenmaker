@@ -1,7 +1,8 @@
 import Conversion from "./Conversion";
-import WGS84 from "../Coordinates/WGS84";
-import DutchGrid from "../Coordinates/DutchGrid";
+import WGS84, {WGS84System} from "../Coordinates/WGS84";
+import DutchGrid, {DutchGridSystem} from "../Coordinates/DutchGrid";
 import Coordinate from "../Coordinates/Coordinate";
+import CoordinateSystem from "../Coordinates/CoordinateSystem";
 
 /**
  * Functions to convert coordinates:
@@ -12,6 +13,8 @@ import Coordinate from "../Coordinates/Coordinate";
  */
 
 class Bessel implements Coordinate {
+    readonly name = 'EPSG:7004'; // Correct?
+
     readonly lat: number;
     readonly lng: number;
 
@@ -35,6 +38,14 @@ class Bessel implements Coordinate {
 }
 
 export default class WGS84_DutchGrid implements Conversion<WGS84, DutchGrid> {
+
+    sourceSystem(): CoordinateSystem<WGS84> {
+        return new WGS84System();
+    }
+
+    targetSystem(): CoordinateSystem<DutchGrid> {
+        return new DutchGridSystem();
+    }
 
     // Constants neccessary Projection translation
     readonly WGS84_SEMI_MAJOR_AXIS = 6378137.0;

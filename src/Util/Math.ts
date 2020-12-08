@@ -2,6 +2,8 @@ import Coordinate from "../Coordinates/Coordinate";
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 
 export class Point implements Coordinate {
+    readonly name = '';
+
     readonly x: number;
     readonly y: number;
 

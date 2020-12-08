@@ -3,8 +3,13 @@ import * as L from 'leaflet';
 import CoordinateSystem from "./CoordinateSystem";
 import LeafletConvertibleCoordinate from "./LeafletConvertibleCoordinate";
 import LeafletConvertibleCoordinateSystem from "./LeafletConvertibleCoordinateSystem";
+import Conversion from "../Conversion/Conversion";
+import WGS84_DutchGrid from "../Conversion/WGS84_DutchGrid";
+import WGS84_UTM from "../Conversion/WGS84_UTM";
 
 export class WGS84System implements CoordinateSystem<WGS84>, LeafletConvertibleCoordinateSystem<WGS84> {
+    readonly name = 'EPSG:4326';
+
     make(lat: number, lng: number): WGS84 {
         return new WGS84(lat, lng);
     }
@@ -12,9 +17,18 @@ export class WGS84System implements CoordinateSystem<WGS84>, LeafletConvertibleC
     fromLeaflet(source: L.LatLng): WGS84 {
         return this.make(source.lat, source.lng);
     }
+
+    conversions(): Conversion<WGS84, Coordinate>[] {
+        return [
+            new WGS84_DutchGrid(),
+            new WGS84_UTM(),
+        ];
+    }
 }
 
 export default class WGS84 implements Coordinate, LeafletConvertibleCoordinate {
+    readonly name = 'EPSG:4326';
+
     readonly lat: number;
     readonly lng: number;
 

@@ -11,19 +11,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 import Projection from "./Main/Projection";
 import WGS84_UTM from "./Conversion/WGS84_UTM";
-import UTM from "./Coordinates/UTM";
+import UTM, {UTMSystem} from "./Coordinates/UTM";
+import CoordinateConverter from "./Util/CoordinateConverter";
 
+CoordinateConverter.registerCoordinateSystem(new WGS84System());
+CoordinateConverter.registerCoordinateSystem(new DutchGridSystem());
+CoordinateConverter.registerCoordinateSystem(new UTMSystem(0, 0)); // TODO Dummy parameters
 
 const userInterface = new UserInterface();
 
 
 
 
-const greeting = (person: string) => {
-    console.log('Good day ' + person);
-};
-
-greeting('Daniel');
 
 const WmsGermany = new Wms('https://geo4.service24.rlp.de/wms/rp_dtk25.fcgi');
 
@@ -63,3 +62,14 @@ const pb = [
 ];
 
 console.log(polygonsOverlap(pa, pb));
+
+let m, n;
+m = CoordinateConverter.convert(new DutchGrid(155000, 463000), CoordinateConverter.getCoordinateSystem('EPSG:25832'));
+console.log(m);
+n = CoordinateConverter.convert(m, CoordinateConverter.getCoordinateSystem('EPSG:28992'));
+console.log(n);
+
+m = CoordinateConverter.convert(new DutchGrid(155000, 463000), CoordinateConverter.getCoordinateSystem('EPSG:25832'));
+console.log(m);
+n = CoordinateConverter.convert(m, CoordinateConverter.getCoordinateSystem('EPSG:28992'));
+console.log(n);
