@@ -1,5 +1,4 @@
 import Coordinate from "../Coordinates/Coordinate";
-import Conversion from "../Conversion/Conversion";
 import {millimeter, Paper} from "../Util/Paper";
 import * as L from 'leaflet';
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
@@ -15,6 +14,7 @@ import {Point} from "../Util/Math";
 import {WmsParams} from "../Util/Wms";
 import Cache from "../Util/Cache";
 import UserInterface from "./UserInterface";
+import CoordinateConverter from "../Util/CoordinateConverter";
 
 export type CutoutOptions = {
     margin_top: millimeter,
@@ -77,8 +77,6 @@ export default class Cutout<
         readonly workspaceCoordinateSystem: WorkspaceCoordinateSystem,
         readonly projectionCoordinateSystem: ProjectionCoordinateSystem,
         readonly gridCoordinateSystem: GridCoordinateSystem,
-        readonly conversionProjection: Conversion<WorkspaceCoordinate, ProjectionCoordinate>,
-        readonly conversionGrid: Conversion<WorkspaceCoordinate, GridCoordinate>,
         private projection: Projection<ProjectionCoordinate>
     ) {
         this.options = Object.assign({}, Cutout.defaultCutoutOptions);
@@ -88,7 +86,7 @@ export default class Cutout<
 
     setAnchorWorkspaceCoordinate(c: WorkspaceCoordinate) {
         this.anchorWorkspaceCoordinate = c;
-        this.anchorProjection = this.conversionProjection.convert(this.anchorWorkspaceCoordinate);
+        this.anchorProjection = CoordinateConverter.convert(this.anchorWorkspaceCoordinate, this.projectionCoordinateSystem);
     }
 
     computeProjectionPolygon(anchorProjection: ProjectionCoordinate): ProjectionCoordinate[] {
@@ -119,7 +117,7 @@ export default class Cutout<
                 Cutout.pointsOnEdge,
                 (c: ProjectionCoordinate, step): void => {
                     if(step < Cutout.pointsOnEdge-1) {
-                        mapPolygonWorkspace.push(this.conversionProjection.inverse(c));
+                        mapPolygonWorkspace.push(CoordinateConverter.convert(c, this.workspaceCoordinateSystem));
                     }
                 }
             );
@@ -146,8 +144,14 @@ export default class Cutout<
         this.leafletPolygon.dragging.enable();
 
         this.leafletPolygon.on('prelatlng', (evt) => {
-            const thisCornerLL = this.conversionProjection.convert(evt.latlngs[0]);
-            const thisCornerHH = this.conversionProjection.convert(evt.latlngs[(Cutout.pointsOnEdge - 1) * 2]);
+            const thisCornerLL = CoordinateConverter.convert(
+                this.workspaceCoordinateSystem.fromLeaflet(evt.latlngs[0]),
+                this.projectionCoordinateSystem
+            );
+            const thisCornerHH = CoordinateConverter.convert(
+                this.workspaceCoordinateSystem.fromLeaflet(evt.latlngs[(Cutout.pointsOnEdge - 1) * 2]),
+                this.projectionCoordinateSystem
+            );
             const thisLeft = thisCornerLL.getX();
             const thisRight = thisCornerHH.getX();
             const thisBottom = thisCornerLL.getY();
@@ -254,7 +258,7 @@ export default class Cutout<
         });
 
         this.leafletPolygon.on('dragend', () => {
-            this.setAnchorWorkspaceCoordinate(this.leafletPolygon.getLatLngs()[0][0]);
+            this.setAnchorWorkspaceCoordinate(this.workspaceCoordinateSystem.fromLeaflet(this.leafletPolygon.getLatLngs()[0][0]));
             this.updateMap();
         });
 

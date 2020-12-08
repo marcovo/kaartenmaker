@@ -103,8 +103,6 @@ export default class UserInterface {
                 new WGS84System(),
                 new DutchGridSystem(),
                 new DutchGridSystem(),
-                new WGS84_DutchGrid(),
-                new WGS84_DutchGrid(),
                 new Projection<DutchGrid>(new WmsKadaster25(), 25000),
             );
         } else {
@@ -118,8 +116,6 @@ export default class UserInterface {
                 new WGS84System(),
                 new UTMSystem(utm.zone, utm.hemi),
                 new UTMSystem(utm.zone, utm.hemi),
-                new WGS84_UTM(),
-                new WGS84_UTM(),
                 new Projection<UTM>(new WmsGermanyRP(), 25000),
             );
         }
