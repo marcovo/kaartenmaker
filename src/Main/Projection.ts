@@ -47,6 +47,7 @@ export default class Projection<C extends Coordinate> {
 
             const tileSize = 1000000 / scale;
 
+            // TODO: Generalize this function
             const toPaperCoord = (c: C): Point => {
                 const diffX = c.getX() - this.anchor.getX();
                 const diffY = c.getY() - this.anchor.getY();

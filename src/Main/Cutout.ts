@@ -148,6 +148,7 @@ export default class Cutout<
         this.leafletPolygon.dragging.enable();
 
         this.leafletPolygon.on('prelatlng', (evt) => {
+            // TODO: In UTM, when two cutouts are near a zone border, the moving cutout jumps away out of sight
             const thisCornerLL = CoordinateConverter.convert(
                 this.workspaceCoordinateSystem.fromLeaflet(evt.latlngs[0]),
                 this.projection.coordinateSystem
@@ -288,6 +289,7 @@ export default class Cutout<
     print(cache: Cache): Promise<void> {
         const scale = this.projection.getScale();
 
+        // TODO: Generalize this function
         const toPaperCoord = (c: ProjectionCoordinate): Point => {
             const diffX = c.getX() - this.projection.anchor.getX();
             const diffY = c.getY() - this.projection.anchor.getY();
