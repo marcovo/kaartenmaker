@@ -43,7 +43,6 @@ export default class Cutout<
     options: CutoutOptions;
 
     anchorWorkspaceCoordinate: WorkspaceCoordinate;
-    anchorProjection: ProjectionCoordinate;
 
     mapPolygonWorkspace: WorkspaceCoordinate[];
     mapPolygonProjection: ProjectionCoordinate[];
@@ -83,6 +82,10 @@ export default class Cutout<
         this.grid.attach(this);
 
         this.setAnchorWorkspaceCoordinate(anchorWorkspace);
+    }
+
+    getPaper(): Paper {
+        return this.paper;
     }
 
     setAnchorWorkspaceCoordinate(c: WorkspaceCoordinate) {
@@ -285,8 +288,6 @@ export default class Cutout<
     print(cache: Cache): Promise<void> {
         const scale = this.projection.getScale();
 
-        const tileSize = 1000000 / scale;
-
         const toPaperCoord = (c: ProjectionCoordinate): Point => {
             const diffX = c.getX() - this.projection.anchor.getX();
             const diffY = c.getY() - this.projection.anchor.getY();
@@ -302,36 +303,7 @@ export default class Cutout<
             format: [this.paper.width, this.paper.height],
         });
 
-        const p = this.mapPolygonProjection;
-        const minX = Math.floor(Math.min(p[0].getX(), p[1].getX(), p[2].getX(), p[3].getX())/1000)*1000;
-        const maxX = Math.ceil(Math.max(p[0].getX(), p[1].getX(), p[2].getX(), p[3].getX())/1000)*1000;
-        const minY = Math.floor(Math.min(p[0].getY(), p[1].getY(), p[2].getY(), p[3].getY())/1000)*1000;
-        const maxY = Math.ceil(Math.max(p[0].getY(), p[1].getY(), p[2].getY(), p[3].getY())/1000)*1000;
-
-        const promises: Promise<HTMLImageElement>[] = [];
-        for(let x=minX; x<maxX; x+= 1000) {
-            for(let y=minY; y<maxY; y+= 1000) {
-                const imagePromise: Promise<HTMLImageElement> = this.downloadPrintImage(cache, [
-                    this.projection.coordinateSystem.make(x, y+1000),
-                    this.projection.coordinateSystem.make(x+1000, y+1000),
-                    this.projection.coordinateSystem.make(x+1000, y),
-                    this.projection.coordinateSystem.make(x, y),
-                ], {
-                    width: '400',
-                    height: '400',
-                });
-
-                const paperCoord = toPaperCoord(this.projection.coordinateSystem.make(x, y+1000));
-
-                imagePromise.then((img) => {
-                    doc.addImage(img, 'PNG', paperCoord.getX(), paperCoord.getY(), tileSize, tileSize);
-                })
-
-                promises.push(imagePromise);
-            }
-        }
-
-        return Promise.all(promises).then(() => {
+        return this.projection.projectToPdf(doc, this.paper, cache).then(() => {
             const diffs = (coords: [number, number][]): [number, number][] => {
                 const res = [];
                 for(let i=0; i<coords.length-1; i++) {
@@ -416,38 +388,6 @@ export default class Cutout<
             );
 
             doc.save("a4.pdf");
-        });
-    }
-
-    private downloadPrintImage(cache: Cache, coords: ProjectionCoordinate[], params: WmsParams = {}): Promise<HTMLImageElement> {
-        const url = this.projection.getWmsUrl(coords, params);
-
-        return cache.fetch(url, () => {
-            return new Promise((resolve, reject) => {
-
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', url, true);
-                xhr.responseType = 'blob';
-                xhr.onload = function (e) {
-                    const blob = xhr.response;
-
-                    const fr = new FileReader();
-                    fr.onload = function(e) {
-                        // @ts-ignore
-                        resolve(fr.result);
-                    };
-                    fr.readAsDataURL(blob);
-                };
-                xhr.send(null);
-            });
-        }).then((result) => {
-            return new Promise((resolve, reject) => {
-                const img = document.createElement('img');
-                img.src = result;
-                img.onload = function () {
-                    resolve(img);
-                };
-            });
         });
     }
 
