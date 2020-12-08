@@ -7,4 +7,6 @@ export default interface CoordinateSystem<C extends Coordinate> {
     make(...args: any): C;
 
     conversions(): Conversion<C, Coordinate>[];
+
+    rebase(c: C): CoordinateSystem<C>;
 }

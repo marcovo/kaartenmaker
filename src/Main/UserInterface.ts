@@ -6,19 +6,20 @@ import WGS84, {WGS84System} from "../Coordinates/WGS84";
 import DutchGrid, {DutchGridSystem} from "../Coordinates/DutchGrid";
 import WGS84_DutchGrid from "../Conversion/WGS84_DutchGrid";
 import Projection from "./Projection";
-import {WmsGermanyRP, WmsKadaster25} from "../Util/Wms";
+import Container from "./Container";
 import Cache from "../Util/Cache";
 const $ = require( 'jquery' );
 import Vue from 'vue/dist/vue.esm.js';
 import * as L from 'leaflet';
 import UTM, {UTMSystem} from "../Coordinates/UTM";
 import WGS84_UTM from "../Conversion/WGS84_UTM";
+import Grid from "./Grid";
 require('../Lib/LeafletDrag');
 
 export default class UserInterface {
 
     private map: Map;
-    private cutouts: Cutout<any, any, any, any, any, any>[] = [];
+    private cutouts: Cutout<any, any, any, any>[] = [];
     private cutoutsCounter = 0;
 
     private cutoutList: Vue;
@@ -71,16 +72,16 @@ export default class UserInterface {
                 cutouts: this.cutouts,
             },
             methods: {
-                print: (cutout: Cutout<any, any, any, any, any, any>) => {
+                print: (cutout: Cutout<any, any, any, any>) => {
                     this.print(cutout);
                 },
-                deleteCutout: (cutout: Cutout<any, any, any, any, any, any>) => {
+                deleteCutout: (cutout: Cutout<any, any, any, any>) => {
                     this.deleteCutout(cutout);
                 },
-                mouseover: (cutout: Cutout<any, any, any, any, any, any>) => {
+                mouseover: (cutout: Cutout<any, any, any, any>) => {
                     cutout.mouseover();
                 },
-                mouseout: (cutout: Cutout<any, any, any, any, any, any>) => {
+                mouseout: (cutout: Cutout<any, any, any, any>) => {
                     cutout.mouseout();
                 }
             }
@@ -101,9 +102,8 @@ export default class UserInterface {
                 new A4L(),
                 new WGS84(52, 5),
                 new WGS84System(),
-                new DutchGridSystem(),
-                new DutchGridSystem(),
-                new Projection<DutchGrid>(new WmsKadaster25(), 25000),
+                new Projection<DutchGrid>(Container.wms('nl_kad_25'), 25000),
+                new Grid<DutchGrid>(new DutchGridSystem())
             );
         } else {
             const wgs = new WGS84(50, 7);
@@ -114,9 +114,8 @@ export default class UserInterface {
                 new A4L(),
                 wgs,
                 new WGS84System(),
-                new UTMSystem(utm.zone, utm.hemi),
-                new UTMSystem(utm.zone, utm.hemi),
-                new Projection<UTM>(new WmsGermanyRP(), 25000),
+                new Projection<UTM>(Container.wms('de_rp_25'), 25000),
+                new Grid<UTM>(new UTMSystem(utm.zone, utm.hemi))
             );
         }
         this.lastAddedMapType = type;
@@ -133,7 +132,7 @@ export default class UserInterface {
         return this.cutouts;
     }
 
-    print(cutout: Cutout<any, any, any, any, any, any>): void {
+    print(cutout: Cutout<any, any, any, any>): void {
         const cache = new Cache('image_cache');
         cache.initialize().then(() => {
             cutout.print(cache).then(() => {
@@ -142,7 +141,7 @@ export default class UserInterface {
         });
     }
 
-    deleteCutout(cutout: Cutout<any, any, any, any, any, any>): void {
+    deleteCutout(cutout: Cutout<any, any, any, any>): void {
         const index = this.cutouts.indexOf(cutout);
         if(index > -1) {
             cutout.removeFromMap(this.map);

@@ -15,6 +15,7 @@ import {WmsParams} from "../Util/Wms";
 import Cache from "../Util/Cache";
 import UserInterface from "./UserInterface";
 import CoordinateConverter from "../Util/CoordinateConverter";
+import Grid from "./Grid";
 
 export type CutoutOptions = {
     margin_top: millimeter,
@@ -36,9 +37,7 @@ export default class Cutout<
     WorkspaceCoordinate extends Coordinate & LeafletConvertibleCoordinate,
     ProjectionCoordinate extends Coordinate,
     GridCoordinate extends Coordinate,
-    WorkspaceCoordinateSystem extends CoordinateSystem<WorkspaceCoordinate> & LeafletConvertibleCoordinateSystem<WorkspaceCoordinate>,
-    ProjectionCoordinateSystem extends CoordinateSystem<ProjectionCoordinate>,
-    GridCoordinateSystem extends CoordinateSystem<GridCoordinate>,
+    WorkspaceCoordinateSystem extends CoordinateSystem<WorkspaceCoordinate> & LeafletConvertibleCoordinateSystem<WorkspaceCoordinate>
     > {
     name: string;
     options: CutoutOptions;
@@ -75,18 +74,20 @@ export default class Cutout<
         private paper: Paper,
         anchorWorkspace: WorkspaceCoordinate,
         readonly workspaceCoordinateSystem: WorkspaceCoordinateSystem,
-        readonly projectionCoordinateSystem: ProjectionCoordinateSystem,
-        readonly gridCoordinateSystem: GridCoordinateSystem,
-        private projection: Projection<ProjectionCoordinate>
+        private projection: Projection<ProjectionCoordinate>,
+        private grid: Grid<GridCoordinate>
     ) {
         this.options = Object.assign({}, Cutout.defaultCutoutOptions);
+
+        this.projection.attach(this);
+        this.grid.attach(this);
 
         this.setAnchorWorkspaceCoordinate(anchorWorkspace);
     }
 
     setAnchorWorkspaceCoordinate(c: WorkspaceCoordinate) {
         this.anchorWorkspaceCoordinate = c;
-        this.anchorProjection = CoordinateConverter.convert(this.anchorWorkspaceCoordinate, this.projectionCoordinateSystem);
+        this.projection.setAnchor(this.anchorWorkspaceCoordinate);
     }
 
     computeProjectionPolygon(anchorProjection: ProjectionCoordinate): ProjectionCoordinate[] {
@@ -94,9 +95,9 @@ export default class Cutout<
         const height: millimeter = this.paper.height - this.options.margin_top - this.options.margin_bottom;
 
         const scale = this.projection.getScale();
-        const topRight = this.projectionCoordinateSystem.make(anchorProjection.getX() + width*scale/1000, anchorProjection.getY());
-        const bottomRight = this.projectionCoordinateSystem.make(anchorProjection.getX() + width*scale/1000, anchorProjection.getY() + height*scale/1000);
-        const bottomLeft = this.projectionCoordinateSystem.make(anchorProjection.getX(), anchorProjection.getY() + height*scale/1000);
+        const topRight = this.projection.coordinateSystem.make(anchorProjection.getX() + width*scale/1000, anchorProjection.getY());
+        const bottomRight = this.projection.coordinateSystem.make(anchorProjection.getX() + width*scale/1000, anchorProjection.getY() + height*scale/1000);
+        const bottomLeft = this.projection.coordinateSystem.make(anchorProjection.getX(), anchorProjection.getY() + height*scale/1000);
 
         return [
             anchorProjection,
@@ -111,7 +112,7 @@ export default class Cutout<
 
         for(let i=0; i<4; i++) {
             walkLine(
-                this.projectionCoordinateSystem,
+                this.projection.coordinateSystem,
                 mapPolygonProjection[i],
                 mapPolygonProjection[(i+1) % 4],
                 Cutout.pointsOnEdge,
@@ -126,7 +127,7 @@ export default class Cutout<
     }
 
     determineWorkspacePolygon(): void {
-        this.mapPolygonProjection = this.computeProjectionPolygon(this.anchorProjection);
+        this.mapPolygonProjection = this.computeProjectionPolygon(this.projection.anchor);
 
         this.mapPolygonWorkspace = this.computeWorkspacePolygon(this.mapPolygonProjection);
     }
@@ -146,11 +147,11 @@ export default class Cutout<
         this.leafletPolygon.on('prelatlng', (evt) => {
             const thisCornerLL = CoordinateConverter.convert(
                 this.workspaceCoordinateSystem.fromLeaflet(evt.latlngs[0]),
-                this.projectionCoordinateSystem
+                this.projection.coordinateSystem
             );
             const thisCornerHH = CoordinateConverter.convert(
                 this.workspaceCoordinateSystem.fromLeaflet(evt.latlngs[(Cutout.pointsOnEdge - 1) * 2]),
-                this.projectionCoordinateSystem
+                this.projection.coordinateSystem
             );
             const thisLeft = thisCornerLL.getX();
             const thisRight = thisCornerHH.getX();
@@ -236,7 +237,7 @@ export default class Cutout<
                 newCornerX = newCornerX || thisLeft;
                 newCornerY = newCornerY || thisBottom;
 
-                const newCorner = this.projectionCoordinateSystem.make(newCornerX, newCornerY);
+                const newCorner = this.projection.coordinateSystem.make(newCornerX, newCornerY);
 
                 const newPolygon = this.computeWorkspacePolygon(this.computeProjectionPolygon(newCorner));
 
@@ -287,8 +288,8 @@ export default class Cutout<
         const tileSize = 1000000 / scale;
 
         const toPaperCoord = (c: ProjectionCoordinate): Point => {
-            const diffX = c.getX() - this.anchorProjection.getX();
-            const diffY = c.getY() - this.anchorProjection.getY();
+            const diffX = c.getX() - this.projection.anchor.getX();
+            const diffY = c.getY() - this.projection.anchor.getY();
 
             return new Point(
                 this.options.margin_left + diffX / (scale / 1000),
@@ -311,16 +312,16 @@ export default class Cutout<
         for(let x=minX; x<maxX; x+= 1000) {
             for(let y=minY; y<maxY; y+= 1000) {
                 const imagePromise: Promise<HTMLImageElement> = this.downloadPrintImage(cache, [
-                    this.projectionCoordinateSystem.make(x, y+1000),
-                    this.projectionCoordinateSystem.make(x+1000, y+1000),
-                    this.projectionCoordinateSystem.make(x+1000, y),
-                    this.projectionCoordinateSystem.make(x, y),
+                    this.projection.coordinateSystem.make(x, y+1000),
+                    this.projection.coordinateSystem.make(x+1000, y+1000),
+                    this.projection.coordinateSystem.make(x+1000, y),
+                    this.projection.coordinateSystem.make(x, y),
                 ], {
                     width: '400',
                     height: '400',
                 });
 
-                const paperCoord = toPaperCoord(this.projectionCoordinateSystem.make(x, y+1000));
+                const paperCoord = toPaperCoord(this.projection.coordinateSystem.make(x, y+1000));
 
                 imagePromise.then((img) => {
                     doc.addImage(img, 'PNG', paperCoord.getX(), paperCoord.getY(), tileSize, tileSize);

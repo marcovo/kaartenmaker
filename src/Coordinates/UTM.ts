@@ -18,6 +18,13 @@ export class UTMSystem implements CoordinateSystem<UTM> {
             new UTM_WGS84(),
         ];
     }
+
+    rebase(c: UTM): UTMSystem {
+        if(c.zone !== this.zone || c.hemi !== this.hemi) {
+            return new UTMSystem(c.zone, c.hemi);
+        }
+        return this;
+    }
 }
 
 export default class UTM implements Coordinate {

@@ -15,6 +15,10 @@ export class DutchGridSystem implements CoordinateSystem<DutchGrid> {
             new DutchGrid_WGS84(),
         ];
     }
+
+    rebase(c: DutchGrid): DutchGridSystem {
+        return this;
+    }
 }
 
 export default class DutchGrid implements Coordinate {

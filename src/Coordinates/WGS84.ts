@@ -24,6 +24,10 @@ export class WGS84System implements CoordinateSystem<WGS84>, LeafletConvertibleC
             new WGS84_UTM(),
         ];
     }
+
+    rebase(c: WGS84): WGS84System {
+        return this;
+    }
 }
 
 export default class WGS84 implements Coordinate, LeafletConvertibleCoordinate {
