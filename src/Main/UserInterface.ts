@@ -102,8 +102,8 @@ export default class UserInterface {
                 new A4L(),
                 new WGS84(52, 5),
                 new WGS84System(),
-                new Projection<DutchGrid>(Container.wms('nl_kad_25'), 25000),
-                new Grid<DutchGrid>(new DutchGridSystem())
+                new Projection(Container.wms('nl_kad_25'), 25000),
+                new Grid(new DutchGridSystem())
             );
         } else {
             const wgs = new WGS84(50, 7);
@@ -114,8 +114,8 @@ export default class UserInterface {
                 new A4L(),
                 wgs,
                 new WGS84System(),
-                new Projection<UTM>(Container.wms('de_rp_25'), 25000),
-                new Grid<UTM>(new UTMSystem(utm.zone, utm.hemi))
+                new Projection(Container.wms('de_rp_25'), 25000),
+                new Grid(new UTMSystem(utm.zone, utm.hemi))
             );
         }
         this.lastAddedMapType = type;
