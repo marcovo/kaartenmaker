@@ -4,7 +4,13 @@
     "allowJs": true,
     "target": "es5",
     "lib": ["es6", "dom"],
-    "types": ["node"]
+    "types": ["node"],
+    "jsx": "preserve",
+    "module": "esnext",
+    "moduleResolution": "node"
   },
+  "files": [
+    "src/vue-shims.d.ts"
+  ],
   "include": ["./src/**/*"]
 }

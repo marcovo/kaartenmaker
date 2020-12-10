@@ -12,6 +12,7 @@ import Container from "./Main/Container";
 import WGS84_UTM from "./Conversion/WGS84_UTM";
 import UTM, {UTMSystem} from "./Coordinates/UTM";
 import CoordinateConverter from "./Util/CoordinateConverter";
+require('./components/CutoutSettingsModal.vue');
 
 CoordinateConverter.registerCoordinateSystem(new WGS84System());
 CoordinateConverter.registerCoordinateSystem(new DutchGridSystem());

@@ -1,5 +1,6 @@
 //const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
     entry: "./src/index.ts",
@@ -25,7 +26,7 @@ module.exports = {
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
+        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".vue"]
     },
 
     //stats: 'verbose',
@@ -33,7 +34,12 @@ module.exports = {
     module: {
         rules: [
             // All files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'.
-            { test: /\.tsx?$/, loader: "ts-loader" },
+            {
+                test: /\.tsx?$/,
+                loader: "ts-loader",
+                options: { appendTsSuffixTo: [/\.vue$/] },
+                //exclude: /node_modules/,
+            },
 
             // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
             { test: /\.js$/, loader: "source-map-loader" },
@@ -47,9 +53,11 @@ module.exports = {
                             publicPath: ''
                         }
                     },
+                    'vue-style-loader',
                     'css-loader',
                     {
-                        loader: 'postcss-loader'
+                        loader: 'postcss-loader',
+                        //options: { importLoaders: 1 },
                     }
                 ],
                 //include: [
@@ -62,6 +70,11 @@ module.exports = {
             {
                 test: /\.(ttf|eot|svg|png|jpg|gif|ico)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
                 loader: 'file-loader'
+            },
+
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader'
             }
         ]
     },
@@ -70,6 +83,7 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: 'bundle.css'
         }),
+        new VueLoaderPlugin(),
     ]
 
     // Other options...
