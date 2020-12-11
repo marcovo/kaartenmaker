@@ -70,8 +70,8 @@
                 v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_general-tab'"
             >
               <div class="form-group">
-                <label v-bind:for="'csm_' + cutout.id + 'name'">Kaart naam</label>
-                <input type="text" class="form-control" v-bind:id="'csm_' + cutout.id + 'name'" placeholder="Typ een naam..." v-bind:value="cutout.name">
+                <label v-bind:for="'csm_' + cutout.id + '_name'">Kaart naam</label>
+                <input type="text" class="form-control" v-bind:id="'csm_' + cutout.id + '_name'" placeholder="Typ een naam..." v-bind:value="cutout.name">
               </div>
             </div>
 
@@ -80,7 +80,15 @@
                  role="tabpanel"
                  v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_projection-tab'"
             >
-              Projection
+              <div class="form-group">
+                <label v-bind:for="'csm_' + cutout.id + '_wms'">Kaartbron</label>
+                <select class="form-control" v-bind:id="'csm_' + cutout.id + '_wms'">
+                  <option
+                      v-for="wms in container.wmsList()"
+                      v-bind:value="wms.name"
+                  >{{ wms.title }}</option>
+                </select>
+              </div>
             </div>
 
             <div
@@ -112,6 +120,7 @@
 
 <script lang="ts">
 import Vue from 'vue/dist/vue.esm.js';
+import Container from "../Main/Container";
 import Cutout from "../Main/Cutout";
 import * as $ from "jquery";
 
@@ -134,7 +143,7 @@ export default Vue.component('cutout-settings-modal', {
     });
 
     return {
-
+      container: Container,
     };
   },
   methods: {

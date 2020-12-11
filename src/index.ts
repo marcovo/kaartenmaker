@@ -18,37 +18,37 @@ CoordinateConverter.registerCoordinateSystem(new WGS84System());
 CoordinateConverter.registerCoordinateSystem(new DutchGridSystem());
 CoordinateConverter.registerCoordinateSystem(new UTMSystem(0, 0)); // TODO Dummy parameters
 
-Container.registerWms('nl_kad_25', new Wms('https://geodata.nationaalgeoregister.nl/top25raster/wms', {
+Container.registerWms(new Wms('nl_kad_25','Kadaster (NL) 1:25.000', 'https://geodata.nationaalgeoregister.nl/top25raster/wms', {
     CRS: 'EPSG:28992',
     layers: 'top25raster',
 }));
 
-Container.registerWms('nl_kad_50', new Wms('https://geodata.nationaalgeoregister.nl/top50raster/wms', {
+Container.registerWms(new Wms('nl_kad_50','Kadaster (NL) 1:50.000','https://geodata.nationaalgeoregister.nl/top50raster/wms', {
     CRS: 'EPSG:28992',
     layers: 'top50raster',
 }));
 
-Container.registerWms('nl_kad_100', new Wms('https://geodata.nationaalgeoregister.nl/top100raster/wms', {
+Container.registerWms(new Wms('nl_kad_100','Kadaster (NL) 1:100.000','https://geodata.nationaalgeoregister.nl/top100raster/wms', {
     CRS: 'EPSG:28992',
     layers: 'top100raster',
 }));
 
-Container.registerWms('nl_kad_250', new Wms('https://geodata.nationaalgeoregister.nl/top250raster/wms', {
+Container.registerWms(new Wms('nl_kad_250','Kadaster (NL) 1:250.000', 'https://geodata.nationaalgeoregister.nl/top250raster/wms', {
     CRS: 'EPSG:28992',
     layers: 'top250raster',
 }));
 
-Container.registerWms('nl_kad_500', new Wms('https://geodata.nationaalgeoregister.nl/top500raster/wms', {
+Container.registerWms(new Wms('nl_kad_500','Kadaster (NL) 1:500.000','https://geodata.nationaalgeoregister.nl/top500raster/wms', {
     CRS: 'EPSG:28992',
     layers: 'top500raster',
 }));
 
-Container.registerWms('nl_kad_1000', new Wms('https://geodata.nationaalgeoregister.nl/top1000raster/wms', {
+Container.registerWms(new Wms('nl_kad_1000','Kadaster (NL) 1:1.000.000', 'https://geodata.nationaalgeoregister.nl/top1000raster/wms', {
     CRS: 'EPSG:28992',
     layers: 'top1000raster',
 }));
 
-Container.registerWms('de_rp_25', new Wms('https://geo4.service24.rlp.de/wms/rp_dtk25.fcgi', {
+Container.registerWms(new Wms('de_rp_25', 'Rheinland-Pfalz (DE) 1:25.000', 'https://geo4.service24.rlp.de/wms/rp_dtk25.fcgi', {
     // Wanted to use EPSG:4258 (ETRS89) here as that is used in the original maps in germany. However,
     // the WMS data is returned in a rectangular grid while the original maps obey the distortion introduced
     // by the ETRS89 system; making the map 1mm smaller in both the top left and top right corner when compared to
@@ -68,7 +68,7 @@ const userInterface = new UserInterface();
 
 
 
-const WmsGermany = new Wms('https://geo4.service24.rlp.de/wms/rp_dtk25.fcgi');
+/*const WmsGermany = new Wms('https://geo4.service24.rlp.de/wms/rp_dtk25.fcgi');
 
 const url = WmsGermany.mapUrl({
     'bbox' : '437000,5446000,439000,5448000',
@@ -76,7 +76,7 @@ const url = WmsGermany.mapUrl({
     'height' : '50',
 })
 
-console.log(url);
+console.log(url);*/
 
 const c1 = new WGS84_UTM();
 //const proj = new Projection<UTM>(new WmsGermanyRP(), 25000, new UTMSystem(c1.zone, c1.hemi));

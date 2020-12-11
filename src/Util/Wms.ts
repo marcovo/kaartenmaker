@@ -19,7 +19,7 @@ export type WmsParams = {
 export default class Wms {
     readonly params: WmsParams;
 
-    constructor(readonly url: string, params: WmsParams = {}) {
+    constructor(readonly name: string, readonly title: string, readonly url: string, params: WmsParams = {}) {
         this.params = Object.assign({
             version: '1.3.0',
             service: 'WMS',

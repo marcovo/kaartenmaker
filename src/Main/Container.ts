@@ -3,8 +3,8 @@ import Wms from "../Util/Wms";
 export default class Container {
     private static WMSes: Record<string, Wms> = {};
 
-    static registerWms(name: string, wms: Wms) {
-        Container.WMSes[name] = wms;
+    static registerWms(wms: Wms) {
+        Container.WMSes[wms.name] = wms;
     }
 
     static wms(name: string): Wms {
@@ -13,5 +13,9 @@ export default class Container {
         }
 
         return Container.WMSes[name];
+    }
+
+    static wmsList(): Wms[] {
+        return Object.values(this.WMSes);
     }
 }
