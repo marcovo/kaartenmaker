@@ -137,7 +137,7 @@ export default Vue.component('cutout-settings-modal', {
         $('#cutout_settings_modal_' + cutout.id).modal();
       });
 
-      $('#csm_' + cutout.id + 'name').on('change keyup input', function() {
+      $('#csm_' + cutout.id + '_name').on('change keyup input', function() {
         cutout.name = $(this).val();
       })
     });
