@@ -106,7 +106,76 @@
                 role="tabpanel"
                 v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_frame-tab'"
             >
-              Frame
+              <label>Marges</label>
+              <div class="row">
+                <div class="offset-md-4 col-md-4">
+                  <div class="form-group">
+                    <div>
+                      <label v-bind:for="'csm_' + cutout.id + '_margin_top'" class="float-left font-italic">Boven</label>
+                      <div class="form-check float-right">
+                        <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_top'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_top">
+                        <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_top'">Coördinaten</label>
+                      </div>
+                    </div>
+                    <div class="input-group">
+                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_top'" v-bind:value="cutout.options.margin_top">
+                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <div>
+                      <label v-bind:for="'csm_' + cutout.id + '_margin_left'" class="font-italic">Links</label>
+                      <div class="form-check float-right">
+                        <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_left'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_left">
+                        <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_left'">Coördinaten</label>
+                      </div>
+                    </div>
+                    <div class="input-group">
+                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_left'" v-bind:value="cutout.options.margin_left">
+                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="offset-md-4 col-md-4">
+                  <div class="form-group">
+                    <div>
+                      <label v-bind:for="'csm_' + cutout.id + '_margin_right'" class="font-italic">Rechts</label>
+                      <div class="form-check float-right">
+                        <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_right'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_right">
+                        <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_right'">Coördinaten</label>
+                      </div>
+                    </div>
+                    <div class="input-group">
+                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_right'" v-bind:value="cutout.options.margin_right">
+                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="offset-md-4 col-md-4">
+                  <div class="form-group">
+                    <div>
+                      <label v-bind:for="'csm_' + cutout.id + '_margin_bottom'" class="font-italic">Onder</label>
+                      <div class="form-check float-right">
+                        <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_bottom'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_bottom">
+                        <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_bottom'">Coördinaten</label>
+                      </div>
+                    </div>
+                    <div class="input-group">
+                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_bottom'" v-bind:value="cutout.options.margin_bottom">
+                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -143,7 +212,24 @@ export default Vue.component('cutout-settings-modal', {
         if(newName !== cutout.name) {
           cutout.userInterface.actionHistory.addAction(new ChangeCutoutNameAction(cutout, newName));
         }
-      })
+      });
+
+      for(const side of ['top', 'left', 'right', 'bottom']) {
+        $('#csm_' + cutout.id + '_coords_' + side).on('change keyup input blur', function() {
+          const newVal = $(this).prop('checked');
+          if(newVal !== cutout.options['display_coords_'+side]) {
+            cutout.options['display_coords_'+side] = newVal;
+          }
+        });
+
+        $('#csm_' + cutout.id + '_margin_' + side).on('change keyup input blur', function() {
+          const newVal = $(this).val();
+          if(newVal !== cutout.options['margin_'+side]) {
+            cutout.options['margin_'+side] = newVal;
+            cutout.updateMap();
+          }
+        });
+      }
     });
 
     return {
