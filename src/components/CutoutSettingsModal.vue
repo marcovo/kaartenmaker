@@ -190,6 +190,7 @@
 <script lang="ts">
 import Vue from 'vue/dist/vue.esm.js';
 import ChangeCutoutNameAction from "../ActionHistory/ChangeCutoutNameAction";
+import UpdateCutoutOptionAction from "../ActionHistory/UpdateCutoutOptionAction";
 import Container from "../Main/Container";
 import Cutout from "../Main/Cutout";
 import * as $ from "jquery";
@@ -218,15 +219,22 @@ export default Vue.component('cutout-settings-modal', {
         $('#csm_' + cutout.id + '_coords_' + side).on('change keyup input blur', function() {
           const newVal = $(this).prop('checked');
           if(newVal !== cutout.options['display_coords_'+side]) {
-            cutout.options['display_coords_'+side] = newVal;
+            cutout.userInterface.actionHistory.addAction(new UpdateCutoutOptionAction(
+                cutout,
+                'display_coords_'+side,
+                newVal
+            ));
           }
         });
 
         $('#csm_' + cutout.id + '_margin_' + side).on('change keyup input blur', function() {
           const newVal = $(this).val();
           if(newVal !== cutout.options['margin_'+side]) {
-            cutout.options['margin_'+side] = newVal;
-            cutout.updateMap();
+            cutout.userInterface.actionHistory.addAction(new UpdateCutoutOptionAction(
+                cutout,
+                'margin_'+side,
+                newVal
+            ));
           }
         });
       }
