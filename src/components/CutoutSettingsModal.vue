@@ -120,6 +120,7 @@
 
 <script lang="ts">
 import Vue from 'vue/dist/vue.esm.js';
+import ChangeCutoutNameAction from "../ActionHistory/ChangeCutoutNameAction";
 import Container from "../Main/Container";
 import Cutout from "../Main/Cutout";
 import * as $ from "jquery";
@@ -137,8 +138,11 @@ export default Vue.component('cutout-settings-modal', {
         $('#cutout_settings_modal_' + cutout.id).modal();
       });
 
-      $('#csm_' + cutout.id + '_name').on('change keyup input', function() {
-        cutout.name = $(this).val();
+      $('#csm_' + cutout.id + '_name').on('change keyup input blur', function() {
+        const newName = $(this).val();
+        if(newName !== cutout.name) {
+          cutout.userInterface.actionHistory.addAction(new ChangeCutoutNameAction(cutout, newName));
+        }
       })
     });
 

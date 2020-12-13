@@ -68,7 +68,7 @@ export default class Cutout<
     };
 
     constructor(
-        private userInterface: UserInterface,
+        readonly userInterface: UserInterface,
         readonly id: number,
         private paper: Paper,
         anchorWorkspace: WorkspaceCoordinate,

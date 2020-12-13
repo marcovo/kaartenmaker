@@ -14,6 +14,7 @@ import * as L from 'leaflet';
 import UTM, {UTMSystem} from "../Coordinates/UTM";
 import WGS84_UTM from "../Conversion/WGS84_UTM";
 import Grid from "./Grid";
+import ActionHistory from "../ActionHistory/ActionHistory";
 require('../Lib/LeafletDrag');
 
 export default class UserInterface {
@@ -27,9 +28,13 @@ export default class UserInterface {
 
     readonly colors: string[];
 
+    readonly actionHistory: ActionHistory;
+
     constructor() {
 
         this.colors = ['#03f', 'aqua', 'black', 'blue', 'fuchsia', 'green', 'lime', 'maroon', 'navy', 'olive', 'orange', 'purple', 'red', 'teal', 'yellow'];
+
+        this.actionHistory = new ActionHistory();
 
         $(() => {
             this.onLoad();
@@ -54,6 +59,14 @@ export default class UserInterface {
             $('#add_de_rp').on('click', () => {
                 this.addCutout('de_rp');
                 toggle_menu(false);
+            });
+
+            $('#undoButton').on('click', () => {
+                this.actionHistory.undo();
+            });
+
+            $('#redoButton').on('click', () => {
+                this.actionHistory.redo();
             });
         });
 
