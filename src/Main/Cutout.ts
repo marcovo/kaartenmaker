@@ -16,6 +16,7 @@ import Cache from "../Util/Cache";
 import UserInterface from "./UserInterface";
 import CoordinateConverter from "../Util/CoordinateConverter";
 import Grid from "./Grid";
+import MoveCutoutAction from "../ActionHistory/MoveCutoutAction";
 
 export type CutoutOptions = {
     margin_top: millimeter,
@@ -263,8 +264,10 @@ export default class Cutout<
         });
 
         this.leafletPolygon.on('dragend', () => {
-            this.setAnchorWorkspaceCoordinate(this.workspaceCoordinateSystem.fromLeaflet(this.leafletPolygon.getLatLngs()[0][0]));
-            this.updateMap();
+            this.userInterface.actionHistory.addAction(new MoveCutoutAction(
+                this,
+                this.workspaceCoordinateSystem.fromLeaflet(this.leafletPolygon.getLatLngs()[0][0])
+            ));
         });
 
         this.mouseout();
