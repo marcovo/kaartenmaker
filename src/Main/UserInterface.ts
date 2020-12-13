@@ -15,6 +15,8 @@ import UTM, {UTMSystem} from "../Coordinates/UTM";
 import WGS84_UTM from "../Conversion/WGS84_UTM";
 import Grid from "./Grid";
 import ActionHistory from "../ActionHistory/ActionHistory";
+import AddCutoutAction from "../ActionHistory/AddCutoutAction";
+import DeleteCutoutAction from "../ActionHistory/DeleteCutoutAction";
 require('../Lib/LeafletDrag');
 
 export default class UserInterface {
@@ -136,9 +138,27 @@ export default class UserInterface {
 
         cutout.name = 'Mijn kaart ' + (id+1);
         cutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
-        cutout.addToMap(this.map);
 
-        this.cutouts.push(cutout);
+        this.actionHistory.addAction(new AddCutoutAction(
+            cutout,
+            this,
+            this.cutouts.length
+        ));
+    }
+
+    public attachCutout(cutout: Cutout<any, any, any, any>, position: number) {
+        cutout.addToMap(this.map);
+        this.cutouts.splice(position, 0, cutout);
+    }
+
+    public detachCutout(cutout: Cutout<any, any, any, any>) {
+        const index = this.cutouts.indexOf(cutout);
+        if(index === -1) {
+            throw new Error('Invalid cutout');
+        }
+
+        cutout.removeFromMap(this.map);
+        this.cutouts.splice(index, 1);
     }
 
     getCutouts() {
@@ -157,8 +177,7 @@ export default class UserInterface {
     deleteCutout(cutout: Cutout<any, any, any, any>): void {
         const index = this.cutouts.indexOf(cutout);
         if(index > -1) {
-            cutout.removeFromMap(this.map);
-            this.cutouts.splice(index, 1);
+            this.actionHistory.addAction(new DeleteCutoutAction(cutout, this));
         }
     }
 
