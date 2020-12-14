@@ -154,10 +154,12 @@ export default class Cutout<
                 this.workspaceCoordinateSystem.fromLeaflet(evt.latlngs[0]),
                 this.projection.coordinateSystem
             );
-            const thisCornerHH = CoordinateConverter.convert(
-                this.workspaceCoordinateSystem.fromLeaflet(evt.latlngs[(Cutout.pointsOnEdge - 1) * 2]),
-                this.projection.coordinateSystem
-            );
+
+            const width: millimeter = this.paper.width - this.options.margin_left - this.options.margin_right;
+            const height: millimeter = this.paper.height - this.options.margin_top - this.options.margin_bottom;
+            const scale = this.projection.getScale();
+            const thisCornerHH = this.projection.coordinateSystem.make(thisCornerLL.getX() + width * scale / 1000, thisCornerLL.getY() + height * scale / 1000);
+
             const thisLeft = thisCornerLL.getX();
             const thisRight = thisCornerHH.getX();
             const thisBottom = thisCornerLL.getY();
@@ -197,8 +199,6 @@ export default class Cutout<
                 const minDiffVer = Math.min(outDiffTop, outDiffBottom, inDiffTop, inDiffBottom);
                 const minDiffHor = Math.min(outDiffLeft, outDiffRight, inDiffLeft, inDiffRight);
 
-                // TODO: In cases we subtract something ( e.g. - (thisTop - thisBottom) ) a snap at high
-                // zoom level leads to a non-exact snap when looking at a low zoom level.
                 if(minDiffHor < maxDiffPerpHor) {
                     if(outDiffTop < diffY) {
                         newCornerY = otherBottom - (thisTop - thisBottom);
