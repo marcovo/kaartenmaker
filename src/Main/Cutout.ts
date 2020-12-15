@@ -89,6 +89,14 @@ export default class Cutout<
         return this.paper;
     }
 
+    getProjection(): Projection<ProjectionCoordinate> {
+        return this.projection;
+    }
+
+    getGrid(): Grid<GridCoordinate> {
+        return this.grid;
+    }
+
     setAnchorWorkspaceCoordinate(c: WorkspaceCoordinate) {
         this.anchorWorkspaceCoordinate = c;
         this.projection.setAnchor(this.anchorWorkspaceCoordinate);

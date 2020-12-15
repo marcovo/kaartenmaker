@@ -23,6 +23,10 @@ export class Point implements Coordinate {
     withinBounds(): boolean {
         return true;
     }
+
+    clone(): Point {
+        return new Point(this.x, this.y);
+    }
 }
 
 export function walkLine<C extends Coordinate, S extends CoordinateSystem<C>>(s: S, a: C, b: C, steps: number, callback: (c: C, step: number) => void) {

@@ -35,6 +35,10 @@ class Bessel implements Coordinate {
         // TODO: Is this correct?
         return -180 <= this.lng && this.lng <= 180 && -90 <= this.lat && this.lat <= 90;
     }
+
+    clone(): Bessel {
+        return new Bessel(this.lat, this.lng);
+    }
 }
 
 export default class WGS84_DutchGrid implements Conversion<WGS84, DutchGrid> {

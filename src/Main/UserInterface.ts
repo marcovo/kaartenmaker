@@ -93,6 +93,9 @@ export default class UserInterface {
                 deleteCutout: (cutout: Cutout<any, any, any, any>) => {
                     this.deleteCutout(cutout);
                 },
+                duplicateCutout: (cutout: Cutout<any, any, any, any>) => {
+                    this.duplicateCutout(cutout);
+                },
                 mouseover: (cutout: Cutout<any, any, any, any>) => {
                     cutout.mouseover();
                 },
@@ -179,6 +182,31 @@ export default class UserInterface {
         if(index > -1) {
             this.actionHistory.addAction(new DeleteCutoutAction(cutout, this));
         }
+    }
+
+    duplicateCutout(sourceCutout: Cutout<any, any, any, any>): void {
+        const id = this.cutoutsCounter++;
+        const newCutout = new Cutout(
+            this,
+            id,
+            sourceCutout.getPaper(),
+            sourceCutout.anchorWorkspaceCoordinate.clone(),
+            sourceCutout.workspaceCoordinateSystem,
+            new Projection(
+                Container.wms(sourceCutout.getProjection().wms.name),
+                sourceCutout.getProjection().getScale(),
+            ),
+            new Grid(sourceCutout.getGrid().coordinateSystem)
+        );
+
+        newCutout.name = sourceCutout.name + ' (duplicaat)';
+        newCutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+
+        this.actionHistory.addAction(new AddCutoutAction(
+            newCutout,
+            this,
+            this.cutouts.length
+        ));
     }
 
 }
