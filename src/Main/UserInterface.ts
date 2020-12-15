@@ -199,7 +199,7 @@ export default class UserInterface {
             new Grid(sourceCutout.getGrid().coordinateSystem)
         );
 
-        newCutout.name = sourceCutout.name + ' (duplicaat)';
+        newCutout.name = sourceCutout.name + ' (kopie)';
         newCutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
 
         this.actionHistory.addAction(new AddCutoutAction(
