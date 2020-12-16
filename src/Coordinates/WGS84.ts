@@ -49,8 +49,8 @@ export default class WGS84 implements Coordinate, LeafletConvertibleCoordinate {
         return this.lat;
     }
 
-    clone(): WGS84 {
-        return new WGS84(this.lat, this.lng);
+    clone<C extends this>(): C {
+        return <C>new WGS84(this.lat, this.lng);
     }
 
     toLeaflet(): L.LatLng {

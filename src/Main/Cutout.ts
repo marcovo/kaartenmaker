@@ -17,6 +17,7 @@ import UserInterface from "./UserInterface";
 import CoordinateConverter from "../Util/CoordinateConverter";
 import Grid from "./Grid";
 import MoveCutoutAction from "../ActionHistory/MoveCutoutAction";
+import Container from "./Container";
 
 export type CutoutOptions = {
     margin_top: millimeter,
@@ -40,6 +41,9 @@ export default class Cutout<
     GridCoordinate extends Coordinate,
     WorkspaceCoordinateSystem extends CoordinateSystem<WorkspaceCoordinate> & LeafletConvertibleCoordinateSystem<WorkspaceCoordinate>
     > {
+    static idIncrement: number = 0;
+
+    readonly id: number;
     name: string;
     options: CutoutOptions;
 
@@ -70,13 +74,13 @@ export default class Cutout<
 
     constructor(
         readonly userInterface: UserInterface,
-        readonly id: number,
         private paper: Paper,
         anchorWorkspace: WorkspaceCoordinate,
         readonly workspaceCoordinateSystem: WorkspaceCoordinateSystem,
         private projection: Projection<ProjectionCoordinate>,
         private grid: Grid<GridCoordinate>
     ) {
+        this.id = Cutout.idIncrement++;
         this.options = Object.assign({}, Cutout.defaultCutoutOptions);
 
         this.projection.attach(this);
@@ -95,6 +99,20 @@ export default class Cutout<
 
     getGrid(): Grid<GridCoordinate> {
         return this.grid;
+    }
+
+    clone(): Cutout<WorkspaceCoordinate, ProjectionCoordinate, GridCoordinate, WorkspaceCoordinateSystem> {
+        return new Cutout(
+            this.userInterface,
+            this.getPaper(),
+            this.anchorWorkspaceCoordinate.clone(),
+            this.workspaceCoordinateSystem,
+            new Projection(
+                Container.wms(this.getProjection().wms.name),
+                this.getProjection().getScale(),
+            ),
+            new Grid(this.getGrid().coordinateSystem)
+        );
     }
 
     setAnchorWorkspaceCoordinate(c: WorkspaceCoordinate) {

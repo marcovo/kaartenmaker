@@ -23,7 +23,6 @@ export default class UserInterface {
 
     private map: Map;
     private cutouts: Cutout<any, any, any, any>[] = [];
-    private cutoutsCounter = 0;
 
     private cutoutList: Vue;
     private lastAddedMapType = null;
@@ -111,12 +110,10 @@ export default class UserInterface {
     addCutout(type: string = null) {
         type = type || this.lastAddedMapType;
         type = (type === 'de_rp') ? 'de_rp' : 'nl';
-        const id = this.cutoutsCounter++;
         let cutout;
         if(type === 'nl') {
             cutout = new Cutout(
                 this,
-                id,
                 new A4L(),
                 new WGS84(52, 5),
                 new WGS84System(),
@@ -128,7 +125,6 @@ export default class UserInterface {
             const utm = (new WGS84_UTM()).convert(wgs);
             cutout = new Cutout(
                 this,
-                id,
                 new A4L(),
                 wgs,
                 new WGS84System(),
@@ -139,7 +135,7 @@ export default class UserInterface {
         this.lastAddedMapType = type;
 
 
-        cutout.name = 'Mijn kaart ' + (id+1);
+        cutout.name = 'Mijn kaart ' + (cutout.id+1);
         cutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
 
         this.actionHistory.addAction(new AddCutoutAction(
@@ -185,19 +181,7 @@ export default class UserInterface {
     }
 
     duplicateCutout(sourceCutout: Cutout<any, any, any, any>): void {
-        const id = this.cutoutsCounter++;
-        const newCutout = new Cutout(
-            this,
-            id,
-            sourceCutout.getPaper(),
-            sourceCutout.anchorWorkspaceCoordinate.clone(),
-            sourceCutout.workspaceCoordinateSystem,
-            new Projection(
-                Container.wms(sourceCutout.getProjection().wms.name),
-                sourceCutout.getProjection().getScale(),
-            ),
-            new Grid(sourceCutout.getGrid().coordinateSystem)
-        );
+        const newCutout = sourceCutout.clone();
 
         newCutout.name = sourceCutout.name + ' (kopie)';
         newCutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];

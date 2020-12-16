@@ -24,8 +24,8 @@ export class Point implements Coordinate {
         return true;
     }
 
-    clone(): Point {
-        return new Point(this.x, this.y);
+    clone<P extends this>(): P {
+        return <P>new Point(this.x, this.y);
     }
 }
 

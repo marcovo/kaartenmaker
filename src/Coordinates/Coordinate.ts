@@ -8,5 +8,5 @@ export default interface Coordinate {
 
     withinBounds(): boolean;
 
-    clone(): Coordinate;
+    clone(): this;
 }

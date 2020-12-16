@@ -40,8 +40,8 @@ export default class DutchGrid implements Coordinate {
         return this.y;
     }
 
-    clone(): DutchGrid {
-        return new DutchGrid(this.x, this.y);
+    clone<C extends this>(): C {
+        return <C>new DutchGrid(this.x, this.y);
     }
 
     withinBounds(): boolean {

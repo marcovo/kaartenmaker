@@ -41,8 +41,8 @@ export default class UTM implements Coordinate {
         return this.N;
     }
 
-    clone(): UTM {
-        return new UTM(this.E, this.N, this.zone, this.hemi);
+    clone<C extends this>(): C {
+        return <C>new UTM(this.E, this.N, this.zone, this.hemi);
     }
 
     withinBounds(): boolean {

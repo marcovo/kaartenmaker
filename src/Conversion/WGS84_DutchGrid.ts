@@ -36,8 +36,8 @@ class Bessel implements Coordinate {
         return -180 <= this.lng && this.lng <= 180 && -90 <= this.lat && this.lat <= 90;
     }
 
-    clone(): Bessel {
-        return new Bessel(this.lat, this.lng);
+    clone<C extends this>(): C {
+        return <C>new Bessel(this.lat, this.lng);
     }
 }
 
