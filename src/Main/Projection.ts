@@ -12,7 +12,7 @@ import Container from "./Container";
 export default class Projection<C extends Coordinate> {
 
     readonly wms: Wms;
-    private cutout: Cutout<any, C, any, any> = null;
+    private cutout: Cutout<any, C, any> = null;
     coordinateSystem: CoordinateSystem<C>;
     anchor: C;
 
@@ -21,7 +21,7 @@ export default class Projection<C extends Coordinate> {
         this.coordinateSystem = this.wms.getCoordinateSystem();
     }
 
-    attach(cutout: Cutout<any, C, any, any>) {
+    attach(cutout: Cutout<any, C, any>) {
         if(this.cutout !== null) {
             throw new Error('Already attached');
         }

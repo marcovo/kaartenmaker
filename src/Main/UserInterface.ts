@@ -22,7 +22,7 @@ require('../Lib/LeafletDrag');
 export default class UserInterface {
 
     private map: Map;
-    private cutouts: Cutout<any, any, any, any>[] = [];
+    private cutouts: Cutout<any, any, any>[] = [];
 
     private cutoutList: Vue;
     private lastAddedMapType = null;
@@ -86,19 +86,19 @@ export default class UserInterface {
                 cutouts: this.cutouts,
             },
             methods: {
-                print: (cutout: Cutout<any, any, any, any>) => {
+                print: (cutout: Cutout<any, any, any>) => {
                     this.print(cutout);
                 },
-                deleteCutout: (cutout: Cutout<any, any, any, any>) => {
+                deleteCutout: (cutout: Cutout<any, any, any>) => {
                     this.deleteCutout(cutout);
                 },
-                duplicateCutout: (cutout: Cutout<any, any, any, any>) => {
+                duplicateCutout: (cutout: Cutout<any, any, any>) => {
                     this.duplicateCutout(cutout);
                 },
-                mouseover: (cutout: Cutout<any, any, any, any>) => {
+                mouseover: (cutout: Cutout<any, any, any>) => {
                     cutout.mouseover();
                 },
-                mouseout: (cutout: Cutout<any, any, any, any>) => {
+                mouseout: (cutout: Cutout<any, any, any>) => {
                     cutout.mouseout();
                 }
             }
@@ -117,8 +117,7 @@ export default class UserInterface {
                 new A4L(),
                 new WGS84(52, 5),
                 new WGS84System(),
-                new Projection('nl_kad_25', 25000),
-                new Grid(new DutchGridSystem())
+                new Projection('nl_kad_25', 25000)
             );
         } else {
             const wgs = new WGS84(50, 7);
@@ -128,8 +127,7 @@ export default class UserInterface {
                 new A4L(),
                 wgs,
                 new WGS84System(),
-                new Projection('de_rp_25', 25000),
-                new Grid(new UTMSystem(utm.zone, utm.hemi))
+                new Projection('de_rp_25', 25000)
             );
         }
         this.lastAddedMapType = type;
@@ -145,12 +143,12 @@ export default class UserInterface {
         ));
     }
 
-    public attachCutout(cutout: Cutout<any, any, any, any>, position: number) {
+    public attachCutout(cutout: Cutout<any, any, any>, position: number) {
         cutout.addToMap(this.map);
         this.cutouts.splice(position, 0, cutout);
     }
 
-    public detachCutout(cutout: Cutout<any, any, any, any>) {
+    public detachCutout(cutout: Cutout<any, any, any>) {
         const index = this.cutouts.indexOf(cutout);
         if(index === -1) {
             throw new Error('Invalid cutout');
@@ -164,7 +162,7 @@ export default class UserInterface {
         return this.cutouts;
     }
 
-    print(cutout: Cutout<any, any, any, any>): void {
+    print(cutout: Cutout<any, any, any>): void {
         const cache = new Cache('image_cache');
         cache.initialize().then(() => {
             cutout.print(cache).then(() => {
@@ -173,14 +171,14 @@ export default class UserInterface {
         });
     }
 
-    deleteCutout(cutout: Cutout<any, any, any, any>): void {
+    deleteCutout(cutout: Cutout<any, any, any>): void {
         const index = this.cutouts.indexOf(cutout);
         if(index > -1) {
             this.actionHistory.addAction(new DeleteCutoutAction(cutout, this));
         }
     }
 
-    duplicateCutout(sourceCutout: Cutout<any, any, any, any>): void {
+    duplicateCutout(sourceCutout: Cutout<any, any, any>): void {
         const newCutout = sourceCutout.clone();
 
         newCutout.name = sourceCutout.name + ' (kopie)';

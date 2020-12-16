@@ -1,5 +1,6 @@
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import CoordinateConverter from "./CoordinateConverter";
+import Coordinate from "../Coordinates/Coordinate";
 
 const $ = require( 'jquery' );
 
@@ -19,7 +20,13 @@ export type WmsParams = {
 export default class Wms {
     readonly params: WmsParams;
 
-    constructor(readonly name: string, readonly title: string, readonly url: string, params: WmsParams = {}) {
+    constructor(
+        readonly name: string,
+        readonly title: string,
+        readonly url: string,
+        private defaultGridCoordinateSystem: CoordinateSystem<Coordinate>,
+        params: WmsParams = {}
+    ) {
         this.params = Object.assign({
             version: '1.3.0',
             service: 'WMS',
@@ -31,6 +38,10 @@ export default class Wms {
             throw new Error('No default coordinate system set');
         }
         return CoordinateConverter.getCoordinateSystem(this.params['CRS']);
+    }
+
+    getDefaultGridCoordinateSystem(): CoordinateSystem<Coordinate> {
+        return this.defaultGridCoordinateSystem;
     }
 
     buildUrl(params: WmsParams) {

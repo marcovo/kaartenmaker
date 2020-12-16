@@ -11,7 +11,7 @@ export default class UTM_WGS84 implements Conversion<UTM, WGS84> {
     }
 
     sourceSystem(): CoordinateSystem<UTM> {
-        return new UTMSystem(0, 0); // TODO Dummy parameters
+        return new UTMSystem();
     }
 
     targetSystem(): CoordinateSystem<WGS84> {

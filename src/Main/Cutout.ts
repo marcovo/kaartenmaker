@@ -38,7 +38,6 @@ type Color = string;
 export default class Cutout<
     WorkspaceCoordinate extends Coordinate & LeafletConvertibleCoordinate,
     ProjectionCoordinate extends Coordinate,
-    GridCoordinate extends Coordinate,
     WorkspaceCoordinateSystem extends CoordinateSystem<WorkspaceCoordinate> & LeafletConvertibleCoordinateSystem<WorkspaceCoordinate>
     > {
     static idIncrement: number = 0;
@@ -78,12 +77,16 @@ export default class Cutout<
         anchorWorkspace: WorkspaceCoordinate,
         readonly workspaceCoordinateSystem: WorkspaceCoordinateSystem,
         private projection: Projection<ProjectionCoordinate>,
-        private grid: Grid<GridCoordinate>
+        private grid: Grid<Coordinate> = null
     ) {
         this.id = Cutout.idIncrement++;
         this.options = Object.assign({}, Cutout.defaultCutoutOptions);
 
         this.projection.attach(this);
+
+        if(this.grid === null) {
+            this.grid = new Grid(this.projection.wms.getDefaultGridCoordinateSystem());
+        }
         this.grid.attach(this);
 
         this.setAnchorWorkspaceCoordinate(anchorWorkspace);
@@ -97,11 +100,11 @@ export default class Cutout<
         return this.projection;
     }
 
-    getGrid(): Grid<GridCoordinate> {
+    getGrid(): Grid<Coordinate> {
         return this.grid;
     }
 
-    clone(): Cutout<WorkspaceCoordinate, ProjectionCoordinate, GridCoordinate, WorkspaceCoordinateSystem> {
+    clone(): Cutout<WorkspaceCoordinate, ProjectionCoordinate, WorkspaceCoordinateSystem> {
         return new Cutout(
             this.userInterface,
             this.getPaper(),

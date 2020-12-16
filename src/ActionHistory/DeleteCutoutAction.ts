@@ -7,7 +7,7 @@ export default class DeleteCutoutAction implements Action {
     readonly position: number;
 
     constructor(
-        readonly cutout: Cutout<any, any, any, any>,
+        readonly cutout: Cutout<any, any, any>,
         readonly userInterface: UserInterface
     ) {
         this.position = userInterface.getCutouts().indexOf(cutout);

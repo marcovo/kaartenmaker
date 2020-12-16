@@ -9,7 +9,7 @@ export default class UpdateCutoutOptionAction<Type> implements Action {
     private readonly oldValue: Type;
 
     constructor(
-        private cutout: Cutout<any, any, any, any>,
+        private cutout: Cutout<any, any, any>,
         private key: string,
         private newValue: Type
     ) {

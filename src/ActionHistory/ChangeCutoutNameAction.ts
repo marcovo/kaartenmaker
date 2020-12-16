@@ -5,7 +5,7 @@ export default class ChangeCutoutNameAction implements Action {
 
     private readonly oldName: string;
 
-    constructor(private cutout: Cutout<any, any, any, any>, private newName: string) {
+    constructor(private cutout: Cutout<any, any, any>, private newName: string) {
         this.oldName = this.cutout.name;
     }
 

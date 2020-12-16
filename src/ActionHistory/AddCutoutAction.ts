@@ -5,7 +5,7 @@ import UserInterface from "../Main/UserInterface";
 export default class AddCutoutAction implements Action {
 
     constructor(
-        readonly cutout: Cutout<any, any, any, any>,
+        readonly cutout: Cutout<any, any, any>,
         readonly userInterface: UserInterface,
         readonly position: number
     ) {

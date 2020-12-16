@@ -6,10 +6,13 @@ import UTM_WGS84 from "../Conversion/UTM_WGS84";
 export class UTMSystem implements CoordinateSystem<UTM> {
     readonly name = 'EPSG:25832';
 
-    constructor(readonly zone: number, readonly hemi: number) {
+    constructor(readonly zone: number = null, readonly hemi: number = null) {
     }
 
     make(E: number, N: number): UTM {
+        if(this.zone === null || this.hemi === null) {
+            throw new Error('Cannot create UTM coordinate from incomplete system specification');
+        }
         return new UTM(E, N, this.zone, this.hemi);
     }
 

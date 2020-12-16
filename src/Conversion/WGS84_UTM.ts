@@ -22,7 +22,7 @@ export default class WGS84_UTM implements Conversion<WGS84, UTM> {
     }
 
     targetSystem(): CoordinateSystem<UTM> {
-        return new UTMSystem(0, 0); // TODO Dummy parameters
+        return new UTMSystem();
     }
 
     public k: number;

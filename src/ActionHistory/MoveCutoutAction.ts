@@ -7,7 +7,7 @@ export default class MoveCutoutAction<C extends Coordinate & LeafletConvertibleC
 
     private readonly oldCoordinate: C;
 
-    constructor(private cutout: Cutout<C, any, any, any>, private newCoordinate: C) {
+    constructor(private cutout: Cutout<C, any, any>, private newCoordinate: C) {
         this.oldCoordinate = this.cutout.anchorWorkspaceCoordinate;
     }
 
