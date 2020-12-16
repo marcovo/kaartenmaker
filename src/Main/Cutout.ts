@@ -108,7 +108,7 @@ export default class Cutout<
             this.anchorWorkspaceCoordinate.clone(),
             this.workspaceCoordinateSystem,
             new Projection(
-                Container.wms(this.getProjection().wms.name),
+                this.getProjection().wms.name,
                 this.getProjection().getScale(),
             ),
             new Grid(this.getGrid().coordinateSystem)

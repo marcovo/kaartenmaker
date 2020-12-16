@@ -117,7 +117,7 @@ export default class UserInterface {
                 new A4L(),
                 new WGS84(52, 5),
                 new WGS84System(),
-                new Projection(Container.wms('nl_kad_25'), 25000),
+                new Projection('nl_kad_25', 25000),
                 new Grid(new DutchGridSystem())
             );
         } else {
@@ -128,7 +128,7 @@ export default class UserInterface {
                 new A4L(),
                 wgs,
                 new WGS84System(),
-                new Projection(Container.wms('de_rp_25'), 25000),
+                new Projection('de_rp_25', 25000),
                 new Grid(new UTMSystem(utm.zone, utm.hemi))
             );
         }

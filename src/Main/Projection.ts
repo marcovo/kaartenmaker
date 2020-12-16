@@ -7,14 +7,17 @@ import Cache from "../Util/Cache";
 import {Point} from "../Util/Math";
 import {jsPDF} from "jspdf";
 import {Paper} from "../Util/Paper";
+import Container from "./Container";
 
 export default class Projection<C extends Coordinate> {
 
+    readonly wms: Wms;
     private cutout: Cutout<any, C, any, any> = null;
     coordinateSystem: CoordinateSystem<C>;
     anchor: C;
 
-    constructor(readonly wms: Wms, private scale: number) {
+    constructor(wmsName: string, private scale: number) {
+        this.wms = Container.wms(wmsName);
         this.coordinateSystem = this.wms.getCoordinateSystem();
     }
 
