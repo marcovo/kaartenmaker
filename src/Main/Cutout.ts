@@ -18,6 +18,7 @@ import CoordinateConverter from "../Util/CoordinateConverter";
 import Grid from "./Grid";
 import MoveCutoutAction from "../ActionHistory/MoveCutoutAction";
 import Container from "./Container";
+import CutoutTemplate from "./CutoutTemplate";
 
 export type CutoutOptions = {
     margin_top: millimeter,
@@ -33,27 +34,16 @@ export type CutoutOptions = {
     display_sub_ticks: boolean,
 };
 
-type Color = string;
-
 export default class Cutout<
     WorkspaceCoordinate extends Coordinate & LeafletConvertibleCoordinate,
     ProjectionCoordinate extends Coordinate,
     WorkspaceCoordinateSystem extends CoordinateSystem<WorkspaceCoordinate> & LeafletConvertibleCoordinateSystem<WorkspaceCoordinate>
-    > {
-    static idIncrement: number = 0;
-
-    readonly id: number;
-    name: string;
-    options: CutoutOptions;
-
-    anchorWorkspaceCoordinate: WorkspaceCoordinate;
+    > extends CutoutTemplate<WorkspaceCoordinate, ProjectionCoordinate, WorkspaceCoordinateSystem> {
 
     mapPolygonWorkspace: WorkspaceCoordinate[];
     mapPolygonProjection: ProjectionCoordinate[];
 
     leafletPolygon: L.polygon;
-
-    color: Color;
 
     static readonly pointsOnEdge = 5;
 
@@ -73,35 +63,16 @@ export default class Cutout<
 
     constructor(
         readonly userInterface: UserInterface,
-        private paper: Paper,
+        paper: Paper,
         anchorWorkspace: WorkspaceCoordinate,
-        readonly workspaceCoordinateSystem: WorkspaceCoordinateSystem,
-        private projection: Projection<ProjectionCoordinate>,
-        private grid: Grid<Coordinate> = null
+        workspaceCoordinateSystem: WorkspaceCoordinateSystem,
+        projection: Projection<ProjectionCoordinate>,
+        grid: Grid<Coordinate> = null
     ) {
-        this.id = Cutout.idIncrement++;
-        this.options = Object.assign({}, Cutout.defaultCutoutOptions);
+        super(paper, anchorWorkspace, workspaceCoordinateSystem, projection, grid);
 
         this.projection.attach(this);
-
-        if(this.grid === null) {
-            this.grid = new Grid(this.projection.wms.getDefaultGridCoordinateSystem());
-        }
         this.grid.attach(this);
-
-        this.setAnchorWorkspaceCoordinate(anchorWorkspace);
-    }
-
-    getPaper(): Paper {
-        return this.paper;
-    }
-
-    getProjection(): Projection<ProjectionCoordinate> {
-        return this.projection;
-    }
-
-    getGrid(): Grid<Coordinate> {
-        return this.grid;
     }
 
     clone(): Cutout<WorkspaceCoordinate, ProjectionCoordinate, WorkspaceCoordinateSystem> {
@@ -116,11 +87,6 @@ export default class Cutout<
             ),
             new Grid(this.getGrid().coordinateSystem)
         );
-    }
-
-    setAnchorWorkspaceCoordinate(c: WorkspaceCoordinate) {
-        this.anchorWorkspaceCoordinate = c;
-        this.projection.setAnchor(this.anchorWorkspaceCoordinate);
     }
 
     computeProjectionPolygon(anchorProjection: ProjectionCoordinate): ProjectionCoordinate[] {

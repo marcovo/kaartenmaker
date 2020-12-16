@@ -17,6 +17,7 @@ import Grid from "./Grid";
 import ActionHistory from "../ActionHistory/ActionHistory";
 import AddCutoutAction from "../ActionHistory/AddCutoutAction";
 import DeleteCutoutAction from "../ActionHistory/DeleteCutoutAction";
+import CutoutTemplate from "./CutoutTemplate";
 require('../Lib/LeafletDrag');
 
 export default class UserInterface {
@@ -25,6 +26,7 @@ export default class UserInterface {
     private cutouts: Cutout<any, any, any>[] = [];
 
     private cutoutList: Vue;
+    private cutoutTemplateList: Vue;
     private lastAddedMapType = null;
 
     readonly colors: string[];
@@ -39,28 +41,6 @@ export default class UserInterface {
 
         $(() => {
             this.onLoad();
-
-            let add_menu_showing = false;
-            const toggle_menu = (show: boolean = null) => {
-                if(show === null) {
-                    show = !add_menu_showing;
-                }
-                $('#add_menu').toggle(show);
-                add_menu_showing = show;
-            };
-            $('#add_button').on('click', () => {
-                toggle_menu();
-            });
-
-            $('#add_nl').on('click', () => {
-                this.addCutout('nl');
-                toggle_menu(false);
-            });
-
-            $('#add_de_rp').on('click', () => {
-                this.addCutout('de_rp');
-                toggle_menu(false);
-            });
 
             $('#undoButton').on('click', () => {
                 this.actionHistory.undo();
@@ -104,7 +84,45 @@ export default class UserInterface {
             }
         });
 
+        let add_menu_showing = false;
+        const toggle_menu = (show: boolean = null) => {
+            if(show === null) {
+                show = !add_menu_showing;
+            }
+            $('#add_menu').toggle(show);
+            add_menu_showing = show;
+        };
+        $('#add_button').on('click', () => {
+            toggle_menu();
+        });
+
+        this.cutoutTemplateList = new Vue({
+            el: '#cutoutTemplateList',
+            data: {
+                cutoutTemplates: Container.cutoutTemplateList(),
+            },
+            methods: {
+                click: (cutoutTemplate: CutoutTemplate<any, any, any>) => {
+                    this.addCutoutFromTemplate(cutoutTemplate);
+                    toggle_menu(false);
+                },
+            }
+        });
+
         this.addCutout();
+    }
+
+    addCutoutFromTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {
+        const cutout = cutoutTemplate.makeCutout(this);
+
+        cutout.name = 'Mijn kaart ' + (cutout.id+1);
+        cutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+
+        this.actionHistory.addAction(new AddCutoutAction(
+            cutout,
+            this,
+            this.cutouts.length
+        ));
     }
 
     addCutout(type: string = null) {

@@ -9,9 +9,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 import Projection from "./Main/Projection";
 import Container from "./Main/Container";
+import Cutout from "./Main/Cutout";
 import WGS84_UTM from "./Conversion/WGS84_UTM";
 import UTM, {UTMSystem} from "./Coordinates/UTM";
 import CoordinateConverter from "./Util/CoordinateConverter";
+import {A4L} from "./Util/Paper";
+import CutoutTemplate from "./Main/CutoutTemplate";
 require('./components/CutoutSettingsModal.vue');
 
 CoordinateConverter.registerCoordinateSystem(new WGS84System());
@@ -102,6 +105,24 @@ Container.registerWms(new Wms(
         CRS: 'EPSG:25832',
         layers: 'rp_dtk25',
     }
+));
+
+Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(
+    new A4L(),
+    new WGS84(52, 5),
+    new WGS84System(),
+    new Projection('nl_kad_25', 25000),
+    null,
+    '(NL) Kadaster 1:25.000'
+));
+
+Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(
+    new A4L(),
+    new WGS84(50, 7),
+    new WGS84System(),
+    new Projection('de_rp_25', 25000),
+    null,
+    '(DE) Rheinland-Pfalz 1:25.000'
 ));
 
 const userInterface = new UserInterface();

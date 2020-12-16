@@ -25,9 +25,10 @@
                         <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
-                        <div class="dropdown-menu">
-                            <button class="dropdown-item" type="button" id="add_nl">Nederland</button>
-                            <button class="dropdown-item" type="button" id="add_de_rp">Rheinland-Pfalz</button>
+                        <div class="dropdown-menu" id="cutoutTemplateList">
+                            <button v-for="cutoutTemplate in cutoutTemplates" class="dropdown-item" type="button" v-on:click="click(cutoutTemplate)">
+                                {{ cutoutTemplate.name }}
+                            </button>
                         </div>
                     </div>
 
