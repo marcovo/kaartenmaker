@@ -1,24 +1,16 @@
 import Map from "./Map";
 import Cutout from "./Cutout";
-import {A4L, Paper} from "../Util/Paper";
-import Conversion from "../Conversion/Conversion";
-import WGS84, {WGS84System} from "../Coordinates/WGS84";
-import DutchGrid, {DutchGridSystem} from "../Coordinates/DutchGrid";
-import WGS84_DutchGrid from "../Conversion/WGS84_DutchGrid";
-import Projection from "./Projection";
 import Container from "./Container";
 import Cache from "../Util/Cache";
 const $ = require( 'jquery' );
 import Vue from 'vue/dist/vue.esm.js';
 import * as L from 'leaflet';
-import UTM, {UTMSystem} from "../Coordinates/UTM";
-import WGS84_UTM from "../Conversion/WGS84_UTM";
-import Grid from "./Grid";
 import ActionHistory from "../ActionHistory/ActionHistory";
 import AddCutoutAction from "../ActionHistory/AddCutoutAction";
 import DeleteCutoutAction from "../ActionHistory/DeleteCutoutAction";
 import CutoutTemplate from "./CutoutTemplate";
 require('../Lib/LeafletDrag');
+require("./Cutout"); // If we don't explicitly require this, the application crashes...
 
 export default class UserInterface {
 
@@ -27,7 +19,7 @@ export default class UserInterface {
 
     private cutoutList: Vue;
     private cutoutTemplateList: Vue;
-    private lastAddedMapType = null;
+    private lastAddedCutoutTemplateId: number = null;
 
     readonly colors: string[];
 
@@ -123,42 +115,31 @@ export default class UserInterface {
             this,
             this.cutouts.length
         ));
+
+        this.lastAddedCutoutTemplateId = cutoutTemplate.id;
     }
 
-    addCutout(type: string = null) {
-        type = type || this.lastAddedMapType;
-        type = (type === 'de_rp') ? 'de_rp' : 'nl';
-        let cutout;
-        if(type === 'nl') {
-            cutout = new Cutout(
-                this,
-                new A4L(),
-                new WGS84(52, 5),
-                new WGS84System(),
-                new Projection('nl_kad_25', 25000)
-            );
-        } else {
-            const wgs = new WGS84(50, 7);
-            const utm = (new WGS84_UTM()).convert(wgs);
-            cutout = new Cutout(
-                this,
-                new A4L(),
-                wgs,
-                new WGS84System(),
-                new Projection('de_rp_25', 25000)
-            );
+    addCutout() {
+        const cutoutTemplates = Container.cutoutTemplateList();
+        if(cutoutTemplates.length === 0) {
+            throw new Error('No cutout templates');
         }
-        this.lastAddedMapType = type;
 
+        let cutoutTemplate = null;
+        if(this.lastAddedCutoutTemplateId !== null) {
+            for(const item of cutoutTemplates) {
+                if(item.id === this.lastAddedCutoutTemplateId) {
+                    cutoutTemplate = item;
+                    break;
+                }
+            }
+        }
 
-        cutout.name = 'Mijn kaart ' + (cutout.id+1);
-        cutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+        if(cutoutTemplate === null) {
+            cutoutTemplate = cutoutTemplates[0];
+        }
 
-        this.actionHistory.addAction(new AddCutoutAction(
-            cutout,
-            this,
-            this.cutouts.length
-        ));
+        this.addCutoutFromTemplate(cutoutTemplate);
     }
 
     public attachCutout(cutout: Cutout<any, any, any>, position: number) {

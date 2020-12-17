@@ -19,7 +19,7 @@ export default class Container {
     }
 
     static wmsList(): Wms[] {
-        return Object.values(this.WMSes);
+        return Object.values(Container.WMSes);
     }
 
     static registerCutoutTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {
@@ -27,6 +27,6 @@ export default class Container {
     }
 
     static cutoutTemplateList(): CutoutTemplate<any, any, any>[] {
-        return this.cutoutTemplates;
+        return Container.cutoutTemplates;
     }
 }
