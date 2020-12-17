@@ -17,6 +17,8 @@ export type WmsParams = {
     height?: string,
 };
 
+export type ScaleRange = { min: number, max: number };
+
 export default class Wms {
     readonly params: WmsParams;
 
@@ -25,6 +27,8 @@ export default class Wms {
         readonly title: string,
         readonly url: string,
         private defaultGridCoordinateSystem: CoordinateSystem<Coordinate>,
+        private defaultScale: number,
+        private preferredScaleRange: ScaleRange,
         params: WmsParams = {}
     ) {
         this.params = Object.assign({
@@ -42,6 +46,14 @@ export default class Wms {
 
     getDefaultGridCoordinateSystem(): CoordinateSystem<Coordinate> {
         return this.defaultGridCoordinateSystem;
+    }
+
+    getDefaultScale(): number {
+        return this.defaultScale;
+    }
+
+    getPreferredScaleRange(): ScaleRange {
+        return this.preferredScaleRange;
     }
 
     buildUrl(params: WmsParams) {

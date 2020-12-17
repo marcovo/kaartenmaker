@@ -78,6 +78,11 @@ export default class CutoutTemplate<
         return this.projection;
     }
 
+    setProjection(projection: Projection<ProjectionCoordinate>) {
+        this.projection = projection;
+        this.projection.setAnchor(this.anchorWorkspaceCoordinate);
+    }
+
     getGrid(): Grid<Coordinate> {
         return this.grid;
     }

@@ -16,9 +16,13 @@ export default class Projection<C extends Coordinate> {
     coordinateSystem: CoordinateSystem<C>;
     anchor: C;
 
-    constructor(wmsName: string, private scale: number) {
+    constructor(wmsName: string, private scale: number = null) {
         this.wms = Container.wms(wmsName);
         this.coordinateSystem = this.wms.getCoordinateSystem();
+
+        if(this.scale === null) {
+            this.scale = this.wms.getDefaultScale();
+        }
     }
 
     attach(cutout: Cutout<any, C, any>) {
@@ -36,6 +40,13 @@ export default class Projection<C extends Coordinate> {
 
     getScale(): number {
         return this.scale;
+    }
+
+    setScale(newScale: number) {
+        this.scale = newScale;
+        if(this.cutout) {
+            this.cutout.updateMap();
+        }
     }
 
     getWmsUrl(coords: C[], params: WmsParams = {}) {

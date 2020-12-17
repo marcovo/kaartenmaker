@@ -75,6 +75,12 @@ export default class Cutout<
         this.grid.attach(this);
     }
 
+    setProjection(projection: Projection<ProjectionCoordinate>) {
+        super.setProjection(projection);
+        this.projection.attach(this);
+        this.updateMap();
+    }
+
     clone(): Cutout<WorkspaceCoordinate, ProjectionCoordinate, WorkspaceCoordinateSystem> {
         return new Cutout(
             this.userInterface,

@@ -89,6 +89,17 @@
                   >{{ wms.title }}</option>
                 </select>
               </div>
+
+              <div class="form-group">
+                <label v-bind:for="'csm_' + cutout.id + '_scale'">Schaal</label>
+
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">1:</span>
+                  </div>
+                  <input type="text" class="form-control" v-bind:id="'csm_' + cutout.id + '_scale'" v-bind:value="cutout.getProjection().getScale()">
+                </div>
+              </div>
             </div>
 
             <div
@@ -190,9 +201,12 @@
 <script lang="ts">
 import Vue from 'vue/dist/vue.esm.js';
 import ChangeCutoutNameAction from "../ActionHistory/ChangeCutoutNameAction";
+import ChangeCutoutProjectionAction from "../ActionHistory/ChangeCutoutProjectionAction";
+import ChangeCutoutScaleAction from "../ActionHistory/ChangeCutoutScaleAction";
 import UpdateCutoutOptionAction from "../ActionHistory/UpdateCutoutOptionAction";
 import Container from "../Main/Container";
 import Cutout from "../Main/Cutout";
+import Projection from "../Main/Projection";
 import * as $ from "jquery";
 
 export default Vue.component('cutout-settings-modal', {
@@ -215,8 +229,35 @@ export default Vue.component('cutout-settings-modal', {
         }
       });
 
+
+      $('#csm_' + cutout.id + '_wms').on('change', function() {
+        const newVal = $(this).val();
+        const oldProjection = cutout.getProjection();
+        if(newVal !== oldProjection.wms.name) {
+          const newProjection = new Projection($(this).val());
+
+          if(
+              oldProjection.wms.getDefaultScale() === newProjection.wms.getDefaultScale()
+              && oldProjection.wms.getPreferredScaleRange().min === newProjection.wms.getPreferredScaleRange().min
+              && oldProjection.wms.getPreferredScaleRange().max === newProjection.wms.getPreferredScaleRange().max
+          ) {
+            // The new WMS is has equivalent scaling with the old WMS, so we can reasonably keep the scale setting
+            newProjection.setScale(oldProjection.getScale());
+          }
+
+          cutout.userInterface.actionHistory.addAction(new ChangeCutoutProjectionAction(cutout, newProjection));
+        }
+      });
+
+      $('#csm_' + cutout.id + '_scale').on('change keyup input blur', function() {
+        const newScale = $(this).val();
+        if(newScale !== cutout.getProjection().getScale()) {
+          cutout.userInterface.actionHistory.addAction(new ChangeCutoutScaleAction(cutout, newScale));
+        }
+      });
+
       for(const side of ['top', 'left', 'right', 'bottom']) {
-        $('#csm_' + cutout.id + '_coords_' + side).on('change keyup input blur', function() {
+        $('#csm_' + cutout.id + '_coords_' + side).on('change', function() {
           const newVal = $(this).prop('checked');
           if(newVal !== cutout.options['display_coords_'+side]) {
             cutout.userInterface.actionHistory.addAction(new UpdateCutoutOptionAction(
