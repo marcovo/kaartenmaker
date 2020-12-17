@@ -13,10 +13,12 @@ export default class ChangeCutoutProjectionAction<C extends Coordinate> implemen
 
     public apply() {
         this.cutout.setProjection(this.newProjection);
+        this.oldProjection.detach();
     }
 
     public revert() {
         this.cutout.setProjection(this.oldProjection);
+        this.newProjection.detach();
     }
 
     public merge(newAction: Action): boolean {

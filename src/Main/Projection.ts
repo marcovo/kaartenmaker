@@ -25,6 +25,14 @@ export default class Projection<C extends Coordinate> {
         }
     }
 
+    detach() {
+        if(this.cutout === null) {
+            throw new Error('Already detached');
+        }
+
+        this.cutout = null;
+    }
+
     attach(cutout: Cutout<any, C, any>) {
         if(this.cutout !== null) {
             throw new Error('Already attached');
