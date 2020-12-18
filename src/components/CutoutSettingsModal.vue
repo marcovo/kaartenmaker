@@ -95,10 +95,15 @@
 
                 <div class="input-group">
                   <div class="input-group-prepend">
-                    <span class="input-group-text" id="basic-addon1">1:</span>
+                    <span class="input-group-text">1:</span>
                   </div>
                   <input type="text" class="form-control" v-bind:id="'csm_' + cutout.id + '_scale'" v-bind:value="cutout.getProjection().getScale()">
                 </div>
+              </div>
+
+              <div class="form-group">
+                <label v-bind:for="'csm_' + cutout.id + '_dpi'">DPI</label>
+                <input type="text" class="form-control" v-bind:id="'csm_' + cutout.id + '_dpi'" v-bind:value="cutout.getProjection().getDpi()">
               </div>
             </div>
 
@@ -203,6 +208,7 @@ import Vue from 'vue/dist/vue.esm.js';
 import ChangeCutoutNameAction from "../ActionHistory/ChangeCutoutNameAction";
 import ChangeCutoutProjectionAction from "../ActionHistory/ChangeCutoutProjectionAction";
 import ChangeCutoutScaleAction from "../ActionHistory/ChangeCutoutScaleAction";
+import ChangeCutoutDpiAction from "../ActionHistory/ChangeCutoutDpiAction";
 import UpdateCutoutOptionAction from "../ActionHistory/UpdateCutoutOptionAction";
 import Container from "../Main/Container";
 import Cutout from "../Main/Cutout";
@@ -243,6 +249,7 @@ export default Vue.component('cutout-settings-modal', {
           ) {
             // The new WMS is has equivalent scaling with the old WMS, so we can reasonably keep the scale setting
             newProjection.setScale(oldProjection.getScale());
+            newProjection.setDpi(oldProjection.getDpi());
           }
 
           cutout.userInterface.actionHistory.addAction(new ChangeCutoutProjectionAction(cutout, newProjection));
@@ -253,6 +260,13 @@ export default Vue.component('cutout-settings-modal', {
         const newScale = $(this).val();
         if(newScale !== cutout.getProjection().getScale()) {
           cutout.userInterface.actionHistory.addAction(new ChangeCutoutScaleAction(cutout, newScale));
+        }
+      });
+
+      $('#csm_' + cutout.id + '_dpi').on('change keyup input blur', function() {
+        const newDpi = $(this).val();
+        if(newDpi !== cutout.getProjection().getDpi()) {
+          cutout.userInterface.actionHistory.addAction(new ChangeCutoutDpiAction(cutout, newDpi));
         }
       });
 

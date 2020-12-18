@@ -17,6 +17,7 @@ export default class Projection<C extends Coordinate> {
     private cutout: Cutout<any, C, any> = null;
     coordinateSystem: CoordinateSystem<C>;
     anchor: C;
+    private dpi: number = 300;
 
     constructor(wmsName: string, private scale: number = null) {
         this.wms = Container.wms(wmsName);
@@ -59,6 +60,14 @@ export default class Projection<C extends Coordinate> {
         }
     }
 
+    getDpi(): number {
+        return this.dpi;
+    }
+
+    setDpi(newDpi: number) {
+        this.dpi = newDpi;
+    }
+
     getWmsUrl(coords: C[], params: WmsParams = {}) {
         return this.wms.mapUrl(Object.assign({}, params, {
             bbox: coords[3].getX() + ',' + coords[3].getY() + ',' + coords[1].getX() + ',' + coords[1].getY(),
@@ -73,11 +82,11 @@ export default class Projection<C extends Coordinate> {
             // px: pixels in WMS tile download
             // unit: unit of measurement of projection coordinate system (e.g., meters)
             const scale = this.getScale();
+            const dpi = this.getDpi();
             const realMmPerPaperMm = scale;
 
             const realMmPerUnit = 1000;
             const targetPxPerTile = 500;
-            const dpi = 254;
 
             const pxPerPaperMm = Math.ceil(dpi / MM_PER_INCH);
             const pxPerUnit = pxPerPaperMm / realMmPerPaperMm * realMmPerUnit;
