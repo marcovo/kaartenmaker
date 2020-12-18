@@ -310,6 +310,9 @@ export default class Cutout<
         });
 
         return this.projection.projectToPdf(doc, this.paper, cache).then(() => {
+
+            this.grid.drawOnPdf(doc);
+
             const diffs = (coords: [number, number][]): [number, number][] => {
                 const res = [];
                 for(let i=0; i<coords.length-1; i++) {
