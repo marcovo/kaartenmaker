@@ -397,10 +397,11 @@ export default class Cutout<
             );
 
             for(const intersection of edgeIntersections.left) {
-                const paperCoord = intersection[0];
-                const gridCoord = intersection[1];
-
-                doc.text('' + gridCoord.getY(), paperCoord.getX(), paperCoord.getY());
+                doc.text(
+                    intersection.gridCoord.getY().toString(),
+                    intersection.paperCoord.getX(),
+                    intersection.paperCoord.getY(),
+                );
             }
 
             doc.save("a4.pdf");

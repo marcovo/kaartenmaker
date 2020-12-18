@@ -6,6 +6,11 @@ import {Point} from "../Util/Math";
 import CoordinateConverter from "../Util/CoordinateConverter";
 import ConversionComposition from "../Conversion/ConversionComposition";
 
+export type EdgeIntersection<C extends Coordinate> = {
+    paperCoord: Point,
+    gridCoord: C,
+};
+
 export default class Grid<C extends Coordinate> {
 
     private cutout: Cutout<any, any, any> = null;
@@ -33,7 +38,7 @@ export default class Grid<C extends Coordinate> {
         return gridPolygon;
     }
 
-    drawOnPdf(doc: jsPDF) {
+    drawOnPdf(doc: jsPDF): Record<string, EdgeIntersection<C>[]> {
         // real mm: mm in physical world
         // paper mm: mm on paper map
         // unit: unit of measurement of projection coordinate system (e.g., meters)
@@ -84,10 +89,10 @@ export default class Grid<C extends Coordinate> {
                         this.cutout.options.margin_left,
                         from.getY() + (this.cutout.options.margin_left - from.getX()) / (toX.getX() - from.getX()) * (toX.getY() - from.getY()),
                     );
-                    edgeIntersections.left.push([
-                        paperCoord,
-                        toPaperCoord.inverse(paperCoord),
-                    ]);
+                    edgeIntersections.left.push(<EdgeIntersection<C>>{
+                        paperCoord: paperCoord,
+                        gridCoord: toPaperCoord.inverse(paperCoord),
+                    });
                 }
             }
         }
