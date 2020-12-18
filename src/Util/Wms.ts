@@ -110,7 +110,6 @@ export default class Wms {
     getSuggestedScaleRange(): Promise<ScaleRange> {
         return this.getCapabilities().then((xmlDoc) => {
 
-            // @ts-ignore
             let nsResolver = null;
             const xmlns = xmlDoc.documentElement.getAttribute('xmlns');
             if(xmlns !== null) {
@@ -125,6 +124,30 @@ export default class Wms {
                 min: parseInt(xmlDoc.evaluate('//xx:MinScaleDenominator', xmlDoc, nsResolver, XPathResult.STRING_TYPE).stringValue),
                 max: parseInt(xmlDoc.evaluate('//xx:MaxScaleDenominator', xmlDoc, nsResolver, XPathResult.STRING_TYPE).stringValue),
             };
+        });
+    }
+
+    downloadLegend() {
+        this.getCapabilities().then((xmlDoc) => {
+            let nsResolver = null;
+            const xmlns = xmlDoc.documentElement.getAttribute('xmlns');
+            if(xmlns !== null) {
+                nsResolver = function(prefix) {
+                    if(prefix === 'xx') {
+                        return xmlns;
+                    }
+                }
+            }
+            console.log(xmlDoc);console.log(nsResolver);
+            const node = xmlDoc.evaluate('//xx:LegendURL/xx:OnlineResource', xmlDoc, nsResolver, XPathResult.ANY_TYPE).iterateNext();
+            if(node) {
+                // @ts-ignore
+                const url = node.attributes['xlink:href'].value;
+
+                window.open(url);
+            } else {
+                alert('Could not find legend URL');
+            }
         });
     }
 }

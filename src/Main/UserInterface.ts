@@ -67,6 +67,9 @@ export default class UserInterface {
                 duplicateCutout: (cutout: Cutout<any, any, any>) => {
                     this.duplicateCutout(cutout);
                 },
+                downloadLegend: (cutout: Cutout<any, any, any>) => {
+                    cutout.getProjection().wms.downloadLegend();
+                },
                 mouseover: (cutout: Cutout<any, any, any>) => {
                     cutout.mouseover();
                 },
