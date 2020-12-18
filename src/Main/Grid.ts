@@ -71,6 +71,7 @@ export default class Grid<C extends Coordinate> {
         const minXFloor = Math.floor(minX / unitsPerLine) * unitsPerLine;
         const minYFloor = Math.floor(minY / unitsPerLine) * unitsPerLine;
 
+        doc.setLineWidth(0.1);
         const coordinateSystem = this.coordinateSystem.rebase(p[0]);
         for(let x=minXFloor; x<maxX; x+= unitsPerLine) {
             for(let y=minYFloor; y<maxY; y+= unitsPerLine) {
