@@ -240,7 +240,7 @@ export default Vue.component('cutout-settings-modal', {
         const newVal = $(this).val();
         const oldProjection = cutout.getProjection();
         if(newVal !== oldProjection.wms.name) {
-          const newProjection = new Projection($(this).val());
+          const newProjection = new Projection(newVal);
 
           if(
               oldProjection.wms.getDefaultScale() === newProjection.wms.getDefaultScale()
@@ -257,14 +257,14 @@ export default Vue.component('cutout-settings-modal', {
       });
 
       $('#csm_' + cutout.id + '_scale').on('change keyup input blur', function() {
-        const newScale = $(this).val();
+        const newScale = parseInt($(this).val());
         if(newScale !== cutout.getProjection().getScale()) {
           cutout.userInterface.actionHistory.addAction(new ChangeCutoutScaleAction(cutout, newScale));
         }
       });
 
       $('#csm_' + cutout.id + '_dpi').on('change keyup input blur', function() {
-        const newDpi = $(this).val();
+        const newDpi = parseInt($(this).val());
         if(newDpi !== cutout.getProjection().getDpi()) {
           cutout.userInterface.actionHistory.addAction(new ChangeCutoutDpiAction(cutout, newDpi));
         }
@@ -283,7 +283,7 @@ export default Vue.component('cutout-settings-modal', {
         });
 
         $('#csm_' + cutout.id + '_margin_' + side).on('change keyup input blur', function() {
-          const newVal = $(this).val();
+          const newVal = parseInt($(this).val());
           if(newVal !== cutout.options['margin_'+side]) {
             cutout.userInterface.actionHistory.addAction(new UpdateCutoutOptionAction(
                 cutout,

@@ -90,9 +90,10 @@ export default class Projection<C extends Coordinate> {
 
             const realMmPerUnit = 1000;
             const targetPxPerTile = 500;
+            const paperMmPerUnit = realMmPerUnit / realMmPerPaperMm;
 
             const pxPerPaperMm = Math.ceil(dpi / MM_PER_INCH);
-            const pxPerUnit = pxPerPaperMm / realMmPerPaperMm * realMmPerUnit;
+            const pxPerUnit = pxPerPaperMm * paperMmPerUnit;
 
             const targetUnitsPerTile = targetPxPerTile / pxPerUnit;
             const targetUnitsPerTileOrder = 10 ** Math.round(Math.log10(targetUnitsPerTile));
@@ -107,8 +108,8 @@ export default class Projection<C extends Coordinate> {
                 const diffY = c.getY() - this.anchor.getY();
 
                 return new Point(
-                    this.cutout.options.margin_left + diffX / (scale / realMmPerUnit),
-                    paper.height - this.cutout.options.margin_bottom - diffY / (scale / realMmPerUnit)
+                    this.cutout.options.margin_left + diffX * paperMmPerUnit,
+                    paper.height - this.cutout.options.margin_bottom - diffY * paperMmPerUnit
                 );
             };
 
