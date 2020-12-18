@@ -63,6 +63,13 @@ export default class Grid<C extends Coordinate> {
         const minXFloor = Math.floor(minX / unitsPerLine) * unitsPerLine;
         const minYFloor = Math.floor(minY / unitsPerLine) * unitsPerLine;
 
+        const edgeIntersections = {
+            top: [],
+            left: [],
+            right: [],
+            bottom: [],
+        };
+
         doc.setLineWidth(0.1);
         for(let x=minXFloor; x<maxX; x+= unitsPerLine) {
             for(let y=minYFloor; y<maxY; y+= unitsPerLine) {
@@ -71,8 +78,21 @@ export default class Grid<C extends Coordinate> {
                 const toY = toPaperCoord.convert(coordinateSystem.make(x, y+unitsPerLine));
                 doc.line(from.getX(), from.getY(), toX.getX(), toX.getY());
                 doc.line(from.getX(), from.getY(), toY.getX(), toY.getY());
+
+                if(from.getX() < this.cutout.options.margin_left && toX.getX() > this.cutout.options.margin_left) {
+                    const paperCoord = new Point(
+                        this.cutout.options.margin_left,
+                        from.getY() + (this.cutout.options.margin_left - from.getX()) / (toX.getX() - from.getX()) * (toX.getY() - from.getY()),
+                    );
+                    edgeIntersections.left.push([
+                        paperCoord,
+                        toPaperCoord.inverse(paperCoord),
+                    ]);
+                }
             }
         }
+
+        return edgeIntersections;
     }
 
 }

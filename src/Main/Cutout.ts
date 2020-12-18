@@ -311,7 +311,7 @@ export default class Cutout<
 
         return this.projection.projectToPdf(doc, this.paper, cache).then(() => {
 
-            this.grid.drawOnPdf(doc);
+            const edgeIntersections = this.grid.drawOnPdf(doc);
 
             const diffs = (coords: [number, number][]): [number, number][] => {
                 const res = [];
@@ -395,6 +395,13 @@ export default class Cutout<
                 'F',
                 true
             );
+
+            for(const intersection of edgeIntersections.left) {
+                const paperCoord = intersection[0];
+                const gridCoord = intersection[1];
+
+                doc.text('' + gridCoord.getY(), paperCoord.getX(), paperCoord.getY());
+            }
 
             doc.save("a4.pdf");
         });
