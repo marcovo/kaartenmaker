@@ -42,6 +42,9 @@ export default class Projection<C extends Coordinate> {
         }
 
         this.cutout = cutout;
+
+        // Preload capabilities upon attaching
+        this.wms.getCapabilities();
     }
 
     setAnchor(coordinate: Coordinate) {

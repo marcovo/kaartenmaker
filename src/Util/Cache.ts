@@ -10,13 +10,16 @@ export default class Cache {
     // https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
     private db: IDBDatabase;
 
-    constructor(private readonly cache_name: string) {
+    private static readonly indexedDbName = 'cache_db';
+    private static readonly objectStoreName = 'cache_store';
+
+    constructor() {
 
     }
 
     initialize(): Promise<void> {
         return new Promise((resolve, reject) => {
-            const dbRequest = window.indexedDB.open('kaartenmaker', 1);
+            const dbRequest = window.indexedDB.open(Cache.indexedDbName, 1);
 
             dbRequest.onerror = (event) => {
                 reject(event);
@@ -30,7 +33,7 @@ export default class Cache {
                 // @ts-ignore
                 const db: IDBDatabase = event.target.result;
 
-                const objectStore = db.createObjectStore(this.cache_name, { keyPath: 'key'});
+                const objectStore = db.createObjectStore(Cache.objectStoreName, { keyPath: 'key'});
                 objectStore.createIndex('expires_at', 'expires_at', { unique: false });
 
                 // objectStore.transaction.oncomplete = (event) => {};
@@ -45,7 +48,7 @@ export default class Cache {
     }
 
     private getObjectStore(mode: IDBTransactionMode): IDBObjectStore {
-        return this.db.transaction([this.cache_name], mode).objectStore(this.cache_name);
+        return this.db.transaction([Cache.objectStoreName], mode).objectStore(Cache.objectStoreName);
     }
 
     get(key: string, def: any = null): Promise<any> {

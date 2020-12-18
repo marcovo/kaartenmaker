@@ -1,6 +1,8 @@
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import CoordinateConverter from "./CoordinateConverter";
 import Coordinate from "../Coordinates/Coordinate";
+import Cache from "./Cache";
+import Container from "../Main/Container";
 
 const $ = require( 'jquery' );
 
@@ -72,6 +74,58 @@ export default class Wms {
         }, params);
 
         return this.buildUrl(params);
+    }
+
+    getCapabilities(params: WmsParams = {}): Promise<Document> {
+        params = Object.assign({}, {
+            request: 'GetCapabilities',
+        }, params);
+
+        const url = this.buildUrl(params);
+
+        return Container.getCache().then((cache) => {
+            return cache.fetch(url, () => {
+                return new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('GET', url, true);
+                    xhr.responseType = 'text';
+                    xhr.onload = function (e) {
+                        resolve(xhr.responseText);
+                    };
+                    xhr.send(null);
+                });
+            }).then((capabilitiesString) => {
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(capabilitiesString, 'application/xml');
+
+                if(xml.documentElement.nodeName == "parsererror") {
+                    return Promise.reject('Xml parser error');
+                } else {
+                    return xml;
+                }
+            });
+        });
+    }
+
+    getSuggestedScaleRange(): Promise<ScaleRange> {
+        return this.getCapabilities().then((xmlDoc) => {
+
+            // @ts-ignore
+            let nsResolver = null;
+            const xmlns = xmlDoc.documentElement.getAttribute('xmlns');
+            if(xmlns !== null) {
+                nsResolver = function(prefix) {
+                    if(prefix === 'xx') {
+                        return xmlns;
+                    }
+                }
+            }
+
+            return <ScaleRange> {
+                min: parseInt(xmlDoc.evaluate('//xx:MinScaleDenominator', xmlDoc, nsResolver, XPathResult.STRING_TYPE).stringValue),
+                max: parseInt(xmlDoc.evaluate('//xx:MaxScaleDenominator', xmlDoc, nsResolver, XPathResult.STRING_TYPE).stringValue),
+            };
+        });
     }
 }
 

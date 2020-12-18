@@ -162,8 +162,7 @@ export default class UserInterface {
     }
 
     print(cutout: Cutout<any, any, any>): void {
-        const cache = new Cache('image_cache');
-        cache.initialize().then(() => {
+        Container.getCache().then((cache) => {
             cutout.print(cache).then(() => {
                 return cache.clean();
             });
