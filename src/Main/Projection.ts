@@ -4,10 +4,11 @@ import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import Cutout from "./Cutout";
 import CoordinateConverter from "../Util/CoordinateConverter";
 import Cache from "../Util/Cache";
-import {Point} from "../Util/Math";
+import {Point, PointSystem} from "../Util/Math";
 import {jsPDF} from "jspdf";
 import {Paper} from "../Util/Paper";
 import Container from "./Container";
+import CartesianTransformation from "../Conversion/CartesianTransformation";
 
 const MM_PER_INCH = 25.4;
 
@@ -77,6 +78,32 @@ export default class Projection<C extends Coordinate> {
         }));
     }
 
+    paperCoordinateConversion(): CartesianTransformation<Point> {
+        const realMmPerPaperMm = this.getScale();
+        const realMmPerUnit = 1000;
+        const paperMmPerUnit = realMmPerUnit / realMmPerPaperMm;
+
+        return CartesianTransformation
+            .build(new PointSystem())
+
+            // Incoming is a projection coordinate; we move the anchor to the origin
+            .translate(new Point(-this.anchor.getX(), -this.anchor.getY()))
+
+            // We scale from real distances to paper distances
+            .scale(paperMmPerUnit)
+
+            // On paper, the y-axis points down
+            .mulMatrix([[1, 0], [0, -1]])
+
+            // Move by margin
+            .translate(new Point(
+                this.cutout.options.margin_left,
+                this.cutout.getPaper().height - this.cutout.options.margin_bottom
+            ))
+
+            .make();
+    }
+
     projectToPdf(doc: jsPDF, paper: Paper, cache: Cache): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             // real mm: mm in physical world
@@ -102,16 +129,7 @@ export default class Projection<C extends Coordinate> {
             const pxPerTile = Math.round(pxPerUnit * unitsPerTile);
             const paperMmPerTile = pxPerTile / pxPerPaperMm;
 
-            // TODO: Generalize this function
-            const toPaperCoord = (c: C): Point => {
-                const diffX = c.getX() - this.anchor.getX();
-                const diffY = c.getY() - this.anchor.getY();
-
-                return new Point(
-                    this.cutout.options.margin_left + diffX * paperMmPerUnit,
-                    paper.height - this.cutout.options.margin_bottom - diffY * paperMmPerUnit
-                );
-            };
+            const toPaperCoord = this.paperCoordinateConversion();
 
             const p = this.cutout.mapPolygonProjection;
             const minX = Math.floor(Math.min(p[0].getX(), p[1].getX(), p[2].getX(), p[3].getX())/unitsPerTile)*unitsPerTile;
@@ -132,7 +150,7 @@ export default class Projection<C extends Coordinate> {
                         height: pxPerTile.toString(),
                     });
 
-                    const paperCoord = toPaperCoord(this.coordinateSystem.make(x, y+unitsPerTile));
+                    const paperCoord = toPaperCoord.convert(new Point(x, y+unitsPerTile));
 
                     const addImagePromise = imagePromise.then((img) => {
                         doc.addImage(img, 'PNG', paperCoord.getX(), paperCoord.getY(), paperMmPerTile, paperMmPerTile);

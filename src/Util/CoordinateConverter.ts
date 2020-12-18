@@ -2,6 +2,7 @@ import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import Coordinate from "../Coordinates/Coordinate";
 import Conversion from "../Conversion/Conversion";
 import ConversionComposition from "../Conversion/ConversionComposition";
+import CartesianTransformation from "../Conversion/CartesianTransformation";
 
 export default class CoordinateConverter {
     private static coordinateSystems: Record<string, CoordinateSystem<Coordinate>> = {};
@@ -24,26 +25,34 @@ export default class CoordinateConverter {
             return source;
         }
 
+        return this.conversion(CoordinateConverter.getCoordinateSystem(source.name), targetSystem).convert(source);
+    }
+
+    static conversion(sourceSystem: CoordinateSystem<Coordinate>, targetSystem: CoordinateSystem<Coordinate>) {
+        if(sourceSystem.name === targetSystem.name) {
+            return CartesianTransformation.build(sourceSystem).make();
+        }
+
         let conversion = null;
-        if(CoordinateConverter.conversions.hasOwnProperty(source.name)) {
-            if(CoordinateConverter.conversions[source.name].hasOwnProperty(targetSystem.name)) {
-                conversion = CoordinateConverter.conversions[source.name][targetSystem.name];
+        if(CoordinateConverter.conversions.hasOwnProperty(sourceSystem.name)) {
+            if(CoordinateConverter.conversions[sourceSystem.name].hasOwnProperty(targetSystem.name)) {
+                conversion = CoordinateConverter.conversions[sourceSystem.name][targetSystem.name];
             }
         }
 
         if(conversion === null) {
-            conversion = CoordinateConverter.fetchConversion(CoordinateConverter.getCoordinateSystem(source.name), targetSystem);
+            conversion = CoordinateConverter.fetchConversion(CoordinateConverter.getCoordinateSystem(sourceSystem.name), targetSystem);
             if(conversion === null) {
-                throw new Error('Could not find conversion between "' + source.name + '" and "' + targetSystem.name + '"');
+                throw new Error('Could not find conversion between "' + sourceSystem.name + '" and "' + targetSystem.name + '"');
             }
 
-            if(!CoordinateConverter.conversions.hasOwnProperty(source.name)) {
-                CoordinateConverter.conversions[source.name] = {};
+            if(!CoordinateConverter.conversions.hasOwnProperty(sourceSystem.name)) {
+                CoordinateConverter.conversions[sourceSystem.name] = {};
             }
-            CoordinateConverter.conversions[source.name][targetSystem.name] = conversion;
+            CoordinateConverter.conversions[sourceSystem.name][targetSystem.name] = conversion;
         }
 
-        return conversion.convert(source);
+        return conversion;
     }
 
     static fetchConversion(

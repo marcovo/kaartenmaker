@@ -1,5 +1,22 @@
 import Coordinate from "../Coordinates/Coordinate";
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
+import Conversion from "../Conversion/Conversion";
+
+export class PointSystem implements CoordinateSystem<Point> {
+    readonly name: '';
+
+    conversions(): Conversion<Point, Coordinate>[] {
+        return [];
+    }
+
+    make(x: number, y: number): Point {
+        return new Point(x, y);
+    }
+
+    rebase(c: Point): CoordinateSystem<Point> {
+        return this;
+    }
+}
 
 export class Point implements Coordinate {
     readonly name = '';
