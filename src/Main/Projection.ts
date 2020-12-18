@@ -9,6 +9,8 @@ import {jsPDF} from "jspdf";
 import {Paper} from "../Util/Paper";
 import Container from "./Container";
 
+const MM_PER_INCH = 25.4;
+
 export default class Projection<C extends Coordinate> {
 
     readonly wms: Wms;
@@ -65,9 +67,27 @@ export default class Projection<C extends Coordinate> {
 
     projectToPdf(doc: jsPDF, paper: Paper, cache: Cache): Promise<void> {
         return new Promise<void>((resolve, reject) => {
+            // real mm: mm in physical world
+            // paper mm: mm on paper map
+            // tile: one WMS image download
+            // px: pixels in WMS tile download
+            // unit: unit of measurement of projection coordinate system (e.g., meters)
             const scale = this.getScale();
+            const realMmPerPaperMm = scale;
 
-            const tileSize = 1000000 / scale;
+            const realMmPerUnit = 1000;
+            const targetPxPerTile = 500;
+            const dpi = 254;
+
+            const pxPerPaperMm = Math.ceil(dpi / MM_PER_INCH);
+            const pxPerUnit = pxPerPaperMm / realMmPerPaperMm * realMmPerUnit;
+
+            const targetUnitsPerTile = targetPxPerTile / pxPerUnit;
+            const targetUnitsPerTileOrder = 10 ** Math.round(Math.log10(targetUnitsPerTile));
+            const unitsPerTile = Math.round(targetUnitsPerTile / targetUnitsPerTileOrder) * targetUnitsPerTileOrder;
+
+            const pxPerTile = Math.round(pxPerUnit * unitsPerTile);
+            const paperMmPerTile = pxPerTile / pxPerPaperMm;
 
             // TODO: Generalize this function
             const toPaperCoord = (c: C): Point => {
@@ -75,34 +95,34 @@ export default class Projection<C extends Coordinate> {
                 const diffY = c.getY() - this.anchor.getY();
 
                 return new Point(
-                    this.cutout.options.margin_left + diffX / (scale / 1000),
-                    paper.height - this.cutout.options.margin_bottom - diffY / (scale / 1000)
+                    this.cutout.options.margin_left + diffX / (scale / realMmPerUnit),
+                    paper.height - this.cutout.options.margin_bottom - diffY / (scale / realMmPerUnit)
                 );
             };
 
             const p = this.cutout.mapPolygonProjection;
-            const minX = Math.floor(Math.min(p[0].getX(), p[1].getX(), p[2].getX(), p[3].getX())/1000)*1000;
-            const maxX = Math.ceil(Math.max(p[0].getX(), p[1].getX(), p[2].getX(), p[3].getX())/1000)*1000;
-            const minY = Math.floor(Math.min(p[0].getY(), p[1].getY(), p[2].getY(), p[3].getY())/1000)*1000;
-            const maxY = Math.ceil(Math.max(p[0].getY(), p[1].getY(), p[2].getY(), p[3].getY())/1000)*1000;
+            const minX = Math.floor(Math.min(p[0].getX(), p[1].getX(), p[2].getX(), p[3].getX())/unitsPerTile)*unitsPerTile;
+            const maxX = Math.ceil(Math.max(p[0].getX(), p[1].getX(), p[2].getX(), p[3].getX())/unitsPerTile)*unitsPerTile;
+            const minY = Math.floor(Math.min(p[0].getY(), p[1].getY(), p[2].getY(), p[3].getY())/unitsPerTile)*unitsPerTile;
+            const maxY = Math.ceil(Math.max(p[0].getY(), p[1].getY(), p[2].getY(), p[3].getY())/unitsPerTile)*unitsPerTile;
 
             const promises: Promise<void>[] = [];
-            for(let x=minX; x<maxX; x+= 1000) {
-                for(let y=minY; y<maxY; y+= 1000) {
+            for(let x=minX; x<maxX; x+= unitsPerTile) {
+                for(let y=minY; y<maxY; y+= unitsPerTile) {
                     const imagePromise: Promise<HTMLImageElement> = this.downloadPrintImage(cache, [
-                        this.coordinateSystem.make(x, y+1000),
-                        this.coordinateSystem.make(x+1000, y+1000),
-                        this.coordinateSystem.make(x+1000, y),
+                        this.coordinateSystem.make(x, y+unitsPerTile),
+                        this.coordinateSystem.make(x+unitsPerTile, y+unitsPerTile),
+                        this.coordinateSystem.make(x+unitsPerTile, y),
                         this.coordinateSystem.make(x, y),
                     ], {
-                        width: '400',
-                        height: '400',
+                        width: pxPerTile.toString(),
+                        height: pxPerTile.toString(),
                     });
 
-                    const paperCoord = toPaperCoord(this.coordinateSystem.make(x, y+1000));
+                    const paperCoord = toPaperCoord(this.coordinateSystem.make(x, y+unitsPerTile));
 
                     const addImagePromise = imagePromise.then((img) => {
-                        doc.addImage(img, 'PNG', paperCoord.getX(), paperCoord.getY(), tileSize, tileSize);
+                        doc.addImage(img, 'PNG', paperCoord.getX(), paperCoord.getY(), paperMmPerTile, paperMmPerTile);
                     })
 
                     promises.push(addImagePromise);
