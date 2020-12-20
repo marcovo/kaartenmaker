@@ -9,6 +9,7 @@ import ActionHistory from "../ActionHistory/ActionHistory";
 import AddCutoutAction from "../ActionHistory/AddCutoutAction";
 import DeleteCutoutAction from "../ActionHistory/DeleteCutoutAction";
 import CutoutTemplate from "./CutoutTemplate";
+import Printer from "./Printer";
 require('../Lib/LeafletDrag');
 require("./Cutout"); // If we don't explicitly require this, the application crashes...
 
@@ -165,10 +166,8 @@ export default class UserInterface {
     }
 
     print(cutout: Cutout<any, any, any>): void {
-        Container.getCache().then((cache) => {
-            cutout.print(cache).then(() => {
-                return cache.clean();
-            });
+        cutout.print().catch(() => {
+            alert('Something went wrong while printing');
         });
     }
 
