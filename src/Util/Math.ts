@@ -29,6 +29,10 @@ export class Point implements Coordinate {
         this.y = y;
     }
 
+    static from(source: Coordinate): Point {
+        return new Point(source.getX(), source.getY());
+    }
+
     getX(): number {
         return this.x;
     }

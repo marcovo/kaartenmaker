@@ -291,18 +291,7 @@ export default class Cutout<
     }
 
     print(cache: Cache): Promise<void> {
-        const scale = this.projection.getScale();
-
-        // TODO: Generalize this function
-        const toPaperCoord = (c: ProjectionCoordinate): Point => {
-            const diffX = c.getX() - this.projection.anchor.getX();
-            const diffY = c.getY() - this.projection.anchor.getY();
-
-            return new Point(
-                this.options.margin_left + diffX / (scale / 1000),
-                this.paper.height - this.options.margin_bottom - diffY / (scale / 1000)
-            );
-        };
+        const toPaperCoord = this.getProjection().paperCoordinateConversion();
 
         const doc = new jsPDF({
             orientation: (this.paper.width >= this.paper.height) ? 'landscape' : 'portrait',
@@ -323,10 +312,10 @@ export default class Cutout<
 
             doc.setFillColor(255, 255, 255);
 
-            const paperCoordTopLeft = toPaperCoord(this.mapPolygonProjection[3]);
-            const paperCoordTopRight = toPaperCoord(this.mapPolygonProjection[2]);
-            const paperCoordBottomRight = toPaperCoord(this.mapPolygonProjection[1]);
-            const paperCoordBottomLeft = toPaperCoord(this.mapPolygonProjection[0]);
+            const paperCoordTopLeft = toPaperCoord.convert(Point.from(this.mapPolygonProjection[3]));
+            const paperCoordTopRight = toPaperCoord.convert(Point.from(this.mapPolygonProjection[2]));
+            const paperCoordBottomRight = toPaperCoord.convert(Point.from(this.mapPolygonProjection[1]));
+            const paperCoordBottomLeft = toPaperCoord.convert(Point.from(this.mapPolygonProjection[0]));
 
             doc.lines(
                 diffs([
