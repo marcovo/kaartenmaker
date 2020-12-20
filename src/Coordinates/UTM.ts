@@ -51,4 +51,8 @@ export default class UTM implements Coordinate {
     withinBounds(): boolean {
         return true; // todo
     }
+
+    formatOrdinateForPdf(dimension: 'x' | 'y'): string {
+        return ''; // TODO
+    }
 }

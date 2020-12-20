@@ -2,6 +2,7 @@ import Coordinate from "./Coordinate";
 import CoordinateSystem from "./CoordinateSystem";
 import Conversion from "../Conversion/Conversion";
 import DutchGrid_WGS84 from "../Conversion/DutchGrid_WGS84";
+import {trimTrailingZeroDecimalPlaces} from "../Util/functions";
 
 export class DutchGridSystem implements CoordinateSystem<DutchGrid> {
     readonly name = 'EPSG:28992';
@@ -47,5 +48,10 @@ export default class DutchGrid implements Coordinate {
     withinBounds(): boolean {
         // TODO: Check with polygon; https://nl.wikipedia.org/wiki/Rijksdriehoeksco%C3%B6rdinaten#Geldigheid
         return -7000 <= this.x && this.x <= 300000 && 289000 <= this.y && this.y <= 629000;
+    }
+
+    formatOrdinateForPdf(dimension: 'x' | 'y'): string {
+        const ordinate = (dimension === 'x') ? this.getX() : this.getY();
+        return trimTrailingZeroDecimalPlaces(ordinate / 1000, 3);
     }
 }

@@ -39,6 +39,10 @@ class Bessel implements Coordinate {
     clone<C extends this>(): C {
         return <C>new Bessel(this.lat, this.lng);
     }
+
+    formatOrdinateForPdf(dimension: 'x' | 'y'): string {
+        throw new Error();
+    }
 }
 
 export default class WGS84_DutchGrid implements Conversion<WGS84, DutchGrid> {

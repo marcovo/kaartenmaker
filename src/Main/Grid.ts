@@ -2,7 +2,7 @@ import Coordinate from "../Coordinates/Coordinate";
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import Cutout from "./Cutout";
 import {jsPDF} from "jspdf";
-import {Point} from "../Util/Math";
+import {lineSegmentsIntersection, Point} from "../Util/Math";
 import CoordinateConverter from "../Util/CoordinateConverter";
 import ConversionComposition from "../Conversion/ConversionComposition";
 
@@ -75,6 +75,20 @@ export default class Grid<C extends Coordinate> {
             bottom: [],
         };
 
+        const corners = {
+            topLeft: new Point(this.cutout.options.margin_left, this.cutout.options.margin_top),
+            topRight: new Point(this.cutout.getPaper().width - this.cutout.options.margin_right, this.cutout.options.margin_top),
+            bottomLeft: new Point(this.cutout.options.margin_left, this.cutout.getPaper().height - this.cutout.options.margin_bottom),
+            bottomRight: new Point(this.cutout.getPaper().width - this.cutout.options.margin_right, this.cutout.getPaper().height - this.cutout.options.margin_bottom),
+        };
+
+        const edges = {
+            top: {from: corners.topLeft, to: corners.topRight},
+            left: {from: corners.topLeft, to: corners.bottomLeft},
+            right: {from: corners.topRight, to: corners.bottomRight},
+            bottom: {from: corners.bottomLeft, to: corners.bottomRight},
+        };
+
         doc.setLineWidth(0.1);
         for(let x=minXFloor; x<maxX; x+= unitsPerLine) {
             for(let y=minYFloor; y<maxY; y+= unitsPerLine) {
@@ -84,12 +98,28 @@ export default class Grid<C extends Coordinate> {
                 doc.line(from.getX(), from.getY(), toX.getX(), toX.getY());
                 doc.line(from.getX(), from.getY(), toY.getX(), toY.getY());
 
-                if(from.getX() < this.cutout.options.margin_left && toX.getX() > this.cutout.options.margin_left) {
-                    const paperCoord = new Point(
-                        this.cutout.options.margin_left,
-                        from.getY() + (this.cutout.options.margin_left - from.getX()) / (toX.getX() - from.getX()) * (toX.getY() - from.getY()),
-                    );
+                // Register intersection points of grid with frame border
+                let paperCoord;
+                if(null !== (paperCoord = lineSegmentsIntersection({from: from, to: toY}, edges.top))) {
+                    edgeIntersections.top.push(<EdgeIntersection<C>>{
+                        paperCoord: paperCoord,
+                        gridCoord: toPaperCoord.inverse(paperCoord),
+                    });
+                }
+                if(null !== (paperCoord = lineSegmentsIntersection({from: from, to: toX}, edges.left))) {
                     edgeIntersections.left.push(<EdgeIntersection<C>>{
+                        paperCoord: paperCoord,
+                        gridCoord: toPaperCoord.inverse(paperCoord),
+                    });
+                }
+                if(null !== (paperCoord = lineSegmentsIntersection({from: from, to: toX}, edges.right))) {
+                    edgeIntersections.right.push(<EdgeIntersection<C>>{
+                        paperCoord: paperCoord,
+                        gridCoord: toPaperCoord.inverse(paperCoord),
+                    });
+                }
+                if(null !== (paperCoord = lineSegmentsIntersection({from: from, to: toY}, edges.bottom))) {
+                    edgeIntersections.bottom.push(<EdgeIntersection<C>>{
                         paperCoord: paperCoord,
                         gridCoord: toPaperCoord.inverse(paperCoord),
                     });

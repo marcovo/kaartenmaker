@@ -1,9 +1,13 @@
 import {Paper} from "../Util/Paper";
-import { jsPDF } from "jspdf";
+import {jsPDF, TextOptionsLight} from "jspdf";
 import {Point} from "../Util/Math";
 import Cache from "../Util/Cache";
 import Cutout from "./Cutout";
 import Container from "./Container";
+import {EdgeIntersection} from "./Grid";
+import Coordinate from "../Coordinates/Coordinate";
+
+export type PdfCoordinateDrawSide = 'top' | 'left' | 'right' | 'bottom';
 
 export default class Printer {
 
@@ -34,13 +38,7 @@ export default class Printer {
 
             this.drawFrameBackground(doc);
 
-            for(const intersection of edgeIntersections.left) {
-                doc.text(
-                    intersection.gridCoord.getY().toString(),
-                    intersection.paperCoord.getX(),
-                    intersection.paperCoord.getY(),
-                );
-            }
+            this.drawFrameCoordinates(doc, edgeIntersections);
 
             doc.save("a4.pdf");
         });
@@ -130,6 +128,55 @@ export default class Printer {
             null,
             'F',
             true
+        );
+    }
+
+    private drawFrameCoordinates(doc: jsPDF, edgeIntersections: Record<string, EdgeIntersection<Coordinate>[]>) {
+        const sides: PdfCoordinateDrawSide[] = ['top', 'left', 'right', 'bottom'];
+
+        for(const side of sides) {
+            for(const intersection of edgeIntersections[side]) {
+                this.drawFrameCoordinate(doc, intersection.gridCoord, intersection.paperCoord, side);
+            }
+        }
+    }
+
+    private drawFrameCoordinate(doc: jsPDF, gridCoordinate: Coordinate, paperCoordinate: Point, side: PdfCoordinateDrawSide) {
+        const ordinate = gridCoordinate.formatOrdinateForPdf((side === 'left' || side === 'right') ? 'y' : 'x');
+
+        const alignments:Record<PdfCoordinateDrawSide, TextOptionsLight['align']> = {
+            'left' : 'right',
+            'top': 'center',
+            'bottom': 'center',
+            'right': 'left',
+        };
+
+        const fontSize = 8;
+        const mmPerPt = 25.4 / 72;
+
+        const dxs = {
+            'left' : -1.0,
+            'top': 0,
+            'bottom': 0,
+            'right': 1.0,
+        };
+
+        const dys = {
+            'left' : -0.5 + (fontSize/2) * mmPerPt,
+            'top': -1.0,
+            'bottom': fontSize * mmPerPt,
+            'right': -0.5 + (fontSize/2) * mmPerPt,
+        };
+
+        doc.setFontSize(fontSize);
+
+        doc.text(
+            ordinate,
+            paperCoordinate.getX() + dxs[side],
+            paperCoordinate.getY() + dys[side],
+            {
+                align: alignments[side],
+            }
         );
     }
 

@@ -48,6 +48,10 @@ export class Point implements Coordinate {
     clone<P extends this>(): P {
         return <P>new Point(this.x, this.y);
     }
+
+    formatOrdinateForPdf(dimension: 'x' | 'y'): string {
+        throw new Error();
+    }
 }
 
 export function walkLine<C extends Coordinate, S extends CoordinateSystem<C>>(s: S, a: C, b: C, steps: number, callback: (c: C, step: number) => void) {
@@ -61,6 +65,36 @@ export function walkLine<C extends Coordinate, S extends CoordinateSystem<C>>(s:
 
         callback(c, i);
     }
+}
+
+export type LineSegment = {from: Point, to: Point};
+
+export function lineSegmentsIntersection(line1: LineSegment, line2: LineSegment): Point|null {
+    // https://stackoverflow.com/a/1968345
+    let
+        p0_x = line1.from.getX(), p0_y = line1.from.getY(),
+        p1_x = line1.to.getX(), p1_y = line1.to.getY(),
+        p2_x = line2.from.getX(), p2_y = line2.from.getY(),
+        p3_x = line2.to.getX(), p3_y = line2.to.getY();
+
+    let s1_x, s1_y, s2_x, s2_y;
+    s1_x = p1_x - p0_x;     s1_y = p1_y - p0_y;
+    s2_x = p3_x - p2_x;     s2_y = p3_y - p2_y;
+
+    let s, t;
+    s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y);
+    t = ( s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / (-s2_x * s1_y + s1_x * s2_y);
+
+    if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+    {
+        // Collision detected
+        return new Point(
+            p0_x + (t * s1_x),
+            p0_y + (t * s1_y),
+        );
+    }
+
+    return null; // No collision
 }
 
 export function dot<C extends Coordinate>(a: C, b: C): number {

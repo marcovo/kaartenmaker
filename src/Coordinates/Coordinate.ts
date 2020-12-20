@@ -9,4 +9,6 @@ export default interface Coordinate {
     withinBounds(): boolean;
 
     clone(): this;
+
+    formatOrdinateForPdf(dimension: 'x' | 'y'): string;
 }
