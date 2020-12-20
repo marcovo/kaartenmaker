@@ -61,7 +61,7 @@ export default class Grid<C extends Coordinate> {
 
         const targetPaperMmPerLine = 40;
         const targetRealMmPerLine = realMmPerPaperMm * targetPaperMmPerLine;
-        const targetRealMmPerLineOrder = 10 ** Math.round(Math.log10(targetRealMmPerLine));
+        const targetRealMmPerLineOrder = 10 ** Math.floor(Math.log10(targetRealMmPerLine));
         const realMmPerLine = Math.round(targetRealMmPerLine / targetRealMmPerLineOrder) * targetRealMmPerLineOrder;
         const unitsPerLine = realMmPerLine / realMmPerUnit;
 

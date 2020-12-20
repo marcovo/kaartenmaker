@@ -123,7 +123,7 @@ export default class Projection<C extends Coordinate> {
             const pxPerUnit = pxPerPaperMm * paperMmPerUnit;
 
             const targetUnitsPerTile = targetPxPerTile / pxPerUnit;
-            const targetUnitsPerTileOrder = 10 ** Math.round(Math.log10(targetUnitsPerTile));
+            const targetUnitsPerTileOrder = 10 ** Math.floor(Math.log10(targetUnitsPerTile));
             const unitsPerTile = Math.round(targetUnitsPerTile / targetUnitsPerTileOrder) * targetUnitsPerTileOrder;
 
             const pxPerTile = Math.round(pxPerUnit * unitsPerTile);
