@@ -2,6 +2,7 @@ import Coordinate from "./Coordinate";
 import CoordinateSystem from "./CoordinateSystem";
 import Conversion from "../Conversion/Conversion";
 import UTM_WGS84 from "../Conversion/UTM_WGS84";
+import {trimTrailingZeroDecimalPlaces} from "../Util/functions";
 
 export class UTMSystem implements CoordinateSystem<UTM> {
     readonly name = 'EPSG:25832';
@@ -53,6 +54,7 @@ export default class UTM implements Coordinate {
     }
 
     formatOrdinateForPdf(dimension: 'x' | 'y'): string {
-        return ''; // TODO
+        const ordinate = (dimension === 'x') ? this.getX() : this.getY();
+        return trimTrailingZeroDecimalPlaces(ordinate / 1000, 1);
     }
 }
