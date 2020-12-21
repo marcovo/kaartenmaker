@@ -166,7 +166,8 @@ export default class UserInterface {
     }
 
     print(cutout: Cutout<any, any, any>): void {
-        cutout.print().catch(() => {
+        cutout.print().catch((e) => {
+            console.log(e);
             alert('Something went wrong while printing');
         });
     }

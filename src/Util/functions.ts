@@ -15,3 +15,42 @@ export function trimTrailingZeroDecimalPlaces(number: number, fractionDigits: nu
 
     return text;
 }
+
+export function formatCm(number: number, decimals: number = 1): string {
+    return formatMeters(number/100, decimals, -2);
+}
+
+export function formatMeters(number: number, decimals: number = 1, displayOrderExponent: number = null): string {
+
+    const numberOrderExponent = Math.floor(Math.log10(number));
+    if(displayOrderExponent === null) {
+        displayOrderExponent = 3 * Math.floor(numberOrderExponent / 3);
+    }
+
+    const displayOrder = 10 ** displayOrderExponent;
+    const roundingOrder = displayOrder / (10**decimals);
+    const roundedNumber = Math.round(number / roundingOrder) * roundingOrder;
+
+    const numberText = trimTrailingZeroDecimalPlaces(roundedNumber / displayOrder, decimals);
+
+    let unit: string;
+    if(displayOrderExponent == 0) {
+        unit = 'm';
+    } else if(displayOrderExponent == 3) {
+        unit = 'km';
+    } else if(displayOrderExponent == -3) {
+        unit = 'mm';
+    } else if(displayOrderExponent == -2) {
+        unit = 'cm';
+    } else if(displayOrderExponent == -1) {
+        unit = 'dm';
+    } else if(displayOrderExponent == 1) {
+        unit = 'dam';
+    } else if(displayOrderExponent == 2) {
+        unit = 'hm';
+    } else {
+        throw new Error('Could not find unit for order ' + displayOrderExponent);
+    }
+
+    return numberText + ' ' + unit;
+}

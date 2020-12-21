@@ -6,6 +6,7 @@ import Cutout from "./Cutout";
 import Container from "./Container";
 import {EdgeIntersection} from "./Grid";
 import Coordinate from "../Coordinates/Coordinate";
+import {formatCm, formatMeters} from "../Util/functions";
 
 export type PdfCoordinateDrawSide = 'top' | 'left' | 'right' | 'bottom';
 type DrawBox = {top: number, bottom: number, left: number, right: number};
@@ -69,6 +70,7 @@ export default class Printer {
 
             this.drawMapName(doc);
             this.drawCopyright(doc);
+            this.drawScale(doc);
 
             this.drawFrameCoordinates(doc, edgeIntersections);
 
@@ -195,6 +197,63 @@ export default class Printer {
         this.registerDrawBox({top: y - strHeight, bottom: y, left: x, right: x + strWidth});
         doc.setFontSize(fontSize);
         doc.text(copyright, x, y);
+    }
+
+    private drawScale(doc: jsPDF) {
+        let realWidth = 1000000; // mm -> = 1 km
+        let barWidth = realWidth / this.cutout.getProjection().getScale();
+        while(barWidth > 100) {
+            barWidth /= 10;
+            realWidth /= 10;
+        }
+        while(barWidth < 20) {
+            barWidth *= 10;
+            realWidth *= 10;
+        }
+        if(barWidth > 50) {
+            barWidth /= 2;
+            realWidth /= 2;
+        }
+        if(barWidth > 50) {
+            barWidth /= 2.5;
+            realWidth /= 2.5;
+        }
+        const barHeight = 1;
+
+        const str0 = '0';
+        const str1 = formatMeters(realWidth/1000) + ' = ' + formatCm(barWidth / 10) + ' (1:'+this.cutout.getProjection().getScale().toFixed(0)+')';
+
+        const fontSize = 6;
+        const mmPerPt = 25.4 / 72;
+        const strHeight = fontSize * mmPerPt;
+        const str0Width = doc.getStringUnitWidth(str0) * strHeight;
+        const str1Width = doc.getStringUnitWidth(str1) * strHeight;
+
+        const x = this.cutout.options.margin_left;
+        const y = this.paper.height - 5.5;
+
+        this.registerDrawBox({
+            top: y,
+            bottom: y + barHeight,
+            left: x,
+            right: x + barWidth + str0Width + str1Width + 2 * 0.5,
+        });
+
+        const x_bar = x + 0.5 + str0Width;
+        doc.setFillColor(255, 255, 255);
+        doc.setDrawColor(0, 0, 0);
+        doc.rect(x_bar, y, barWidth, barHeight);
+        for(let i=0; i<5; i++) {
+            doc.line(x_bar + barWidth/10 * (2*i+1), y + barHeight/2, x_bar + barWidth/10 * (2*i+2), y + barHeight/2);
+            doc.line(x_bar + barWidth/10 * (2*i+1), y, x_bar + barWidth/10 * (2*i+1), y + barHeight);
+            if(i < 4) {
+                doc.line(x_bar + barWidth/10 * (2*i+2), y, x_bar + barWidth/10 * (2*i+2), y + barHeight);
+            }
+        }
+
+        doc.setFontSize(fontSize);
+        doc.text(str0, x, y + barHeight);
+        doc.text(str1, x + barWidth + str0Width + 2 * 0.5, y + barHeight);
     }
 
     private drawFrameCoordinates(doc: jsPDF, edgeIntersections: Record<string, EdgeIntersection<Coordinate>[]>) {
