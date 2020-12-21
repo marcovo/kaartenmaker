@@ -90,6 +90,7 @@
                   <option
                       v-for="wms in container.wmsList()"
                       v-bind:value="wms.name"
+                      v-bind:selected="cutout.projection.wms.name === wms.name"
                   >{{ wms.title }}</option>
                 </select>
               </div>
