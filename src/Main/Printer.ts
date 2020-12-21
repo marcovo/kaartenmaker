@@ -260,6 +260,9 @@ export default class Printer {
         const sides: PdfCoordinateDrawSide[] = ['top', 'left', 'right', 'bottom'];
 
         for(const side of sides) {
+            if(!this.cutout.options['display_coords_' + side]) {
+                continue;
+            }
             for(const intersection of edgeIntersections[side]) {
                 this.drawFrameCoordinate(doc, intersection.gridCoord, intersection.paperCoord, side);
             }
