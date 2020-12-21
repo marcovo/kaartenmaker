@@ -144,40 +144,31 @@ export default class Printer {
     private drawFrameCoordinate(doc: jsPDF, gridCoordinate: Coordinate, paperCoordinate: Point, side: PdfCoordinateDrawSide) {
         const ordinate = gridCoordinate.formatOrdinateForPdf((side === 'left' || side === 'right') ? 'y' : 'x');
 
-        const alignments:Record<PdfCoordinateDrawSide, TextOptionsLight['align']> = {
-            'left' : 'right',
-            'top': 'center',
-            'bottom': 'center',
-            'right': 'left',
-        };
-
         const fontSize = 8;
         const mmPerPt = 25.4 / 72;
 
-        const dxs = {
-            'left' : -1.0,
-            'top': 0,
-            'bottom': 0,
-            'right': 1.0,
-        };
+        const strWidth = doc.getStringUnitWidth(ordinate) * fontSize * mmPerPt;
 
-        const dys = {
-            'left' : -0.5 + (fontSize/2) * mmPerPt,
-            'top': -1.0,
-            'bottom': fontSize * mmPerPt,
-            'right': -0.5 + (fontSize/2) * mmPerPt,
-        };
+        let x = paperCoordinate.getX();
+        let y = paperCoordinate.getY();
+
+        if(side === 'left') {
+            x += -1.0 - strWidth;
+            y += -0.5 + (fontSize/2) * mmPerPt;
+        } else if(side === 'top') {
+            x += 0 - strWidth/2;
+            y += -1.0;
+        } else if(side === 'bottom') {
+            x += 0 - strWidth/2;
+            y += fontSize * mmPerPt;
+        } else if(side === 'right') {
+            x += 1.0;
+            y += -0.5 + (fontSize/2) * mmPerPt;
+        }
 
         doc.setFontSize(fontSize);
 
-        doc.text(
-            ordinate,
-            paperCoordinate.getX() + dxs[side],
-            paperCoordinate.getY() + dys[side],
-            {
-                align: alignments[side],
-            }
-        );
+        doc.text(ordinate, x, y);
     }
 
 }
