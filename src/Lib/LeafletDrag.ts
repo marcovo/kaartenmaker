@@ -130,6 +130,10 @@ L.Handler.PathDrag = L.Handler.extend( /** @lends  L.Path.Drag.prototype */ {
 
         var eventType = evt.originalEvent._simulated ? 'touchstart' : evt.originalEvent.type;
 
+        if(evt.originalEvent.altKey) {
+            return;
+        }
+
         this._mapDraggingWasEnabled = false;
         this._dragStartPoint = evt.containerPoint.clone();
         this._originalLatLngs = this._path.getLatLngs()[0];
