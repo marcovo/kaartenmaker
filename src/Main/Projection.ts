@@ -78,6 +78,20 @@ export default class Projection<C extends Coordinate> {
         }));
     }
 
+    isWithinSuggestedScaleRange(): Promise<boolean> {
+        // WMS 1.3.0, Section 7.2.4.6.9 Scale denominators:
+        //   "(...), the common pixel size is defined to be 0,28 mm × 0,28 mm."
+        // (http://portal.opengeospatial.org/files/?artifact_id=14416)
+
+        return this.wms.getSuggestedScaleRange().then((suggestedScaleRange) => {
+            const ptPerMm = this.getDpi() / 25.4;
+
+            const effectiveScale = this.getScale() / ptPerMm / 0.28;
+
+            return suggestedScaleRange.min <= effectiveScale && effectiveScale <= suggestedScaleRange.max;
+        });
+    }
+
     paperCoordinateConversion(): CartesianTransformation<Point> {
         const realMmPerPaperMm = this.getScale();
         const realMmPerUnit = 1000;

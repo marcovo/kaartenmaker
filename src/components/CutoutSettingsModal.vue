@@ -80,6 +80,10 @@
                  role="tabpanel"
                  v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_projection-tab'"
             >
+              <div class="alert alert-warning" role="alert" v-bind:id="'csm_' + cutout.id + '_error_suggested_scale'" style="display: none;">
+                De ingevulde combinatie van Schaal en DPI resulteert in een resolutie die mogelijk incompatibel is met het geselecteerde WMS.
+              </div>
+
               <div class="form-group">
                 <label v-bind:for="'csm_' + cutout.id + '_wms'">Kaartbron</label>
                 <select class="form-control" v-bind:id="'csm_' + cutout.id + '_wms'">
@@ -215,6 +219,12 @@ import Cutout from "../Main/Cutout";
 import Projection from "../Main/Projection";
 import * as $ from "jquery";
 
+function checkSuggestedScaleRange(cutout: Cutout<any, any, any>) {
+  cutout.getProjection().isWithinSuggestedScaleRange().then((isWithin) => {
+    $('#csm_' + cutout.id + '_error_suggested_scale').toggle(!isWithin);
+  });
+}
+
 export default Vue.component('cutout-settings-modal', {
   props: {
     cutout: Cutout,
@@ -298,6 +308,17 @@ export default Vue.component('cutout-settings-modal', {
     return {
       container: Container,
     };
+  },
+  watch: {
+    'cutout.projection': function (val, oldVal) {
+      checkSuggestedScaleRange(this.cutout);
+    },
+    'cutout.projection.dpi': function (val, oldVal) {
+      checkSuggestedScaleRange(this.cutout);
+    },
+    'cutout.projection.scale': function (val, oldVal) {
+      checkSuggestedScaleRange(this.cutout);
+    }
   },
   methods: {
 

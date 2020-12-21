@@ -50,7 +50,7 @@ export class Point implements Coordinate {
     }
 
     formatOrdinateForPdf(dimension: 'x' | 'y'): string {
-        throw new Error();
+        throw new Error('No formatting available for Point');
     }
 }
 
