@@ -47,7 +47,7 @@ export default class CutoutTemplate<
         display_coords_right: true,
         display_coords_bottom: true,
         display_coords_left: true,
-        rotate_y_coords: true,
+        rotate_y_coords: false,
         display_ticks: true,
         display_sub_ticks: true,
     };

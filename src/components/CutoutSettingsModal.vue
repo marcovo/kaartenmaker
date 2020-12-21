@@ -197,6 +197,12 @@
                   </div>
                 </div>
               </div>
+
+
+              <div class="form-check">
+                <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_rotate_y_coords'" type="checkbox" value="1" v-bind:checked="cutout.options.rotate_y_coords">
+                <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_rotate_y_coords'">Coördinaten langs verticale as kwartslag draaien</label>
+              </div>
             </div>
           </div>
         </div>
@@ -300,6 +306,17 @@ export default Vue.component('cutout-settings-modal', {
           }
         });
       }
+
+      $('#csm_' + cutout.id + '_rotate_y_coords').on('change', function() {
+        const newVal = $(this).prop('checked');
+        if(newVal !== cutout.options['rotate_y_coords']) {
+          cutout.userInterface.actionHistory.addAction(new UpdateCutoutOptionAction(
+              cutout,
+              'rotate_y_coords',
+              newVal
+          ));
+        }
+      });
     });
 
     return {

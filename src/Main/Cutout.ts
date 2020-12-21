@@ -9,31 +9,12 @@ import * as _ from "lodash";
 import * as $ from "jquery";
 import LeafletConvertibleCoordinateSystem from "../Coordinates/LeafletConvertibleCoordinateSystem";
 import Projection from "./Projection";
-import { jsPDF } from "jspdf";
-import {Point} from "../Util/Math";
-import {WmsParams} from "../Util/Wms";
-import Cache from "../Util/Cache";
 import UserInterface from "./UserInterface";
 import CoordinateConverter from "../Util/CoordinateConverter";
 import Grid from "./Grid";
 import MoveCutoutAction from "../ActionHistory/MoveCutoutAction";
-import Container from "./Container";
 import CutoutTemplate from "./CutoutTemplate";
 import Printer from "./Printer";
-
-export type CutoutOptions = {
-    margin_top: millimeter,
-    margin_right: millimeter,
-    margin_bottom: millimeter,
-    margin_left: millimeter,
-    display_coords_top: boolean,
-    display_coords_right: boolean,
-    display_coords_bottom: boolean,
-    display_coords_left: boolean,
-    rotate_y_coords: boolean,
-    display_ticks: boolean,
-    display_sub_ticks: boolean,
-};
 
 export default class Cutout<
     WorkspaceCoordinate extends Coordinate & LeafletConvertibleCoordinate,
@@ -47,20 +28,6 @@ export default class Cutout<
     leafletPolygon: L.polygon;
 
     static readonly pointsOnEdge = 5;
-
-    static defaultCutoutOptions: CutoutOptions = {
-        margin_top: 10,
-        margin_right: 10,
-        margin_bottom: 10,
-        margin_left: 10,
-        display_coords_top: true,
-        display_coords_right: true,
-        display_coords_bottom: true,
-        display_coords_left: true,
-        rotate_y_coords: true,
-        display_ticks: true,
-        display_sub_ticks: true,
-    };
 
     constructor(
         readonly userInterface: UserInterface,

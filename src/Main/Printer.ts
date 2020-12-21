@@ -281,10 +281,17 @@ export default class Printer {
 
         let x = paperCoordinate.getX();
         let y = paperCoordinate.getY();
+        const textOptions: TextOptionsLight = {};
 
         if(side === 'left') {
-            x += -1.0 - strWidth;
-            y += -0.5 + strHeight/2;
+            if(this.cutout.options.rotate_y_coords) {
+                textOptions.angle = 90;
+                x += -1.0;
+                y += strWidth/2;
+            } else {
+                x += -1.0 - strWidth;
+                y += -0.5 + strHeight/2;
+            }
         } else if(side === 'top') {
             x += 0 - strWidth/2;
             y += -1.0;
@@ -292,14 +299,34 @@ export default class Printer {
             x += 0 - strWidth/2;
             y += strHeight;
         } else if(side === 'right') {
-            x += 1.0;
-            y += -0.5 + strHeight/2;
+            if(this.cutout.options.rotate_y_coords) {
+                textOptions.angle = -90;
+                x += 1.0;
+                y += -strWidth/2;
+            } else {
+                x += 1.0;
+                y += -0.5 + strHeight/2;
+            }
+        }
+
+        const drawBox: DrawBox = {top: y - strHeight, bottom: y, left: x, right: x + strWidth};
+        if(this.cutout.options.rotate_y_coords) {
+            if(side === 'left') {
+                drawBox.top = y - strWidth;
+                drawBox.right = x;
+                drawBox.left = x - strHeight;
+
+            } else if(side === 'right') {
+                drawBox.top = y;
+                drawBox.bottom = y + strWidth;
+                drawBox.right = x + strHeight;
+            }
         }
 
         doc.setFontSize(fontSize);
 
-        if(this.requestDrawBox({top: y - strHeight, bottom: y, left: x, right: x + strWidth})) {
-            doc.text(ordinate, x, y);
+        if(this.requestDrawBox(drawBox)) {
+            doc.text(ordinate, x, y, textOptions);
         }
     }
 
