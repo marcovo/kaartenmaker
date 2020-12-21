@@ -118,6 +118,9 @@ export default class Cutout<
         this.leafletPolygon.dragging.enable();
 
         this.leafletPolygon.on('prelatlng', (evt) => {
+            if(evt.originalEvent.ctrlKey) {
+                return;
+            }
             // TODO: In UTM, when two cutouts are near a zone border, the moving cutout jumps away out of sight
             const thisCornerLL = CoordinateConverter.convert(
                 this.workspaceCoordinateSystem.fromLeaflet(evt.latlngs[0]),

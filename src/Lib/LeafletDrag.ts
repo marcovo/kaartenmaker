@@ -189,7 +189,7 @@ L.Handler.PathDrag = L.Handler.extend( /** @lends  L.Path.Drag.prototype */ {
         );
 
         this._path.fire('predrag', evt);
-        this._transformPoints(diffVec);
+        this._transformPoints(diffVec, evt);
         this._path.fire('drag', evt);
     },
 
@@ -208,7 +208,7 @@ L.Handler.PathDrag = L.Handler.extend( /** @lends  L.Path.Drag.prototype */ {
                 containerPoint.y - this._dragStartPoint.y
             );
 
-            this._transformPoints(diffVec);
+            this._transformPoints(diffVec, evt);
 
             L.DomEvent.stop(evt);
         }
@@ -245,8 +245,9 @@ L.Handler.PathDrag = L.Handler.extend( /** @lends  L.Path.Drag.prototype */ {
      * Applies translation
      *
      * @param {L.Point} diffVec
+     * @param {L.MouseEvent} evt
      */
-    _transformPoints: function(diffVec) {
+    _transformPoints: function(diffVec, evt) {
         var newLatLngs = [];
         var i;
         for (i in this._originalLatLngs) {
@@ -254,11 +255,12 @@ L.Handler.PathDrag = L.Handler.extend( /** @lends  L.Path.Drag.prototype */ {
             var newContainerPoint = oldContainerPoint.add(diffVec);
             newLatLngs.push(this._path._map.containerPointToLatLng(newContainerPoint));
         }
-        var evt = {
+        var preLatLngEvt = {
             latlngs: newLatLngs,
+            originalEvent: evt,
         };
-        this._path.fire('prelatlng', evt);
-        this._path.setLatLngs(evt.latlngs);
+        this._path.fire('prelatlng', preLatLngEvt);
+        this._path.setLatLngs(preLatLngEvt.latlngs);
     }
 
 });
