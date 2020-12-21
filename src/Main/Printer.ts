@@ -242,6 +242,7 @@ export default class Printer {
         const x_bar = x + 0.5 + str0Width;
         doc.setFillColor(255, 255, 255);
         doc.setDrawColor(0, 0, 0);
+        doc.setLineWidth(0.1);
         doc.rect(x_bar, y, barWidth, barHeight);
         for(let i=0; i<5; i++) {
             doc.line(x_bar + barWidth/10 * (2*i+1), y + barHeight/2, x_bar + barWidth/10 * (2*i+2), y + barHeight/2);
