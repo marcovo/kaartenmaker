@@ -8,13 +8,35 @@ import {EdgeIntersection} from "./Grid";
 import Coordinate from "../Coordinates/Coordinate";
 
 export type PdfCoordinateDrawSide = 'top' | 'left' | 'right' | 'bottom';
+type DrawBox = {top: number, bottom: number, left: number, right: number};
 
 export default class Printer {
 
     private paper: Paper;
 
+    private drawnBoxes: DrawBox[] = [];
+
     constructor(private cutout: Cutout<any, any, any>) {
         this.paper = this.cutout.getPaper();
+    }
+
+    private requestDrawBox(drawBox: DrawBox): boolean {
+        for(const d of this.drawnBoxes) {
+            if(
+                !(d.left >= drawBox.right || d.right <= drawBox.left)
+                && !(d.top >= drawBox.bottom || d.bottom <= drawBox.top)
+            ) {
+                // Collision
+                return false;
+            }
+        }
+
+        this.registerDrawBox(drawBox);
+        return true;
+    }
+
+    private registerDrawBox(drawBox: DrawBox) {
+        this.drawnBoxes.push(drawBox);
     }
 
     print(): Promise<void> {
@@ -37,6 +59,15 @@ export default class Printer {
             const edgeIntersections = this.cutout.getGrid().drawOnPdf(doc);
 
             this.drawFrameBackground(doc);
+
+            this.registerDrawBox({
+                top: this.cutout.options.margin_top,
+                bottom: this.paper.height - this.cutout.options.margin_bottom,
+                left: this.cutout.options.margin_left,
+                right: this.paper.width - this.cutout.options.margin_right,
+            });
+
+            this.drawMapName(doc);
 
             this.drawFrameCoordinates(doc, edgeIntersections);
 
@@ -131,6 +162,23 @@ export default class Printer {
         );
     }
 
+    private drawMapName(doc: jsPDF) {
+        const name = this.cutout.name;
+
+        const fontSize = 12;
+        const mmPerPt = 25.4 / 72;
+
+        const strHeight = fontSize * mmPerPt;
+        const strWidth = doc.getStringUnitWidth(name) * strHeight;
+
+        const y = 2 + strHeight;
+        const x = this.cutout.options.margin_left;
+
+        this.registerDrawBox({top: y - strHeight, bottom: y, left: x, right: x + strWidth});
+        doc.setFontSize(fontSize);
+        doc.text(name, x, y);
+    }
+
     private drawFrameCoordinates(doc: jsPDF, edgeIntersections: Record<string, EdgeIntersection<Coordinate>[]>) {
         const sides: PdfCoordinateDrawSide[] = ['top', 'left', 'right', 'bottom'];
 
@@ -147,28 +195,31 @@ export default class Printer {
         const fontSize = 8;
         const mmPerPt = 25.4 / 72;
 
-        const strWidth = doc.getStringUnitWidth(ordinate) * fontSize * mmPerPt;
+        const strHeight = fontSize * mmPerPt;
+        const strWidth = doc.getStringUnitWidth(ordinate) * strHeight;
 
         let x = paperCoordinate.getX();
         let y = paperCoordinate.getY();
 
         if(side === 'left') {
             x += -1.0 - strWidth;
-            y += -0.5 + (fontSize/2) * mmPerPt;
+            y += -0.5 + strHeight/2;
         } else if(side === 'top') {
             x += 0 - strWidth/2;
             y += -1.0;
         } else if(side === 'bottom') {
             x += 0 - strWidth/2;
-            y += fontSize * mmPerPt;
+            y += strHeight;
         } else if(side === 'right') {
             x += 1.0;
-            y += -0.5 + (fontSize/2) * mmPerPt;
+            y += -0.5 + strHeight/2;
         }
 
         doc.setFontSize(fontSize);
 
-        doc.text(ordinate, x, y);
+        if(this.requestDrawBox({top: y - strHeight, bottom: y, left: x, right: x + strWidth})) {
+            doc.text(ordinate, x, y);
+        }
     }
 
 }
