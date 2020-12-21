@@ -18,7 +18,7 @@ export type WmsParams = {
     height?: string,
 };
 
-export type ScaleRange = { min: number, max: number };
+export type ScaleRange = { min: number|null, max: number|null };
 
 export default class Wms {
     readonly params: WmsParams;
@@ -115,9 +115,12 @@ export default class Wms {
                 }
             }
 
+            const min = xmlDoc.evaluate('//xx:MinScaleDenominator', xmlDoc, nsResolver, XPathResult.STRING_TYPE).stringValue;
+            const max = xmlDoc.evaluate('//xx:MaxScaleDenominator', xmlDoc, nsResolver, XPathResult.STRING_TYPE).stringValue;
+
             return <ScaleRange> {
-                min: parseInt(xmlDoc.evaluate('//xx:MinScaleDenominator', xmlDoc, nsResolver, XPathResult.STRING_TYPE).stringValue),
-                max: parseInt(xmlDoc.evaluate('//xx:MaxScaleDenominator', xmlDoc, nsResolver, XPathResult.STRING_TYPE).stringValue),
+                min: min.length === 0 ? null : parseFloat(min),
+                max: max.length === 0 ? null : parseFloat(max),
             };
         });
     }

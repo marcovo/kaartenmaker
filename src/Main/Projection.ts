@@ -88,7 +88,15 @@ export default class Projection<C extends Coordinate> {
 
             const effectiveScale = this.getScale() / ptPerMm / 0.28;
 
-            return suggestedScaleRange.min <= effectiveScale && effectiveScale <= suggestedScaleRange.max;
+            if(suggestedScaleRange.min !== null && effectiveScale < suggestedScaleRange.min) {
+                return false;
+            }
+
+            if(suggestedScaleRange.max !== null && effectiveScale > suggestedScaleRange.max) {
+                return false;
+            }
+
+            return true;
         });
     }
 
