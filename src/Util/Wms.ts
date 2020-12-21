@@ -28,6 +28,7 @@ export default class Wms {
         readonly name: string,
         readonly title: string,
         readonly url: string,
+        readonly copyright: string,
         private defaultGridCoordinateSystem: CoordinateSystem<Coordinate>,
         private defaultScale: number,
         private preferredScaleRange: ScaleRange,

@@ -68,6 +68,7 @@ export default class Printer {
             });
 
             this.drawMapName(doc);
+            this.drawCopyright(doc);
 
             this.drawFrameCoordinates(doc, edgeIntersections);
 
@@ -177,6 +178,23 @@ export default class Printer {
         this.registerDrawBox({top: y - strHeight, bottom: y, left: x, right: x + strWidth});
         doc.setFontSize(fontSize);
         doc.text(name, x, y);
+    }
+
+    private drawCopyright(doc: jsPDF) {
+        const copyright = this.cutout.getProjection().wms.copyright;
+
+        const fontSize = 6;
+        const mmPerPt = 25.4 / 72;
+
+        const strHeight = fontSize * mmPerPt;
+        const strWidth = doc.getStringUnitWidth(copyright) * strHeight;
+
+        const y = this.paper.height - strHeight - 2;
+        const x = this.paper.width - this.cutout.options.margin_right - strWidth;
+
+        this.registerDrawBox({top: y - strHeight, bottom: y, left: x, right: x + strWidth});
+        doc.setFontSize(fontSize);
+        doc.text(copyright, x, y);
     }
 
     private drawFrameCoordinates(doc: jsPDF, edgeIntersections: Record<string, EdgeIntersection<Coordinate>[]>) {
