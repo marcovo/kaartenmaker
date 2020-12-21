@@ -198,6 +198,15 @@
                 </div>
               </div>
 
+              <div class="form-check">
+                <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_display_name'" type="checkbox" value="1" v-bind:checked="cutout.options.display_name">
+                <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_display_name'">Kaartnaam afdrukken</label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_display_scale'" type="checkbox" value="1" v-bind:checked="cutout.options.display_scale">
+                <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_display_scale'">Schaal-indicatie afdrukken</label>
+              </div>
 
               <div class="form-check">
                 <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_rotate_y_coords'" type="checkbox" value="1" v-bind:checked="cutout.options.rotate_y_coords">
@@ -307,16 +316,18 @@ export default Vue.component('cutout-settings-modal', {
         });
       }
 
-      $('#csm_' + cutout.id + '_rotate_y_coords').on('change', function() {
-        const newVal = $(this).prop('checked');
-        if(newVal !== cutout.options['rotate_y_coords']) {
-          cutout.userInterface.actionHistory.addAction(new UpdateCutoutOptionAction(
-              cutout,
-              'rotate_y_coords',
-              newVal
-          ));
-        }
-      });
+      for(const optionKey of ['display_name', 'display_scale', 'rotate_y_coords']) {
+        $('#csm_' + cutout.id + '_' + optionKey).on('change', function() {
+          const newVal = $(this).prop('checked');
+          if(newVal !== cutout.options[optionKey]) {
+            cutout.userInterface.actionHistory.addAction(new UpdateCutoutOptionAction(
+                cutout,
+                optionKey,
+                newVal
+            ));
+          }
+        });
+      }
     });
 
     return {

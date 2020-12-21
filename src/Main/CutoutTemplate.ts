@@ -17,6 +17,8 @@ export type CutoutOptions = {
     display_coords_right: boolean,
     display_coords_bottom: boolean,
     display_coords_left: boolean,
+    display_name: boolean,
+    display_scale: boolean,
     rotate_y_coords: boolean,
 };
 
@@ -45,6 +47,8 @@ export default class CutoutTemplate<
         display_coords_right: true,
         display_coords_bottom: true,
         display_coords_left: true,
+        display_name: true,
+        display_scale: true,
         rotate_y_coords: false,
     };
 

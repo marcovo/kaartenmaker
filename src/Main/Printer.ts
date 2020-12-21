@@ -68,9 +68,13 @@ export default class Printer {
                 right: this.paper.width - this.cutout.options.margin_right,
             });
 
-            this.drawMapName(doc);
+            if(this.cutout.options.display_name) {
+                this.drawMapName(doc);
+            }
             this.drawCopyright(doc);
-            this.drawScale(doc);
+            if(this.cutout.options.display_scale) {
+                this.drawScale(doc);
+            }
 
             this.drawFrameCoordinates(doc, edgeIntersections);
 
