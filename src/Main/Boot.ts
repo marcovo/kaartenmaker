@@ -109,16 +109,58 @@ Container.registerWms(new Wms(
 // Instead, we choose to use EPSG:25832 (UTM) as our base, making the maps more like the dutch maps; rectangular maps
 // containing a grid parallel to the map.
 Container.registerWms(new Wms(
+    'de_rp_5',
+    'Rheinland-Pfalz (DE) 1:5.000',
+    'https://geo4.service24.rlp.de/wms/dtk5_rp.fcgi',
+    '©GeoBasis-DE / LVermGeoRP'+((new Date()).getFullYear())+', dl-de/by-2-0, www.lvermgeo.rlp.de [RP DTK5]',
+    CoordinateConverter.getCoordinateSystem('EPSG:25832'),
+    5000,
+    { min: 2500, max: 10000 },
+    {
+        CRS: 'EPSG:25832',
+        layers: 'rp_dtk5',
+    }
+));
+
+Container.registerWms(new Wms(
     'de_rp_25',
     'Rheinland-Pfalz (DE) 1:25.000',
     'https://geo4.service24.rlp.de/wms/rp_dtk25.fcgi',
-    '©GeoBasis-DE / LVermGeoRP'+((new Date()).getFullYear())+', dl-de/by-2-0, www.lvermgeo.rlp.de [RP DTK 25]',
+    '©GeoBasis-DE / LVermGeoRP'+((new Date()).getFullYear())+', dl-de/by-2-0, www.lvermgeo.rlp.de [RP DTK25]',
     CoordinateConverter.getCoordinateSystem('EPSG:25832'),
     25000,
     { min: 12500, max: 50000 },
     {
         CRS: 'EPSG:25832',
         layers: 'rp_dtk25',
+    }
+));
+
+Container.registerWms(new Wms(
+    'de_rp_50',
+    'Rheinland-Pfalz (DE) 1:50.000',
+    'https://geo4.service24.rlp.de/wms/rp_dtk50.fcgi',
+    '©GeoBasis-DE / LVermGeoRP'+((new Date()).getFullYear())+', dl-de/by-2-0, www.lvermgeo.rlp.de [RP DTK50]',
+    CoordinateConverter.getCoordinateSystem('EPSG:25832'),
+    50000,
+    { min: 25000, max: 100000 },
+    {
+        CRS: 'EPSG:25832',
+        layers: 'rp_dtk50',
+    }
+));
+
+Container.registerWms(new Wms(
+    'de_rp_100',
+    'Rheinland-Pfalz (DE) 1:100.000',
+    'https://geo4.service24.rlp.de/wms/rp_dtk100.fcgi',
+    '©GeoBasis-DE / LVermGeoRP'+((new Date()).getFullYear())+', dl-de/by-2-0, www.lvermgeo.rlp.de [RP DTK100]',
+    CoordinateConverter.getCoordinateSystem('EPSG:25832'),
+    100000,
+    { min: 50000, max: 200000 },
+    {
+        CRS: 'EPSG:25832',
+        layers: 'rp_dtk100',
     }
 ));
 
