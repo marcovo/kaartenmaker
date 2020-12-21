@@ -199,6 +199,8 @@ export default class Printer {
         const x = this.paper.width - this.cutout.options.margin_right - strWidth;
 
         this.registerDrawBox({top: y - strHeight, bottom: y, left: x, right: x + strWidth});
+        doc.setFillColor(255, 255, 255);
+        doc.rect(x, y - strHeight, strWidth, strHeight, 'F');
         doc.setFontSize(fontSize);
         doc.text(copyright, x, y);
     }
