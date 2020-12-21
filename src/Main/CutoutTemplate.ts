@@ -18,8 +18,6 @@ export type CutoutOptions = {
     display_coords_bottom: boolean,
     display_coords_left: boolean,
     rotate_y_coords: boolean,
-    display_ticks: boolean,
-    display_sub_ticks: boolean,
 };
 
 type Color = string;
@@ -48,8 +46,6 @@ export default class CutoutTemplate<
         display_coords_bottom: true,
         display_coords_left: true,
         rotate_y_coords: false,
-        display_ticks: true,
-        display_sub_ticks: true,
     };
 
     constructor(
