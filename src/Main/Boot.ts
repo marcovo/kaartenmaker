@@ -20,7 +20,6 @@ Container.registerWms(new Wms(
     '© Kadaster NL TOP25Raster (CC BY 4.0)',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),
     25000,
-    { min: 12500, max: 50000 },
     {
         CRS: 'EPSG:28992',
         layers: 'top25raster',
@@ -34,7 +33,6 @@ Container.registerWms(new Wms(
     '© Kadaster NL TOP50Raster (CC BY 4.0)',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),
     50000,
-    { min: 25000, max: 100000 },
     {
         CRS: 'EPSG:28992',
         layers: 'top50raster',
@@ -48,7 +46,6 @@ Container.registerWms(new Wms(
     '© Kadaster NL TOP100Raster (CC BY 4.0)',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),
     100000,
-    { min: 50000, max: 200000 },
     {
         CRS: 'EPSG:28992',
         layers: 'top100raster',
@@ -62,7 +59,6 @@ Container.registerWms(new Wms(
     '© Kadaster NL TOP250Raster (CC BY 4.0)',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),
     250000,
-    { min: 125000, max: 500000 },
     {
         CRS: 'EPSG:28992',
         layers: 'top250raster',
@@ -76,7 +72,6 @@ Container.registerWms(new Wms(
     '© Kadaster NL TOP500Raster (CC BY 4.0)',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),
     500000,
-    { min: 250000, max: 1000000 },
     {
         CRS: 'EPSG:28992',
         layers: 'top500raster',
@@ -90,7 +85,6 @@ Container.registerWms(new Wms(
     '© Kadaster NL TOP1000Raster (CC BY 4.0)',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),
     1000000,
-    { min: 500000, max: 2000000 },
     {
         CRS: 'EPSG:28992',
         layers: 'top1000raster',
@@ -115,7 +109,6 @@ Container.registerWms(new Wms(
     '©GeoBasis-DE / LVermGeoRP'+((new Date()).getFullYear())+', dl-de/by-2-0, www.lvermgeo.rlp.de [RP DTK5]',
     CoordinateConverter.getCoordinateSystem('EPSG:25832'),
     5000,
-    { min: 2500, max: 10000 },
     {
         CRS: 'EPSG:25832',
         layers: 'rp_dtk5',
@@ -129,7 +122,6 @@ Container.registerWms(new Wms(
     '©GeoBasis-DE / LVermGeoRP'+((new Date()).getFullYear())+', dl-de/by-2-0, www.lvermgeo.rlp.de [RP DTK25]',
     CoordinateConverter.getCoordinateSystem('EPSG:25832'),
     25000,
-    { min: 12500, max: 50000 },
     {
         CRS: 'EPSG:25832',
         layers: 'rp_dtk25',
@@ -143,7 +135,6 @@ Container.registerWms(new Wms(
     '©GeoBasis-DE / LVermGeoRP'+((new Date()).getFullYear())+', dl-de/by-2-0, www.lvermgeo.rlp.de [RP DTK50]',
     CoordinateConverter.getCoordinateSystem('EPSG:25832'),
     50000,
-    { min: 25000, max: 100000 },
     {
         CRS: 'EPSG:25832',
         layers: 'rp_dtk50',
@@ -157,7 +148,6 @@ Container.registerWms(new Wms(
     '©GeoBasis-DE / LVermGeoRP'+((new Date()).getFullYear())+', dl-de/by-2-0, www.lvermgeo.rlp.de [RP DTK100]',
     CoordinateConverter.getCoordinateSystem('EPSG:25832'),
     100000,
-    { min: 50000, max: 200000 },
     {
         CRS: 'EPSG:25832',
         layers: 'rp_dtk100',

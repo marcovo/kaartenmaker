@@ -252,11 +252,7 @@ export default Vue.component('cutout-settings-modal', {
         if(newVal !== oldProjection.wms.name) {
           const newProjection = new Projection(newVal);
 
-          if(
-              oldProjection.wms.getDefaultScale() === newProjection.wms.getDefaultScale()
-              && oldProjection.wms.getPreferredScaleRange().min === newProjection.wms.getPreferredScaleRange().min
-              && oldProjection.wms.getPreferredScaleRange().max === newProjection.wms.getPreferredScaleRange().max
-          ) {
+          if(oldProjection.wms.getDefaultScale() === newProjection.wms.getDefaultScale()) {
             // The new WMS is has equivalent scaling with the old WMS, so we can reasonably keep the scale setting
             newProjection.setScale(oldProjection.getScale());
             newProjection.setDpi(oldProjection.getDpi());

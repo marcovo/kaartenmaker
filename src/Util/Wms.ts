@@ -1,7 +1,6 @@
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import CoordinateConverter from "./CoordinateConverter";
 import Coordinate from "../Coordinates/Coordinate";
-import Cache from "./Cache";
 import Container from "../Main/Container";
 
 const $ = require( 'jquery' );
@@ -31,7 +30,6 @@ export default class Wms {
         readonly copyright: string,
         private defaultGridCoordinateSystem: CoordinateSystem<Coordinate>,
         private defaultScale: number,
-        private preferredScaleRange: ScaleRange,
         params: WmsParams = {}
     ) {
         this.params = Object.assign({
@@ -53,10 +51,6 @@ export default class Wms {
 
     getDefaultScale(): number {
         return this.defaultScale;
-    }
-
-    getPreferredScaleRange(): ScaleRange {
-        return this.preferredScaleRange;
     }
 
     buildUrl(params: WmsParams) {
