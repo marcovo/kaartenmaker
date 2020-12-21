@@ -61,6 +61,10 @@ export default class WGS84 implements Coordinate, LeafletConvertibleCoordinate {
         return -180 <= this.lng && this.lng <= 180 && -90 <= this.lat && this.lat <= 90;
     }
 
+    belongsTo(coordinateSystem: CoordinateSystem<Coordinate>): boolean {
+        return this.name === coordinateSystem.name;
+    }
+
     formatOrdinateForPdf(dimension: 'x' | 'y'): string {
         return ''; // TODO
     }

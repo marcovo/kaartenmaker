@@ -53,6 +53,14 @@ export default class UTM implements Coordinate {
         return true; // todo
     }
 
+    belongsTo(coordinateSystem: CoordinateSystem<Coordinate>): boolean {
+        if(this.name !== coordinateSystem.name || !(coordinateSystem instanceof UTMSystem)) {
+            return false;
+        }
+
+        return this.zone === coordinateSystem.zone && this.hemi === coordinateSystem.hemi;
+    }
+
     formatOrdinateForPdf(dimension: 'x' | 'y'): string {
         const ordinate = (dimension === 'x') ? this.getX() : this.getY();
         return trimTrailingZeroDecimalPlaces(ordinate / 1000, 1);

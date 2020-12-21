@@ -36,6 +36,10 @@ class Bessel implements Coordinate {
         return -180 <= this.lng && this.lng <= 180 && -90 <= this.lat && this.lat <= 90;
     }
 
+    belongsTo(coordinateSystem: CoordinateSystem<Coordinate>): boolean {
+        return this.name === coordinateSystem.name;
+    }
+
     clone<C extends this>(): C {
         return <C>new Bessel(this.lat, this.lng);
     }

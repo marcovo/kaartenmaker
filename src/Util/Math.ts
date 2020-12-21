@@ -45,6 +45,10 @@ export class Point implements Coordinate {
         return true;
     }
 
+    belongsTo(coordinateSystem: CoordinateSystem<Coordinate>): boolean {
+        return this.name === coordinateSystem.name;
+    }
+
     clone<P extends this>(): P {
         return <P>new Point(this.x, this.y);
     }

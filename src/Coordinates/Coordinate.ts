@@ -1,3 +1,4 @@
+import CoordinateSystem from "./CoordinateSystem";
 
 export default interface Coordinate {
     readonly name: string;
@@ -7,6 +8,8 @@ export default interface Coordinate {
     getY(): number;
 
     withinBounds(): boolean;
+
+    belongsTo(coordinateSystem: CoordinateSystem<Coordinate>): boolean;
 
     clone(): this;
 

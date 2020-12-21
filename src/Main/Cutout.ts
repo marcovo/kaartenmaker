@@ -121,7 +121,7 @@ export default class Cutout<
             if(evt.originalEvent.ctrlKey) {
                 return;
             }
-            // TODO: In UTM, when two cutouts are near a zone border, the moving cutout jumps away out of sight
+
             const thisCornerLL = CoordinateConverter.convert(
                 this.workspaceCoordinateSystem.fromLeaflet(evt.latlngs[0]),
                 this.projection.coordinateSystem
@@ -148,6 +148,10 @@ export default class Cutout<
 
             this.userInterface.getCutouts().forEach((cutout) => {
                 if(cutout.id === this.id) {
+                    return;
+                }
+
+                if(!cutout.mapPolygonProjection[0].belongsTo(this.projection.coordinateSystem)) {
                     return;
                 }
 
