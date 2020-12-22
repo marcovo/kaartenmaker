@@ -271,13 +271,18 @@ export default Vue.component('cutout-settings-modal', {
         if(newVal !== oldProjection.wms.name) {
           const newProjection = new WmsProjection(newVal);
 
-          if(oldProjection.wms.getDefaultScale() === newProjection.wms.getDefaultScale()) {
-            // The new WMS is has equivalent scaling with the old WMS, so we can reasonably keep the scale setting
-            newProjection.setScale(oldProjection.getScale());
-            newProjection.setDpi(oldProjection.getDpi());
-          }
+          cutout.userInterface.showLoadingIndicator(100);
+          newProjection.wms.fetchCapabilities().then(() => {
+            if(oldProjection.wms.getDefaultScale() === newProjection.wms.getDefaultScale()) {
+              // The new WMS is has equivalent scaling with the old WMS, so we can reasonably keep the scale setting
+              newProjection.setScale(oldProjection.getScale());
+              newProjection.setDpi(oldProjection.getDpi());
+            }
 
-          cutout.userInterface.actionHistory.addAction(new ChangeCutoutProjectionAction(cutout, newProjection));
+            cutout.userInterface.actionHistory.addAction(new ChangeCutoutProjectionAction(cutout, newProjection));
+          }).finally(() => {
+            cutout.userInterface.hideLoadingIndicator();
+          });
         }
       });
 

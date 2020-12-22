@@ -108,6 +108,20 @@ export default class UserInterface {
         this.addCutout();
     }
 
+    private loadingIndicatorCounter: number = 0;
+    showLoadingIndicator(delay = 0) {
+        this.loadingIndicatorCounter++
+        setTimeout(() => {
+            if(this.loadingIndicatorCounter > 0) {
+                $('#mainLoadingIndicator').show();
+            }
+        }, delay);
+    }
+    hideLoadingIndicator() {
+        this.loadingIndicatorCounter--;
+        $('#mainLoadingIndicator').hide();
+    }
+
     addCutoutFromTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {
         const cutout = cutoutTemplate.makeCutout(this);
 

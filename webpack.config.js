@@ -53,7 +53,7 @@ module.exports = {
                             publicPath: ''
                         }
                     },
-                    'vue-style-loader',
+                    //'vue-style-loader',
                     'css-loader',
                     {
                         loader: 'postcss-loader',
