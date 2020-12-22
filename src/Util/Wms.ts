@@ -2,6 +2,7 @@ import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import CoordinateConverter from "./CoordinateConverter";
 import Coordinate from "../Coordinates/Coordinate";
 import Container from "../Main/Container";
+import MapImageProvider from "./MapImageProvider";
 
 const $ = require( 'jquery' );
 
@@ -20,7 +21,7 @@ export type WmsParams = {
 
 export type ScaleRange = { min: number|null, max: number|null };
 
-export default class Wms {
+export default class Wms implements MapImageProvider {
     readonly params: WmsParams;
 
     constructor(
@@ -36,6 +37,10 @@ export default class Wms {
             version: '1.3.0',
             service: 'WMS',
         }, params);
+    }
+
+    getCopyright(): string {
+        return this.copyright;
     }
 
     getCoordinateSystem(): CoordinateSystem<any> {

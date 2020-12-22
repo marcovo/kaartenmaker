@@ -1,6 +1,6 @@
 import Action from "./Action";
 import Cutout from "../Main/Cutout";
-import Projection from "../Main/Projection";
+import Projection from "../Projection/Projection";
 import Coordinate from "../Coordinates/Coordinate";
 
 export default class ChangeCutoutProjectionAction<C extends Coordinate> implements Action {

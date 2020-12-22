@@ -6,7 +6,7 @@ import Container from "./Container";
 import Wms from "../Util/Wms";
 import CutoutTemplate from "./CutoutTemplate";
 import {A4L} from "../Util/Paper";
-import Projection from "./Projection";
+import WmsProjection from "../Projection/WmsProjection";
 
 CoordinateConverter.registerCoordinateSystem(new WGS84System());
 CoordinateConverter.registerCoordinateSystem(new DutchGridSystem());
@@ -158,7 +158,7 @@ Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(
     new A4L(),
     new WGS84(52, 5),
     new WGS84System(),
-    new Projection('nl_kad_25'),
+    new WmsProjection('nl_kad_25'),
     null,
     '(NL) Kadaster 1:25.000'
 ));
@@ -167,7 +167,7 @@ Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(
     new A4L(),
     new WGS84(50, 7),
     new WGS84System(),
-    new Projection('de_rp_25'),
+    new WmsProjection('de_rp_25'),
     null,
     '(DE) Rheinland-Pfalz 1:25.000'
 ));

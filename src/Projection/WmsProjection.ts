@@ -1,26 +1,24 @@
 import Coordinate from "../Coordinates/Coordinate";
 import Wms, {WmsParams} from "../Util/Wms";
-import CoordinateSystem from "../Coordinates/CoordinateSystem";
-import Cutout from "./Cutout";
-import CoordinateConverter from "../Util/CoordinateConverter";
+import Cutout from "../Main/Cutout";
 import Cache from "../Util/Cache";
-import {Point, PointSystem} from "../Util/Math";
+import {Point} from "../Util/Math";
 import {jsPDF} from "jspdf";
 import {Paper} from "../Util/Paper";
-import Container from "./Container";
-import CartesianTransformation from "../Conversion/CartesianTransformation";
+import Container from "../Main/Container";
+import Projection from "./Projection";
+import MapImageProvider from "../Util/MapImageProvider";
 
 const MM_PER_INCH = 25.4;
 
-export default class Projection<C extends Coordinate> {
+export default class WmsProjection<C extends Coordinate> extends Projection<C> {
 
     readonly wms: Wms;
-    private cutout: Cutout<any, C, any> = null;
-    coordinateSystem: CoordinateSystem<C>;
-    anchor: C;
     private dpi: number = 300;
 
     constructor(wmsName: string, private scale: number = null) {
+        super();
+
         this.wms = Container.wms(wmsName);
         this.coordinateSystem = this.wms.getCoordinateSystem();
 
@@ -29,28 +27,22 @@ export default class Projection<C extends Coordinate> {
         }
     }
 
-    detach() {
-        if(this.cutout === null) {
-            throw new Error('Already detached');
-        }
-
-        this.cutout = null;
+    clone(): WmsProjection<C> {
+        return new WmsProjection(
+            this.wms.name,
+            this.getScale(),
+        );
     }
 
     attach(cutout: Cutout<any, C, any>) {
-        if(this.cutout !== null) {
-            throw new Error('Already attached');
-        }
-
-        this.cutout = cutout;
+        super.attach(cutout);
 
         // Preload capabilities upon attaching
         this.wms.getCapabilities();
     }
 
-    setAnchor(coordinate: Coordinate) {
-        this.anchor = CoordinateConverter.convert(coordinate, this.coordinateSystem);
-        this.coordinateSystem = this.coordinateSystem.rebase(this.anchor);
+    getMapImageProvider(): MapImageProvider {
+        return this.wms;
     }
 
     getScale(): number {
@@ -98,32 +90,6 @@ export default class Projection<C extends Coordinate> {
 
             return true;
         });
-    }
-
-    paperCoordinateConversion(): CartesianTransformation<Point> {
-        const realMmPerPaperMm = this.getScale();
-        const realMmPerUnit = 1000;
-        const paperMmPerUnit = realMmPerUnit / realMmPerPaperMm;
-
-        return CartesianTransformation
-            .build(new PointSystem())
-
-            // Incoming is a projection coordinate; we move the anchor to the origin
-            .translate(new Point(-this.anchor.getX(), -this.anchor.getY()))
-
-            // We scale from real distances to paper distances
-            .scale(paperMmPerUnit)
-
-            // On paper, the y-axis points down
-            .mulMatrix([[1, 0], [0, -1]])
-
-            // Move by margin
-            .translate(new Point(
-                this.cutout.options.margin_left,
-                this.cutout.getPaper().height - this.cutout.options.margin_bottom
-            ))
-
-            .make();
     }
 
     projectToPdf(doc: jsPDF, paper: Paper, cache: Cache): Promise<void> {

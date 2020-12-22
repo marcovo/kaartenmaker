@@ -1,20 +1,33 @@
 import Action from "./Action";
 import Cutout from "../Main/Cutout";
+import WmsProjection from "../Projection/WmsProjection";
 
 export default class ChangeCutoutScaleAction implements Action {
 
     private readonly oldScale: number;
 
     constructor(private cutout: Cutout<any, any, any>, private newScale: number) {
-        this.oldScale = this.cutout.getProjection().getScale();
+        const projection = this.cutout.getProjection();
+        if(!(projection instanceof WmsProjection)) {
+            throw new Error('Can only change scale for WMS projection');
+        }
+        this.oldScale = projection.getScale();
     }
 
     public apply() {
-        this.cutout.getProjection().setScale(this.newScale);
+        const projection = this.cutout.getProjection();
+        if(!(projection instanceof WmsProjection)) {
+            throw new Error('Can only set scale for WMS projection');
+        }
+        projection.setScale(this.newScale);
     }
 
     public revert() {
-        this.cutout.getProjection().setScale(this.oldScale);
+        const projection = this.cutout.getProjection();
+        if(!(projection instanceof WmsProjection)) {
+            throw new Error('Can only set scale for WMS projection');
+        }
+        projection.setScale(this.oldScale);
     }
 
     public merge(newAction: Action): boolean {

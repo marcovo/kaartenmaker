@@ -1,20 +1,33 @@
 import Action from "./Action";
 import Cutout from "../Main/Cutout";
+import WmsProjection from "../Projection/WmsProjection";
 
 export default class ChangeCutoutDpiAction implements Action {
 
     private readonly oldDpi: number;
 
     constructor(private cutout: Cutout<any, any, any>, private newDpi: number) {
-        this.oldDpi = this.cutout.getProjection().getDpi();
+        const projection = this.cutout.getProjection();
+        if(!(projection instanceof WmsProjection)) {
+            throw new Error('Can only change DPI for WMS projection');
+        }
+        this.oldDpi = projection.getDpi();
     }
 
     public apply() {
-        this.cutout.getProjection().setDpi(this.newDpi);
+        const projection = this.cutout.getProjection();
+        if(!(projection instanceof WmsProjection)) {
+            throw new Error('Can only set DPI for WMS projection');
+        }
+        projection.setDpi(this.newDpi);
     }
 
     public revert() {
-        this.cutout.getProjection().setDpi(this.oldDpi);
+        const projection = this.cutout.getProjection();
+        if(!(projection instanceof WmsProjection)) {
+            throw new Error('Can only set DPI for WMS projection');
+        }
+        projection.setDpi(this.oldDpi);
     }
 
     public merge(newAction: Action): boolean {

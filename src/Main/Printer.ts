@@ -187,7 +187,7 @@ export default class Printer {
     }
 
     private drawCopyright(doc: jsPDF) {
-        const copyright = this.cutout.getProjection().wms.copyright;
+        const copyright = this.cutout.getProjection().getMapImageProvider().getCopyright();
 
         const fontSize = 6;
         const mmPerPt = 25.4 / 72;

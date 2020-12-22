@@ -3,7 +3,7 @@ import {millimeter, Paper} from "../Util/Paper";
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
 import LeafletConvertibleCoordinateSystem from "../Coordinates/LeafletConvertibleCoordinateSystem";
-import Projection from "./Projection";
+import Projection from "../Projection/Projection";
 import Grid from "./Grid";
 import Cutout from "./Cutout";
 import UserInterface from "./UserInterface";
@@ -64,7 +64,7 @@ export default class CutoutTemplate<
         this.options = Object.assign({}, CutoutTemplate.defaultCutoutOptions);
 
         if(this.grid === null) {
-            this.grid = new Grid(this.projection.wms.getDefaultGridCoordinateSystem());
+            this.grid = new Grid(this.projection.getMapImageProvider().getDefaultGridCoordinateSystem());
         }
 
         this.setAnchorWorkspaceCoordinate(anchorWorkspace);
@@ -93,10 +93,7 @@ export default class CutoutTemplate<
             this.getPaper(),
             this.anchorWorkspaceCoordinate.clone(),
             this.workspaceCoordinateSystem,
-            new Projection(
-                this.getProjection().wms.name,
-                this.getProjection().getScale(),
-            ),
+            this.getProjection().clone(),
             new Grid(this.getGrid().coordinateSystem)
         );
     }

@@ -8,7 +8,7 @@ import Map from "./Map";
 import * as _ from "lodash";
 import * as $ from "jquery";
 import LeafletConvertibleCoordinateSystem from "../Coordinates/LeafletConvertibleCoordinateSystem";
-import Projection from "./Projection";
+import Projection from "../Projection/Projection";
 import UserInterface from "./UserInterface";
 import CoordinateConverter from "../Util/CoordinateConverter";
 import Grid from "./Grid";
@@ -55,10 +55,7 @@ export default class Cutout<
             this.getPaper(),
             this.anchorWorkspaceCoordinate.clone(),
             this.workspaceCoordinateSystem,
-            new Projection(
-                this.getProjection().wms.name,
-                this.getProjection().getScale(),
-            ),
+            this.getProjection().clone(),
             new Grid(this.getGrid().coordinateSystem)
         );
     }

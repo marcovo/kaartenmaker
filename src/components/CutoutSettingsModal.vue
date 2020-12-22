@@ -232,13 +232,16 @@ import ChangeCutoutDpiAction from "../ActionHistory/ChangeCutoutDpiAction";
 import UpdateCutoutOptionAction from "../ActionHistory/UpdateCutoutOptionAction";
 import Container from "../Main/Container";
 import Cutout from "../Main/Cutout";
-import Projection from "../Main/Projection";
+import WmsProjection from "../Projection/WmsProjection";
 import * as $ from "jquery";
 
 function checkSuggestedScaleRange(cutout: Cutout<any, any, any>) {
-  cutout.getProjection().isWithinSuggestedScaleRange().then((isWithin) => {
-    $('#csm_' + cutout.id + '_error_suggested_scale').toggle(!isWithin);
-  });
+  const projection = cutout.getProjection();
+  if(projection instanceof WmsProjection) {
+    projection.isWithinSuggestedScaleRange().then((isWithin) => {
+      $('#csm_' + cutout.id + '_error_suggested_scale').toggle(!isWithin);
+    });
+  }
 }
 
 export default Vue.component('cutout-settings-modal', {
@@ -266,7 +269,7 @@ export default Vue.component('cutout-settings-modal', {
         const newVal = $(this).val();
         const oldProjection = cutout.getProjection();
         if(newVal !== oldProjection.wms.name) {
-          const newProjection = new Projection(newVal);
+          const newProjection = new WmsProjection(newVal);
 
           if(oldProjection.wms.getDefaultScale() === newProjection.wms.getDefaultScale()) {
             // The new WMS is has equivalent scaling with the old WMS, so we can reasonably keep the scale setting
