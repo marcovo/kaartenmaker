@@ -16,6 +16,15 @@ export default class WmsProjection<C extends Coordinate> extends Projection<C> {
     readonly wms: Wms;
     private dpi: number = 300;
 
+    static createAndInitialize(wmsName: string, scale: number = null): Promise<WmsProjection<Coordinate>> {
+        return new Promise<WmsProjection<Coordinate>>((resolve, reject) => {
+            const projection = new WmsProjection(wmsName, scale);
+            return projection.wms.fetchCapabilities().then(() => {
+                resolve(projection);
+            });
+        });
+    }
+
     constructor(wmsName: string, private scale: number = null) {
         super();
 
