@@ -3,6 +3,7 @@ import CoordinateConverter from "./CoordinateConverter";
 import Coordinate from "../Coordinates/Coordinate";
 import Container from "../Main/Container";
 import MapImageProvider from "./MapImageProvider";
+import UserError from "./UserError";
 
 const $ = require( 'jquery' );
 
@@ -22,6 +23,9 @@ export type WmsParams = {
 export type ScaleRange = { min: number|null, max: number|null };
 
 export default class Wms implements MapImageProvider {
+
+    private capabilities : Document = null;
+
     readonly params: WmsParams;
 
     constructor(
@@ -76,12 +80,21 @@ export default class Wms implements MapImageProvider {
         return this.buildUrl(params);
     }
 
-    getCapabilities(params: WmsParams = {}): Promise<Document> {
-        params = Object.assign({}, {
-            request: 'GetCapabilities',
-        }, params);
+    getCapabilitiesOrThrow(): Document {
+        if(this.capabilities === null) {
+            this.fetchCapabilities();
+            throw new UserError('De configuratie wordt nog ingeladen, probeer het over een paar seconden opnieuw');
+        }
 
-        const url = this.buildUrl(params);
+        return this.capabilities;
+    }
+
+    fetchCapabilities(): Promise<Document> {
+        if(this.capabilities !== null) {
+            return Promise.resolve(this.capabilities);
+        }
+
+        const url = this.buildUrl({ request: 'GetCapabilities' });
 
         return Container.getCache().then((cache) => {
             return cache.fetch(url, () => {
@@ -101,6 +114,7 @@ export default class Wms implements MapImageProvider {
                 if(xml.documentElement.nodeName == "parsererror") {
                     return Promise.reject('Xml parser error');
                 } else {
+                    this.capabilities = xml;
                     return xml;
                 }
             });
@@ -108,7 +122,7 @@ export default class Wms implements MapImageProvider {
     }
 
     getSuggestedScaleRange(): Promise<ScaleRange> {
-        return this.getCapabilities().then((xmlDoc) => {
+        return this.fetchCapabilities().then((xmlDoc) => {
 
             let nsResolver = null;
             const xmlns = xmlDoc.documentElement.getAttribute('xmlns');
@@ -131,27 +145,27 @@ export default class Wms implements MapImageProvider {
     }
 
     downloadLegend() {
-        this.getCapabilities().then((xmlDoc) => {
-            let nsResolver = null;
-            const xmlns = xmlDoc.documentElement.getAttribute('xmlns');
-            if(xmlns !== null) {
-                nsResolver = function(prefix) {
-                    if(prefix === 'xx') {
-                        return xmlns;
-                    }
+        const xmlDoc = this.getCapabilitiesOrThrow();
+
+        let nsResolver = null;
+        const xmlns = xmlDoc.documentElement.getAttribute('xmlns');
+        if(xmlns !== null) {
+            nsResolver = function(prefix) {
+                if(prefix === 'xx') {
+                    return xmlns;
                 }
             }
-            console.log(xmlDoc);console.log(nsResolver);
-            const node = xmlDoc.evaluate('//xx:LegendURL/xx:OnlineResource', xmlDoc, nsResolver, XPathResult.ANY_TYPE).iterateNext();
-            if(node) {
-                // @ts-ignore
-                const url = node.attributes['xlink:href'].value;
+        }
 
-                window.open(url);
-            } else {
-                alert('Could not find legend URL');
-            }
-        });
+        const node = xmlDoc.evaluate('//xx:LegendURL/xx:OnlineResource', xmlDoc, nsResolver, XPathResult.ANY_TYPE).iterateNext();
+        if(node) {
+            // @ts-ignore
+            const url = node.attributes['xlink:href'].value;
+
+            window.open(url);
+        } else {
+            alert('Could not find legend URL');
+        }
     }
 }
 

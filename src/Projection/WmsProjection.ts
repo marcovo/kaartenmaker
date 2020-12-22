@@ -38,7 +38,7 @@ export default class WmsProjection<C extends Coordinate> extends Projection<C> {
         super.attach(cutout);
 
         // Preload capabilities upon attaching
-        this.wms.getCapabilities();
+        this.wms.fetchCapabilities();
     }
 
     getMapImageProvider(): MapImageProvider {
