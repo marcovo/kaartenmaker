@@ -5,7 +5,7 @@ import CoordinateConverter from "../Util/CoordinateConverter";
 import Cache from "../Util/Cache";
 import {Point, PointSystem} from "../Util/Math";
 import {jsPDF} from "jspdf";
-import {Paper} from "../Util/Paper";
+import Paper from "../Util/Paper";
 import CartesianTransformation from "../Conversion/CartesianTransformation";
 import MapImageProvider from "../Util/MapImageProvider";
 

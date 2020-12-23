@@ -73,6 +73,17 @@
                 <label v-bind:for="'csm_' + cutout.id + '_name'">Kaart naam</label>
                 <input type="text" class="form-control" v-bind:id="'csm_' + cutout.id + '_name'" placeholder="Typ een naam..." v-bind:value="cutout.name">
               </div>
+
+              <div class="form-group">
+                <label v-bind:for="'csm_' + cutout.id + '_paper'">Papier formaat</label>
+                <select class="form-control" v-bind:id="'csm_' + cutout.id + '_paper'">
+                  <option
+                      v-for="paper in container.getPaperList()"
+                      v-bind:value="paper.name"
+                      v-bind:selected="cutout.paper.name === paper.name"
+                  >{{ paper.title }}</option>
+                </select>
+              </div>
             </div>
 
             <div class="tab-pane"
@@ -266,6 +277,7 @@ import WmtsProjection from "../Projection/WmtsProjection";
 import Wms from "../Util/Wms";
 import {trimTrailingZeroDecimalPlaces} from "../Util/functions";
 import ChangeCutoutTileMatrixAction from "../ActionHistory/ChangeCutoutTileMatrixAction";
+import ChangeCutoutPaperAction from "../ActionHistory/ChangeCutoutPaperAction";
 
 function checkSuggestedScaleRange(cutout: Cutout<any, any, any>) {
   const projection = cutout.getProjection();
@@ -298,6 +310,14 @@ export default Vue.component('cutout-settings-modal', {
         }
       });
 
+      $('#csm_' + cutout.id + '_paper').on('change', function() {
+        const newVal = $(this).val();
+        const oldPaper = cutout.getPaper();
+        if(newVal !== oldPaper.name) {
+          const newPaper = Container.getPaper(newVal);
+          cutout.userInterface.actionHistory.addAction(new ChangeCutoutPaperAction(cutout, newPaper));
+        }
+      });
 
       $('#csm_' + cutout.id + '_mip').on('change', function() {
         const newVal = $(this).val();

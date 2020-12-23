@@ -1,5 +1,5 @@
 import Coordinate from "../Coordinates/Coordinate";
-import {millimeter, Paper} from "../Util/Paper";
+import Paper, {millimeter} from "../Util/Paper";
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
 import LeafletConvertibleCoordinateSystem from "../Coordinates/LeafletConvertibleCoordinateSystem";

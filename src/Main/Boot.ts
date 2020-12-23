@@ -5,7 +5,7 @@ import {UTMSystem} from "../Coordinates/UTM";
 import Container from "./Container";
 import Wms from "../Util/Wms";
 import CutoutTemplate from "./CutoutTemplate";
-import {A4L} from "../Util/Paper";
+import {A3L, A3P, A4L, A4P, A5L, A5P} from "../Util/Paper";
 import WmsProjection from "../Projection/WmsProjection";
 import Wmts from "../Util/Wmts";
 import WmtsProjection from "../Projection/WmtsProjection";
@@ -13,6 +13,13 @@ import WmtsProjection from "../Projection/WmtsProjection";
 CoordinateConverter.registerCoordinateSystem(new WGS84System());
 CoordinateConverter.registerCoordinateSystem(new DutchGridSystem());
 CoordinateConverter.registerCoordinateSystem(new UTMSystem());
+
+Container.registerPaper(new A3L());
+Container.registerPaper(new A3P());
+Container.registerPaper(new A4L());
+Container.registerPaper(new A4P());
+Container.registerPaper(new A5L());
+Container.registerPaper(new A5P());
 
 // NL, https://www.pdok.nl/geo-services/-/article/dataset-basisregistratie-topografie-brt-topraster
 Container.registerMapImageProvider(new Wms(

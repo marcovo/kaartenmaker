@@ -1,4 +1,4 @@
-import {Paper} from "../Util/Paper";
+import Paper from "../Util/Paper";
 import {jsPDF, TextOptionsLight} from "jspdf";
 import {Point} from "../Util/Math";
 import Cache from "../Util/Cache";
@@ -78,7 +78,11 @@ export default class Printer {
 
             this.drawFrameCoordinates(doc, edgeIntersections);
 
-            doc.save("a4.pdf");
+            let filename = this.cutout.name.replace(/[^0-9a-zA-Z]+/g, '-');
+            if(filename === '') {
+                filename = 'map-'+this.cutout.id;
+            }
+            doc.save(filename + ".pdf");
         });
     }
 

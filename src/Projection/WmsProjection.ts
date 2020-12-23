@@ -4,7 +4,7 @@ import Cutout from "../Main/Cutout";
 import Cache from "../Util/Cache";
 import {Point} from "../Util/Math";
 import {jsPDF} from "jspdf";
-import {Paper} from "../Util/Paper";
+import Paper from "../Util/Paper";
 import Container from "../Main/Container";
 import Projection from "./Projection";
 import MapImageProvider from "../Util/MapImageProvider";

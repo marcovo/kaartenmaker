@@ -3,9 +3,12 @@ import CutoutTemplate from "./CutoutTemplate";
 import MapImageProvider from "../Util/MapImageProvider";
 import Wms from "../Util/Wms";
 import Wmts from "../Util/Wmts";
+import Paper from "../Util/Paper";
 
 export default class Container {
     private static mapImageProviders: Record<string, MapImageProvider> = {};
+
+    private static paperFormats: Record<string, Paper> = {};
 
     private static cutoutTemplates: CutoutTemplate<any, any, any>[] = [];
 
@@ -41,6 +44,22 @@ export default class Container {
 
     static mapImageProviderList(): MapImageProvider[] {
         return Object.values(Container.mapImageProviders);
+    }
+
+    static registerPaper(paper: Paper): void {
+        Container.paperFormats[paper.name] = paper;
+    }
+
+    static getPaper(name: string): Paper {
+        if(!Container.paperFormats.hasOwnProperty(name)) {
+            throw new Error('Unknown paper "' + name + '"');
+        }
+
+        return Container.paperFormats[name];
+    }
+
+    static getPaperList(): Paper[] {
+        return Object.values(this.paperFormats);
     }
 
     static registerCutoutTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {

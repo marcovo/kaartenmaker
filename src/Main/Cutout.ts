@@ -1,5 +1,5 @@
 import Coordinate from "../Coordinates/Coordinate";
-import {millimeter, Paper} from "../Util/Paper";
+import Paper, {millimeter} from "../Util/Paper";
 import * as L from 'leaflet';
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import {walkLine} from "../Util/Math";
@@ -47,6 +47,11 @@ export default class Cutout<
     setProjection(projection: Projection<ProjectionCoordinate, MapImageProvider>) {
         super.setProjection(projection);
         this.projection.attach(this);
+        this.updateMap();
+    }
+
+    setPaper(paper: Paper) {
+        this.paper = paper;
         this.updateMap();
     }
 
