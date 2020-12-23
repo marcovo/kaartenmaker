@@ -20,6 +20,8 @@ export default class UserInterface {
     private actionHistoryButtons: Vue;
     private lastAddedCutoutTemplateId: number = null;
 
+    private cutoutCounter = 0;
+
     readonly colors: string[];
 
     readonly actionHistory: ActionHistory;
@@ -157,7 +159,8 @@ export default class UserInterface {
 
     addCutoutFromTemplate(cutoutTemplate: CutoutTemplate<any, any, any>): Promise<void> {
         return cutoutTemplate.makeCutout(this).then((cutout) => {
-            cutout.name = 'Mijn kaart ' + (cutout.id+1);
+            const number = ++this.cutoutCounter;
+            cutout.name = 'Mijn kaart ' + number;
             cutout.color = this.newColor();
 
             this.actionHistory.addAction(new AddCutoutAction(
