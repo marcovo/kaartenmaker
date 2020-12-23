@@ -265,6 +265,8 @@ function checkSuggestedScaleRange(cutout: Cutout<any, any, any>) {
     projection.isWithinSuggestedScaleRange().then((isWithin) => {
       $('#csm_' + cutout.id + '_error_suggested_scale').toggle(!isWithin);
     });
+  } else {
+    $('#csm_' + cutout.id + '_error_suggested_scale').toggle(false);
   }
 }
 
