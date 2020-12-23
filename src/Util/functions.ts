@@ -54,3 +54,13 @@ export function formatMeters(number: number, decimals: number = 1, displayOrderE
 
     return numberText + ' ' + unit;
 }
+
+export function findChildNode(node: Node, callback: (node) => boolean): Node|null {
+    for (let i = 0; i < node.childNodes.length; i++) {
+        const childNode = node.childNodes[i];
+        if(callback(childNode)) {
+            return childNode;
+        }
+    }
+    return null;
+}

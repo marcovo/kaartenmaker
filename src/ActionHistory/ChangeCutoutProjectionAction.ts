@@ -2,12 +2,13 @@ import Action from "./Action";
 import Cutout from "../Main/Cutout";
 import Projection from "../Projection/Projection";
 import Coordinate from "../Coordinates/Coordinate";
+import MapImageProvider from "../Util/MapImageProvider";
 
 export default class ChangeCutoutProjectionAction<C extends Coordinate> implements Action {
 
-    private readonly oldProjection: Projection<C>;
+    private readonly oldProjection: Projection<C, MapImageProvider>;
 
-    constructor(private cutout: Cutout<any, any, any>, private newProjection: Projection<C>) {
+    constructor(private cutout: Cutout<any, any, any>, private newProjection: Projection<C, MapImageProvider>) {
         this.oldProjection = this.cutout.getProjection();
     }
 

@@ -7,13 +7,15 @@ import Wms from "../Util/Wms";
 import CutoutTemplate from "./CutoutTemplate";
 import {A4L} from "../Util/Paper";
 import WmsProjection from "../Projection/WmsProjection";
+import Wmts from "../Util/Wmts";
+import WmtsProjection from "../Projection/WmtsProjection";
 
 CoordinateConverter.registerCoordinateSystem(new WGS84System());
 CoordinateConverter.registerCoordinateSystem(new DutchGridSystem());
 CoordinateConverter.registerCoordinateSystem(new UTMSystem());
 
 // NL, https://www.pdok.nl/geo-services/-/article/dataset-basisregistratie-topografie-brt-topraster
-Container.registerWms(new Wms(
+Container.registerMapImageProvider(new Wms(
     'nl_kad_25',
     'Kadaster (NL) 1:25.000',
     'https://geodata.nationaalgeoregister.nl/top25raster/wms',
@@ -26,7 +28,7 @@ Container.registerWms(new Wms(
     }
 ));
 
-Container.registerWms(new Wms(
+Container.registerMapImageProvider(new Wms(
     'nl_kad_50',
     'Kadaster (NL) 1:50.000',
     'https://geodata.nationaalgeoregister.nl/top50raster/wms',
@@ -39,7 +41,7 @@ Container.registerWms(new Wms(
     }
 ));
 
-Container.registerWms(new Wms(
+Container.registerMapImageProvider(new Wms(
     'nl_kad_100',
     'Kadaster (NL) 1:100.000',
     'https://geodata.nationaalgeoregister.nl/top100raster/wms',
@@ -52,7 +54,7 @@ Container.registerWms(new Wms(
     }
 ));
 
-Container.registerWms(new Wms(
+Container.registerMapImageProvider(new Wms(
     'nl_kad_250',
     'Kadaster (NL) 1:250.000',
     'https://geodata.nationaalgeoregister.nl/top250raster/wms',
@@ -65,7 +67,7 @@ Container.registerWms(new Wms(
     }
 ));
 
-Container.registerWms(new Wms(
+Container.registerMapImageProvider(new Wms(
     'nl_kad_500',
     'Kadaster (NL) 1:500.000',
     'https://geodata.nationaalgeoregister.nl/top500raster/wms',
@@ -78,7 +80,7 @@ Container.registerWms(new Wms(
     }
 ));
 
-Container.registerWms(new Wms(
+Container.registerMapImageProvider(new Wms(
     'nl_kad_1000',
     'Kadaster (NL) 1:1.000.000',
     'https://geodata.nationaalgeoregister.nl/top1000raster/wms',
@@ -88,6 +90,19 @@ Container.registerWms(new Wms(
     {
         CRS: 'EPSG:28992',
         layers: 'top1000raster',
+    }
+));
+
+Container.registerMapImageProvider(new Wmts(
+    'nl_opentopo_wmts',
+    'OpenTopo',
+    'https://geodata.nationaalgeoregister.nl/tiles/service/wmts',
+    'Bron: J.W. van Aalst, www.opentopo.nl',
+    CoordinateConverter.getCoordinateSystem('EPSG:28992'),
+    CoordinateConverter.getCoordinateSystem('EPSG:28992'),
+    {
+        tilematrixset: 'EPSG:28992',
+        layer: 'opentopo',
     }
 ));
 
@@ -102,7 +117,7 @@ Container.registerWms(new Wms(
 
 // Instead, we choose to use EPSG:25832 (UTM) as our base, making the maps more like the dutch maps; rectangular maps
 // containing a grid parallel to the map.
-Container.registerWms(new Wms(
+Container.registerMapImageProvider(new Wms(
     'de_rp_5',
     'Rheinland-Pfalz (DE) 1:5.000',
     'https://geo4.service24.rlp.de/wms/dtk5_rp.fcgi',
@@ -115,7 +130,7 @@ Container.registerWms(new Wms(
     }
 ));
 
-Container.registerWms(new Wms(
+Container.registerMapImageProvider(new Wms(
     'de_rp_25',
     'Rheinland-Pfalz (DE) 1:25.000',
     'https://geo4.service24.rlp.de/wms/rp_dtk25.fcgi',
@@ -128,7 +143,7 @@ Container.registerWms(new Wms(
     }
 ));
 
-Container.registerWms(new Wms(
+Container.registerMapImageProvider(new Wms(
     'de_rp_50',
     'Rheinland-Pfalz (DE) 1:50.000',
     'https://geo4.service24.rlp.de/wms/rp_dtk50.fcgi',
@@ -141,7 +156,7 @@ Container.registerWms(new Wms(
     }
 ));
 
-Container.registerWms(new Wms(
+Container.registerMapImageProvider(new Wms(
     'de_rp_100',
     'Rheinland-Pfalz (DE) 1:100.000',
     'https://geo4.service24.rlp.de/wms/rp_dtk100.fcgi',
@@ -161,6 +176,15 @@ Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(
     new WmsProjection('nl_kad_25'),
     null,
     '(NL) Kadaster 1:25.000'
+));
+
+Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(
+    new A4L(),
+    new WGS84(52, 5),
+    new WGS84System(),
+    new WmtsProjection('nl_opentopo_wmts'),
+    null,
+    '(NL) OpenTopo 1:25.000'
 ));
 
 Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(

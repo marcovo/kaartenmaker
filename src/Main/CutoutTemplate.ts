@@ -7,6 +7,7 @@ import Projection from "../Projection/Projection";
 import Grid from "./Grid";
 import Cutout from "./Cutout";
 import UserInterface from "./UserInterface";
+import MapImageProvider from "../Util/MapImageProvider";
 
 export type CutoutOptions = {
     margin_top: millimeter,
@@ -56,7 +57,7 @@ export default class CutoutTemplate<
         protected paper: Paper,
         anchorWorkspace: WorkspaceCoordinate,
         readonly workspaceCoordinateSystem: WorkspaceCoordinateSystem,
-        protected projection: Projection<ProjectionCoordinate>,
+        protected projection: Projection<ProjectionCoordinate, MapImageProvider>,
         protected grid: Grid<Coordinate> = null,
         public name: string = null,
     ) {
@@ -74,11 +75,11 @@ export default class CutoutTemplate<
         return this.paper;
     }
 
-    getProjection(): Projection<ProjectionCoordinate> {
+    getProjection(): Projection<ProjectionCoordinate, MapImageProvider> {
         return this.projection;
     }
 
-    setProjection(projection: Projection<ProjectionCoordinate>) {
+    setProjection(projection: Projection<ProjectionCoordinate, MapImageProvider>) {
         this.projection = projection;
         this.projection.setAnchor(this.anchorWorkspaceCoordinate);
     }
@@ -87,15 +88,21 @@ export default class CutoutTemplate<
         return this.grid;
     }
 
-    makeCutout(userInterface: UserInterface): Cutout<WorkspaceCoordinate, ProjectionCoordinate, WorkspaceCoordinateSystem> {
-        return new Cutout(
-            userInterface,
-            this.getPaper(),
-            this.anchorWorkspaceCoordinate.clone(),
-            this.workspaceCoordinateSystem,
-            this.getProjection().clone(),
-            new Grid(this.getGrid().coordinateSystem)
-        );
+    makeCutout(userInterface: UserInterface): Promise<Cutout<WorkspaceCoordinate, ProjectionCoordinate, WorkspaceCoordinateSystem>> {
+        return new Promise<Cutout<WorkspaceCoordinate, ProjectionCoordinate, WorkspaceCoordinateSystem>>(((resolve, reject) => {
+            const cutout = new Cutout(
+                userInterface,
+                this.getPaper(),
+                this.anchorWorkspaceCoordinate.clone(),
+                this.workspaceCoordinateSystem,
+                this.getProjection().clone(),
+                new Grid(this.getGrid().coordinateSystem)
+            );
+
+            cutout.getProjection().initialize().then(() => {
+                resolve(cutout);
+            })
+        }));
     }
 
     setAnchorWorkspaceCoordinate(c: WorkspaceCoordinate) {

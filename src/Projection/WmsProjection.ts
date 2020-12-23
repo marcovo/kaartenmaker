@@ -11,34 +11,36 @@ import MapImageProvider from "../Util/MapImageProvider";
 
 const MM_PER_INCH = 25.4;
 
-export default class WmsProjection<C extends Coordinate> extends Projection<C> {
+export default class WmsProjection<C extends Coordinate> extends Projection<C, Wms> {
 
-    readonly wms: Wms;
     private dpi: number = 300;
 
     static createAndInitialize(wmsName: string, scale: number = null): Promise<WmsProjection<Coordinate>> {
         return new Promise<WmsProjection<Coordinate>>((resolve, reject) => {
             const projection = new WmsProjection(wmsName, scale);
-            return projection.wms.fetchCapabilities().then(() => {
+            return projection.initialize().then(() => {
                 resolve(projection);
             });
         });
     }
 
     constructor(wmsName: string, private scale: number = null) {
-        super();
+        super(Container.wms(wmsName));
 
-        this.wms = Container.wms(wmsName);
-        this.coordinateSystem = this.wms.getCoordinateSystem();
+        this.coordinateSystem = this.mapImageProvider.getCoordinateSystem();
 
         if(this.scale === null) {
-            this.scale = this.wms.getDefaultScale();
+            this.scale = this.mapImageProvider.getDefaultScale();
         }
+    }
+
+    initialize(): Promise<void> {
+        return this.mapImageProvider.fetchCapabilities().then();
     }
 
     clone(): WmsProjection<C> {
         return new WmsProjection(
-            this.wms.name,
+            this.mapImageProvider.name,
             this.getScale(),
         );
     }
@@ -47,11 +49,7 @@ export default class WmsProjection<C extends Coordinate> extends Projection<C> {
         super.attach(cutout);
 
         // Preload capabilities upon attaching
-        this.wms.fetchCapabilities();
-    }
-
-    getMapImageProvider(): MapImageProvider {
-        return this.wms;
+        this.initialize();
     }
 
     getScale(): number {
@@ -74,7 +72,7 @@ export default class WmsProjection<C extends Coordinate> extends Projection<C> {
     }
 
     getWmsUrl(coords: C[], params: WmsParams = {}) {
-        return this.wms.mapUrl(Object.assign({}, params, {
+        return this.mapImageProvider.mapUrl(Object.assign({}, params, {
             bbox: coords[3].getX() + ',' + coords[3].getY() + ',' + coords[1].getX() + ',' + coords[1].getY(),
         }));
     }
@@ -84,7 +82,7 @@ export default class WmsProjection<C extends Coordinate> extends Projection<C> {
         //   "(...), the common pixel size is defined to be 0,28 mm × 0,28 mm."
         // (http://portal.opengeospatial.org/files/?artifact_id=14416)
 
-        return this.wms.getSuggestedScaleRange().then((suggestedScaleRange) => {
+        return this.mapImageProvider.getSuggestedScaleRange().then((suggestedScaleRange) => {
             const ptPerMm = this.getDpi() / 25.4;
 
             const effectiveScale = this.getScale() / ptPerMm / 0.28;

@@ -15,6 +15,7 @@ import Grid from "./Grid";
 import MoveCutoutAction from "../ActionHistory/MoveCutoutAction";
 import CutoutTemplate from "./CutoutTemplate";
 import Printer from "./Printer";
+import MapImageProvider from "../Util/MapImageProvider";
 
 export default class Cutout<
     WorkspaceCoordinate extends Coordinate & LeafletConvertibleCoordinate,
@@ -34,7 +35,7 @@ export default class Cutout<
         paper: Paper,
         anchorWorkspace: WorkspaceCoordinate,
         workspaceCoordinateSystem: WorkspaceCoordinateSystem,
-        projection: Projection<ProjectionCoordinate>,
+        projection: Projection<ProjectionCoordinate, MapImageProvider>,
         grid: Grid<Coordinate> = null
     ) {
         super(paper, anchorWorkspace, workspaceCoordinateSystem, projection, grid);
@@ -43,7 +44,7 @@ export default class Cutout<
         this.grid.attach(this);
     }
 
-    setProjection(projection: Projection<ProjectionCoordinate>) {
+    setProjection(projection: Projection<ProjectionCoordinate, MapImageProvider>) {
         super.setProjection(projection);
         this.projection.attach(this);
         this.updateMap();

@@ -9,13 +9,18 @@ import {Paper} from "../Util/Paper";
 import CartesianTransformation from "../Conversion/CartesianTransformation";
 import MapImageProvider from "../Util/MapImageProvider";
 
-export default abstract class Projection<C extends Coordinate> {
+export default abstract class Projection<C extends Coordinate, MIP extends MapImageProvider> {
 
     protected cutout: Cutout<any, C, any> = null;
     coordinateSystem: CoordinateSystem<C>;
     anchor: C;
 
-    abstract clone(): Projection<C>;
+    protected constructor(readonly mapImageProvider: MIP) {
+    }
+
+    abstract clone(): Projection<C, MIP>;
+
+    abstract initialize(): Promise<void>;
 
     detach() {
         if(this.cutout === null) {
@@ -38,7 +43,9 @@ export default abstract class Projection<C extends Coordinate> {
         this.coordinateSystem = this.coordinateSystem.rebase(this.anchor);
     }
 
-    abstract getMapImageProvider(): MapImageProvider;
+    getMapImageProvider(): MapImageProvider {
+        return this.mapImageProvider;
+    }
 
     abstract getScale();
 

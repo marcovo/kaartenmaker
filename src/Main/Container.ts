@@ -1,28 +1,46 @@
 import Cache from "../Util/Cache";
 import CutoutTemplate from "./CutoutTemplate";
+import MapImageProvider from "../Util/MapImageProvider";
 import Wms from "../Util/Wms";
+import Wmts from "../Util/Wmts";
 
 export default class Container {
-    private static WMSes: Record<string, Wms> = {};
+    private static mapImageProviders: Record<string, MapImageProvider> = {};
 
     private static cutoutTemplates: CutoutTemplate<any, any, any>[] = [];
 
     private static cache: Cache = null;
 
-    static registerWms(wms: Wms) {
-        Container.WMSes[wms.name] = wms;
+    static registerMapImageProvider(mapImageProvider: MapImageProvider) {
+        Container.mapImageProviders[mapImageProvider.name] = mapImageProvider;
     }
 
-    static wms(name: string): Wms {
-        if(!Container.WMSes.hasOwnProperty(name)) {
-            throw new Error('Unknown WMS "' + name + '"');
+    static mapImageProvider(name: string): MapImageProvider {
+        if(!Container.mapImageProviders.hasOwnProperty(name)) {
+            throw new Error('Unknown map image provider "' + name + '"');
         }
 
-        return Container.WMSes[name];
+        return Container.mapImageProviders[name];
     }
 
-    static wmsList(): Wms[] {
-        return Object.values(Container.WMSes);
+    static wms(wmsName: string): Wms {
+        const wms = Container.mapImageProvider(wmsName);
+        if(!(wms instanceof Wms)) {
+            throw new Error('Map image provider "' + name + '" is not WMS');
+        }
+        return wms;
+    }
+
+    static wmts(wmtsName: string): Wmts {
+        const wms = Container.mapImageProvider(wmtsName);
+        if(!(wms instanceof Wmts)) {
+            throw new Error('Map image provider "' + name + '" is not WMTS');
+        }
+        return wms;
+    }
+
+    static mapImageProviderList(): MapImageProvider[] {
+        return Object.values(Container.mapImageProviders);
     }
 
     static registerCutoutTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {

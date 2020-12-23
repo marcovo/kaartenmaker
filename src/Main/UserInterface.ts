@@ -123,18 +123,18 @@ export default class UserInterface {
     }
 
     addCutoutFromTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {
-        const cutout = cutoutTemplate.makeCutout(this);
+        cutoutTemplate.makeCutout(this).then((cutout) => {
+            cutout.name = 'Mijn kaart ' + (cutout.id+1);
+            cutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
 
-        cutout.name = 'Mijn kaart ' + (cutout.id+1);
-        cutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+            this.actionHistory.addAction(new AddCutoutAction(
+                cutout,
+                this,
+                this.cutouts.length
+            ));
 
-        this.actionHistory.addAction(new AddCutoutAction(
-            cutout,
-            this,
-            this.cutouts.length
-        ));
-
-        this.lastAddedCutoutTemplateId = cutoutTemplate.id;
+            this.lastAddedCutoutTemplateId = cutoutTemplate.id;
+        });
     }
 
     addCutout() {

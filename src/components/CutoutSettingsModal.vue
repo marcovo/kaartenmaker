@@ -88,9 +88,9 @@
                 <label v-bind:for="'csm_' + cutout.id + '_wms'">Kaartbron</label>
                 <select class="form-control" v-bind:id="'csm_' + cutout.id + '_wms'">
                   <option
-                      v-for="wms in container.wmsList()"
+                      v-for="wms in container.mapImageProviderList()"
                       v-bind:value="wms.name"
-                      v-bind:selected="cutout.projection.wms.name === wms.name"
+                      v-bind:selected="cutout.projection.mapImageProvider.name === wms.name"
                   >{{ wms.title }}</option>
                 </select>
               </div>
@@ -268,10 +268,10 @@ export default Vue.component('cutout-settings-modal', {
       $('#csm_' + cutout.id + '_wms').on('change', function() {
         const newVal = $(this).val();
         const oldProjection = cutout.getProjection();
-        if(newVal !== oldProjection.wms.name) {
+        if(newVal !== oldProjection.mapImageProvider.name) {
           cutout.userInterface.showLoadingIndicator(100);
           WmsProjection.createAndInitialize(newVal).then((newProjection) => {
-            if(oldProjection.wms.getDefaultScale() === newProjection.wms.getDefaultScale()) {
+            if(oldProjection.mapImageProvider.getDefaultScale() === newProjection.mapImageProvider.getDefaultScale()) {
               // The new WMS is has equivalent scaling with the old WMS, so we can reasonably keep the scale setting
               newProjection.setScale(oldProjection.getScale());
               newProjection.setDpi(oldProjection.getDpi());
