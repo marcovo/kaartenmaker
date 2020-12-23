@@ -108,12 +108,20 @@
 
               <div class="form-group" v-if="isWmsProjection(cutout.getProjection())">
                 <label v-bind:for="'csm_' + cutout.id + '_dpi'">DPI</label>
-                <input type="text" class="form-control" v-bind:id="'csm_' + cutout.id + '_dpi'" v-bind:value="cutout.getProjection().getDpi()">
+                <input
+                    type="text" class="form-control"
+                    v-bind:id="'csm_' + cutout.id + '_dpi'"
+                    v-bind:value="cutout.getProjection().getDpi()"
+                    v-on:change="changeDpi($event, cutout)"
+                    v-on:keyup="changeDpi($event, cutout)"
+                    v-on:input="changeDpi($event, cutout)"
+                    v-on:blur="changeDpi($event, cutout)"
+                >
               </div>
 
               <div class="form-group" v-if="isWmtsProjection(cutout.getProjection())">
                 <label v-bind:for="'csm_' + cutout.id + '_tile_matrix'">Zoom niveau</label>
-                <select class="form-control" v-bind:id="'csm_' + cutout.id + '_tile_matrix'">
+                <select class="form-control" v-bind:id="'csm_' + cutout.id + '_tile_matrix'" v-on:change="changeTileMatrixId($event, cutout)">
                   <option
                       v-for="tileMatrix in cutout.projection.mapImageProvider.getTileMatrixList()"
                       v-bind:value="tileMatrix.identifier"
@@ -334,20 +342,6 @@ export default Vue.component('cutout-settings-modal', {
         }
       });
 
-      $('#csm_' + cutout.id + '_dpi').on('change keyup input blur', function() {
-        const newDpi = parseInt($(this).val());
-        if(newDpi !== cutout.getProjection().getDpi()) {
-          cutout.userInterface.actionHistory.addAction(new ChangeCutoutDpiAction(cutout, newDpi));
-        }
-      });
-
-      $('#csm_' + cutout.id + '_tile_matrix').on('change', function() {
-        const newTileMatrixId = $(this).val();
-        if(newTileMatrixId !== cutout.getProjection().getTileMatrixId()) {
-          cutout.userInterface.actionHistory.addAction(new ChangeCutoutTileMatrixAction(cutout, newTileMatrixId));
-        }
-      });
-
       for(const side of ['top', 'left', 'right', 'bottom']) {
         $('#csm_' + cutout.id + '_coords_' + side).on('change', function() {
           const newVal = $(this).prop('checked');
@@ -412,6 +406,20 @@ export default Vue.component('cutout-settings-modal', {
       const pxPerKm = Wmts.getPxPerKm(tileMatrix);
       return parseInt(tileMatrix.identifier) + ': ' + trimTrailingZeroDecimalPlaces(pxPerKm, pxPerKm < 10 ? 1 : 0);
     },
+    changeDpi(event, cutout: Cutout<any, any, any>) {
+      const newDpi = parseInt($('#csm_' + cutout.id + '_dpi').val());
+      const projection = cutout.getProjection();
+      if(projection instanceof WmsProjection && newDpi !== projection.getDpi()) {
+        cutout.userInterface.actionHistory.addAction(new ChangeCutoutDpiAction(cutout, newDpi));
+      }
+    },
+    changeTileMatrixId(event, cutout: Cutout<any, any, any>) {
+      const newTileMatrixId = $('#csm_' + cutout.id + '_tile_matrix').val();
+      const projection = cutout.getProjection();
+      if(projection instanceof WmtsProjection && newTileMatrixId !== projection.getTileMatrixId()) {
+        cutout.userInterface.actionHistory.addAction(new ChangeCutoutTileMatrixAction(cutout, newTileMatrixId));
+      }
+    }
   }
 });
 </script>
