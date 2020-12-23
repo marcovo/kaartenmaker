@@ -105,7 +105,11 @@ export default class UserInterface {
             }
         });
 
-        this.addCutout();
+        this.addCutout().then(() => {
+            if(this.actionHistory.getLength() === 1) {
+                this.actionHistory.clear();
+            }
+        });
     }
 
     private loadingIndicatorCounter: number = 0;
@@ -122,8 +126,8 @@ export default class UserInterface {
         $('#mainLoadingIndicator').hide();
     }
 
-    addCutoutFromTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {
-        cutoutTemplate.makeCutout(this).then((cutout) => {
+    addCutoutFromTemplate(cutoutTemplate: CutoutTemplate<any, any, any>): Promise<void> {
+        return cutoutTemplate.makeCutout(this).then((cutout) => {
             cutout.name = 'Mijn kaart ' + (cutout.id+1);
             cutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
 
@@ -137,7 +141,7 @@ export default class UserInterface {
         });
     }
 
-    addCutout() {
+    addCutout(): Promise<void> {
         const cutoutTemplates = Container.cutoutTemplateList();
         if(cutoutTemplates.length === 0) {
             throw new Error('No cutout templates');
@@ -157,7 +161,7 @@ export default class UserInterface {
             cutoutTemplate = cutoutTemplates[0];
         }
 
-        this.addCutoutFromTemplate(cutoutTemplate);
+        return this.addCutoutFromTemplate(cutoutTemplate);
     }
 
     public attachCutout(cutout: Cutout<any, any, any>, position: number) {

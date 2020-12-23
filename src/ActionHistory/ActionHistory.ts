@@ -11,6 +11,10 @@ export default class ActionHistory {
 
     }
 
+    public getLength(): number {
+        return this.actionList.length;
+    }
+
     public addAction(action: Action) {
         if(this.pointer !== null && this.actionList.length > this.pointer + 1) {
             this.actionList.splice(this.pointer + 1);
