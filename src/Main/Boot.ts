@@ -182,7 +182,7 @@ Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(
     new A4L(),
     new WGS84(52, 5),
     new WGS84System(),
-    new WmtsProjection('nl_opentopo_wmts'),
+    new WmtsProjection('nl_opentopo_wmts', 25000, '10'),
     null,
     '(NL) OpenTopo 1:25.000'
 ));
