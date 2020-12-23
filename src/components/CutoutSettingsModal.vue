@@ -85,13 +85,13 @@
               </div>
 
               <div class="form-group">
-                <label v-bind:for="'csm_' + cutout.id + '_wms'">Kaartbron</label>
-                <select class="form-control" v-bind:id="'csm_' + cutout.id + '_wms'">
+                <label v-bind:for="'csm_' + cutout.id + '_mip'">Kaartbron</label>
+                <select class="form-control" v-bind:id="'csm_' + cutout.id + '_mip'">
                   <option
-                      v-for="wms in container.mapImageProviderList()"
-                      v-bind:value="wms.name"
-                      v-bind:selected="cutout.projection.mapImageProvider.name === wms.name"
-                  >{{ wms.title }}</option>
+                      v-for="mip in container.mapImageProviderList()"
+                      v-bind:value="mip.name"
+                      v-bind:selected="cutout.projection.mapImageProvider.name === mip.name"
+                  >{{ mip.title }}</option>
                 </select>
               </div>
 
@@ -106,9 +106,25 @@
                 </div>
               </div>
 
-              <div class="form-group">
+              <div class="form-group" v-if="isWmsProjection(cutout.getProjection())">
                 <label v-bind:for="'csm_' + cutout.id + '_dpi'">DPI</label>
                 <input type="text" class="form-control" v-bind:id="'csm_' + cutout.id + '_dpi'" v-bind:value="cutout.getProjection().getDpi()">
+              </div>
+
+              <div class="form-group" v-if="isWmtsProjection(cutout.getProjection())">
+                <label v-bind:for="'csm_' + cutout.id + '_tile_matrix'">Zoom niveau</label>
+                <select class="form-control" v-bind:id="'csm_' + cutout.id + '_tile_matrix'">
+                  <option
+                      v-for="tileMatrix in cutout.projection.mapImageProvider.getTileMatrixList()"
+                      v-bind:value="tileMatrix.identifier"
+                      v-bind:selected="cutout.projection.getTileMatrixId() === tileMatrix.identifier"
+                  >{{ tileMatrixName(tileMatrix) }} px/km</option>
+                </select>
+              </div>
+
+              <div class="form-group" v-if="isWmtsProjection(cutout.getProjection())">
+                <label v-bind:for="'csm_' + cutout.id + '_dpi_wmts'">DPI</label>
+                <input type="text" disabled class="form-control" v-bind:id="'csm_' + cutout.id + '_dpi_wmts'" v-bind:value="Math.round(cutout.projection.getDpi())">
               </div>
             </div>
 
@@ -234,6 +250,14 @@ import Container from "../Main/Container";
 import Cutout from "../Main/Cutout";
 import WmsProjection from "../Projection/WmsProjection";
 import * as $ from "jquery";
+import Projection from "../Projection/Projection";
+import Coordinate from "../Coordinates/Coordinate";
+import MapImageProvider from "../Util/MapImageProvider";
+import Wmts, {TileMatrix} from "../Util/Wmts";
+import WmtsProjection from "../Projection/WmtsProjection";
+import Wms from "../Util/Wms";
+import {trimTrailingZeroDecimalPlaces} from "../Util/functions";
+import ChangeCutoutTileMatrixAction from "../ActionHistory/ChangeCutoutTileMatrixAction";
 
 function checkSuggestedScaleRange(cutout: Cutout<any, any, any>) {
   const projection = cutout.getProjection();
@@ -265,18 +289,35 @@ export default Vue.component('cutout-settings-modal', {
       });
 
 
-      $('#csm_' + cutout.id + '_wms').on('change', function() {
+      $('#csm_' + cutout.id + '_mip').on('change', function() {
         const newVal = $(this).val();
         const oldProjection = cutout.getProjection();
         if(newVal !== oldProjection.mapImageProvider.name) {
           cutout.userInterface.showLoadingIndicator(100);
-          WmsProjection.createAndInitialize(newVal).then((newProjection) => {
-            if(oldProjection.mapImageProvider.getDefaultScale() === newProjection.mapImageProvider.getDefaultScale()) {
-              // The new WMS is has equivalent scaling with the old WMS, so we can reasonably keep the scale setting
-              newProjection.setScale(oldProjection.getScale());
+
+          let newProjection: Projection<Coordinate, MapImageProvider>;
+          const mapImageProvider = Container.mapImageProvider(newVal);
+          if(mapImageProvider instanceof Wms) {
+            newProjection = new WmsProjection(newVal);
+          } else if(mapImageProvider instanceof Wmts) {
+            newProjection = new WmtsProjection(newVal);
+          } else {
+            throw new Error('Invalid value');
+          }
+
+          if(
+              !(oldProjection instanceof WmsProjection)
+              || !(newProjection instanceof WmsProjection)
+              ||  oldProjection.mapImageProvider.getDefaultScale() === newProjection.mapImageProvider.getDefaultScale()
+          ) {
+            // The new WMS is has equivalent scaling with the old WMS, so we can reasonably keep the scale setting
+            newProjection.setScale(oldProjection.getScale());
+            if(oldProjection instanceof WmsProjection && newProjection instanceof WmsProjection) {
               newProjection.setDpi(oldProjection.getDpi());
             }
+          }
 
+          newProjection.initialize().then(() => {
             cutout.userInterface.actionHistory.addAction(new ChangeCutoutProjectionAction(cutout, newProjection));
           }).finally(() => {
             cutout.userInterface.hideLoadingIndicator();
@@ -295,6 +336,13 @@ export default Vue.component('cutout-settings-modal', {
         const newDpi = parseInt($(this).val());
         if(newDpi !== cutout.getProjection().getDpi()) {
           cutout.userInterface.actionHistory.addAction(new ChangeCutoutDpiAction(cutout, newDpi));
+        }
+      });
+
+      $('#csm_' + cutout.id + '_tile_matrix').on('change', function() {
+        const newTileMatrixId = $(this).val();
+        if(newTileMatrixId !== cutout.getProjection().getTileMatrixId()) {
+          cutout.userInterface.actionHistory.addAction(new ChangeCutoutTileMatrixAction(cutout, newTileMatrixId));
         }
       });
 
@@ -352,7 +400,16 @@ export default Vue.component('cutout-settings-modal', {
     }
   },
   methods: {
-
+    isWmsProjection(obj): boolean {
+      return obj instanceof WmsProjection;
+    },
+    isWmtsProjection(obj): boolean {
+      return obj instanceof WmtsProjection;
+    },
+    tileMatrixName(tileMatrix: TileMatrix): string {
+      const pxPerKm = Wmts.getPxPerKm(tileMatrix);
+      return parseInt(tileMatrix.identifier) + ': ' + trimTrailingZeroDecimalPlaces(pxPerKm, pxPerKm < 10 ? 1 : 0);
+    },
   }
 });
 </script>

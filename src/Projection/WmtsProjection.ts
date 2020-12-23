@@ -21,24 +21,24 @@ export default class WmtsProjection<C extends Coordinate> extends Projection<C, 
         });
     }
 
-    constructor(wmtsName: string, private scale: number = null, private tileMatrix: string = null) {
-        super(Container.wmts(wmtsName));
+    constructor(wmtsName: string, scale: number = null, private tileMatrixId: string = null) {
+        super(Container.wmts(wmtsName), scale);
 
         this.coordinateSystem = this.mapImageProvider.getCoordinateSystem();
     }
 
     initialize(): Promise<void> {
         return this.mapImageProvider.fetchCapabilities().then(() => {
-            if(this.scale === null && this.tileMatrix === null) {
+            if(this.scale === null && this.tileMatrixId === null) {
                 this.scale = 25000;
             }
 
-            if(this.tileMatrix === null) {
-                this.tileMatrix = this.mapImageProvider.getTileMatrixClosestToScale(this.scale);
+            if(this.tileMatrixId === null) {
+                this.tileMatrixId = this.mapImageProvider.getTileMatrixClosestToScale(this.scale);
             }
 
             if(this.scale === null) {
-                this.scale = this.mapImageProvider.getTileMatrix(this.tileMatrix).scaleDenominator;
+                this.scale = this.mapImageProvider.getTileMatrix(this.tileMatrixId).scaleDenominator;
             }
         });
     }
@@ -47,7 +47,7 @@ export default class WmtsProjection<C extends Coordinate> extends Projection<C, 
         return new WmtsProjection(
             this.mapImageProvider.name,
             this.getScale(),
-            this.getTileMatrix(),
+            this.getTileMatrixId(),
         );
     }
 
@@ -58,27 +58,29 @@ export default class WmtsProjection<C extends Coordinate> extends Projection<C, 
         this.initialize();
     }
 
-    getScale(): number {
-        return this.scale;
+    getTileMatrixId(): string {
+        return this.tileMatrixId;
     }
 
-    setScale(newScale: number) {
-        this.scale = newScale;
-    }
-
-    getTileMatrix(): string {
-        return this.tileMatrix;
-    }
-
-    setTileMatrix(newTileMatrix: string) {
-        this.tileMatrix = newTileMatrix;
+    setTileMatrixId(newTileMatrix: string) {
+        this.tileMatrixId = newTileMatrix;
         if(this.cutout) {
             this.cutout.updateMap();
         }
     }
 
     getDpi(): number {
-        return null; // TODO
+        const realMmPerPaperMm = this.getScale();
+        const tileMatrix = this.mapImageProvider.getTileMatrix(this.getTileMatrixId());
+
+        // Conversion formula according to WMTS spec 1.0.0, section 6.1
+        // For now, we assume that CRS units === meters, so metersPerUnit(crs) === 1
+        const pixelSpan = tileMatrix.scaleDenominator * 0.00028;
+
+        const realMmPerPx = pixelSpan * 1000;
+        const pxPerPaperMm = realMmPerPaperMm / realMmPerPx;
+
+        return pxPerPaperMm * MM_PER_INCH;
     }
 
     projectToPdf(doc: jsPDF, paper: Paper, cache: Cache): Promise<void> {
@@ -89,9 +91,10 @@ export default class WmtsProjection<C extends Coordinate> extends Projection<C, 
             // unit: unit of measurement of projection coordinate system (e.g., meters)
             const scale = this.getScale();
             const realMmPerPaperMm = scale;
-            const tileMatrix = this.mapImageProvider.getTileMatrix(this.getTileMatrix());
+            const tileMatrix = this.mapImageProvider.getTileMatrix(this.getTileMatrixId());
 
-            // This assumes that CRS units === meters
+            // Conversion formula according to WMTS spec 1.0.0, section 6.1
+            // For now, we assume that CRS units === meters, so metersPerUnit(crs) === 1
             const pixelSpan = tileMatrix.scaleDenominator * 0.00028;
 
             const tileSpanX = tileMatrix.tileWidth * pixelSpan; // 'real m' width of a tile
@@ -122,7 +125,7 @@ export default class WmtsProjection<C extends Coordinate> extends Projection<C, 
             for(let col = colMin; col < colMax; col++) {
                 for(let row = rowMin; row < rowMax; row++) {
                     const imagePromise: Promise<HTMLImageElement> = this.downloadPrintImage(cache, {
-                        tilematrix: this.getTileMatrix(),
+                        tilematrix: this.getTileMatrixId(),
                         tilecol: col.toString(),
                         tilerow: row.toString(),
                     });

@@ -95,7 +95,7 @@ Container.registerMapImageProvider(new Wms(
 
 Container.registerMapImageProvider(new Wmts(
     'nl_opentopo_wmts',
-    'OpenTopo',
+    'OpenTopo (NL)',
     'https://geodata.nationaalgeoregister.nl/tiles/service/wmts',
     'Bron: J.W. van Aalst, www.opentopo.nl',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),

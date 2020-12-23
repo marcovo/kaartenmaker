@@ -62,6 +62,16 @@ export default class Wmts implements MapImageProvider {
         return this.defaultGridCoordinateSystem;
     }
 
+    static getPxPerKm(tileMatrix: TileMatrix): number {
+        // Conversion formula according to WMTS spec 1.0.0, section 6.1
+        // For now, we assume that CRS units === meters, so metersPerUnit(crs) === 1
+        const pixelSpan = tileMatrix.scaleDenominator * 0.00028;
+
+        const realKmPerPx = pixelSpan / 1000;
+
+        return 1 / realKmPerPx;
+    }
+
     buildUrl(params: WmtsParams) {
         params = Object.assign({}, this.params, params);
 
@@ -202,51 +212,74 @@ export default class Wmts implements MapImageProvider {
                 }
 
                 if(identifierNode.textContent === tileMatrixIdentifier) {
-                    tileMatrix = {
-                        identifier: null,
-                        scaleDenominator: null,
-                        topLeftCorner: null,
-                        tileWidth: null,
-                        tileHeight: null,
-                        matrixWidth: null,
-                        matrixHeight: null,
-                    };
-
-                    childNode.childNodes.forEach((childNode2) => {
-                        if(!(childNode2 instanceof Element)) {
-                            return;
-                        }
-
-                        switch(childNode2.tagName) {
-                            case 'ows:Identifier': tileMatrix.identifier = childNode2.textContent; break;
-                            case 'ScaleDenominator': tileMatrix.scaleDenominator = parseFloat(childNode2.textContent); break;
-                            case 'TopLeftCorner':
-                                const parts = childNode2.textContent.split(' ');
-                                tileMatrix.topLeftCorner = [parseFloat(parts[0]), parseFloat(parts[1])];
-                                break;
-                            case 'TileWidth': tileMatrix.tileWidth = parseInt(childNode2.textContent); break;
-                            case 'TileHeight': tileMatrix.tileHeight = parseInt(childNode2.textContent); break;
-                            case 'MatrixWidth': tileMatrix.matrixWidth = parseInt(childNode2.textContent); break;
-                            case 'MatrixHeight': tileMatrix.matrixHeight = parseInt(childNode2.textContent); break;
-                        }
-                    });
-
-                    if(
-                        tileMatrix.identifier === null
-                        || tileMatrix.scaleDenominator === null
-                        || tileMatrix.topLeftCorner === null
-                        || tileMatrix.tileWidth === null
-                        || tileMatrix.tileHeight === null
-                        || tileMatrix.matrixWidth === null
-                        || tileMatrix.matrixHeight === null
-                    ) {
-                        throw new UserError('Could not find complete tilematrix data');
-                    }
+                    tileMatrix = this.parseTileMatrixNode(childNode);
                 }
             }
         });
         if(tileMatrix === null) {
             throw new UserError('Could not find tile matrix');
+        }
+
+        return tileMatrix;
+    }
+
+    getTileMatrixList(): TileMatrix[] {
+        const tileMatrixSetNode = this.getTileMatrixSetNode();
+
+        const tileMatrixes: TileMatrix[] = [];
+        tileMatrixSetNode.childNodes.forEach((childNode) => {
+            if(childNode instanceof Element && childNode.tagName === 'TileMatrix') {
+                tileMatrixes.push(this.parseTileMatrixNode(childNode));
+            }
+        });
+
+        return tileMatrixes;
+    }
+
+    private parseTileMatrixNode(tileMatrixNode: Element): TileMatrix {
+        if(tileMatrixNode.tagName !== 'TileMatrix') {
+            throw new Error('Invalid node');
+        }
+
+        const tileMatrix = {
+            identifier: null,
+            scaleDenominator: null,
+            topLeftCorner: null,
+            tileWidth: null,
+            tileHeight: null,
+            matrixWidth: null,
+            matrixHeight: null,
+        };
+
+        tileMatrixNode.childNodes.forEach((childNode) => {
+            if(!(childNode instanceof Element)) {
+                return;
+            }
+
+            switch(childNode.tagName) {
+                case 'ows:Identifier': tileMatrix.identifier = childNode.textContent; break;
+                case 'ScaleDenominator': tileMatrix.scaleDenominator = parseFloat(childNode.textContent); break;
+                case 'TopLeftCorner':
+                    const parts = childNode.textContent.split(' ');
+                    tileMatrix.topLeftCorner = [parseFloat(parts[0]), parseFloat(parts[1])];
+                    break;
+                case 'TileWidth': tileMatrix.tileWidth = parseInt(childNode.textContent); break;
+                case 'TileHeight': tileMatrix.tileHeight = parseInt(childNode.textContent); break;
+                case 'MatrixWidth': tileMatrix.matrixWidth = parseInt(childNode.textContent); break;
+                case 'MatrixHeight': tileMatrix.matrixHeight = parseInt(childNode.textContent); break;
+            }
+        });
+
+        if(
+            tileMatrix.identifier === null
+            || tileMatrix.scaleDenominator === null
+            || tileMatrix.topLeftCorner === null
+            || tileMatrix.tileWidth === null
+            || tileMatrix.tileHeight === null
+            || tileMatrix.matrixWidth === null
+            || tileMatrix.matrixHeight === null
+        ) {
+            throw new UserError('Could not find complete tilematrix data');
         }
 
         return tileMatrix;

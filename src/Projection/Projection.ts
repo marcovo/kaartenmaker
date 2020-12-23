@@ -15,7 +15,7 @@ export default abstract class Projection<C extends Coordinate, MIP extends MapIm
     coordinateSystem: CoordinateSystem<C>;
     anchor: C;
 
-    protected constructor(readonly mapImageProvider: MIP) {
+    protected constructor(readonly mapImageProvider: MIP, protected scale: number = null) {
     }
 
     abstract clone(): Projection<C, MIP>;
@@ -47,7 +47,16 @@ export default abstract class Projection<C extends Coordinate, MIP extends MapIm
         return this.mapImageProvider;
     }
 
-    abstract getScale();
+    getScale(): number {
+        return this.scale;
+    }
+
+    setScale(newScale: number) {
+        this.scale = newScale;
+        if(this.cutout) {
+            this.cutout.updateMap();
+        }
+    }
 
     abstract getDpi();
 

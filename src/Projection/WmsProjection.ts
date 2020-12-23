@@ -24,18 +24,18 @@ export default class WmsProjection<C extends Coordinate> extends Projection<C, W
         });
     }
 
-    constructor(wmsName: string, private scale: number = null) {
-        super(Container.wms(wmsName));
+    constructor(wmsName: string, scale: number = null) {
+        super(Container.wms(wmsName), scale);
 
         this.coordinateSystem = this.mapImageProvider.getCoordinateSystem();
-
-        if(this.scale === null) {
-            this.scale = this.mapImageProvider.getDefaultScale();
-        }
     }
 
     initialize(): Promise<void> {
-        return this.mapImageProvider.fetchCapabilities().then();
+        return this.mapImageProvider.fetchCapabilities().then(() => {
+            if(this.scale === null) {
+                this.scale = this.mapImageProvider.getDefaultScale();
+            }
+        });
     }
 
     clone(): WmsProjection<C> {
@@ -50,17 +50,6 @@ export default class WmsProjection<C extends Coordinate> extends Projection<C, W
 
         // Preload capabilities upon attaching
         this.initialize();
-    }
-
-    getScale(): number {
-        return this.scale;
-    }
-
-    setScale(newScale: number) {
-        this.scale = newScale;
-        if(this.cutout) {
-            this.cutout.updateMap();
-        }
     }
 
     getDpi(): number {
