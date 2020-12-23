@@ -15,6 +15,8 @@ export default class Map {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(this.leafletMap);
 
+        this.leafletMap.zoomControl.setPosition('bottomright');
+
         this.leafletMap.on('contextmenu', function(e) {
 
         });

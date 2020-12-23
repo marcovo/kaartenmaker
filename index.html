@@ -7,22 +7,22 @@
     <link rel="stylesheet" href="dist/bundle.css" />
 </head>
 <body>
-<div class="website">
-    <div class="map">
+    <div id="mapContainer">
         <div id="map-canvas"></div>
     </div>
-    <div class="rightBar">
-        <div class="rightBarContent">
-            <div class="cutoutTools">
-                <div class="btn-toolbar" role="toolbar">
+
+    <div class="control-panes">
+        <div class="control-pane control-pane-general-tools">
+            <div id="generalTools" class="control-pane-content">
+                <div class="btn-toolbar justify-content-around" role="toolbar">
                     <div class="btn-group mr-1">
-                        <button type="button" class="btn btn-sm btn-primary" id="addButton">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="addButton">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-plus-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                                 <path stroke="currentColor" stroke-width="1" fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                             </svg>
                         </button>
-                        <button type="button" class="btn btn-sm btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="sr-only">Toggle Dropdown</span>
                         </button>
                         <div class="dropdown-menu" id="cutoutTemplateList">
@@ -33,13 +33,13 @@
                     </div>
 
                     <div class="btn-group mr-1">
-                        <button type="button" class="btn btn-sm btn-primary" id="undoButton">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="undoButton">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-arrow-counterclockwise" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"/>
                                 <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"/>
                             </svg>
                         </button>
-                        <button type="button" class="btn btn-sm btn-primary" id="redoButton">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="redoButton">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-arrow-clockwise" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                                 <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
@@ -48,12 +48,12 @@
                     </div>
 
                     <div class="btn-group mr-1">
-                        <button type="button" class="btn btn-sm btn-primary" id="settingsButton">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="settingsButton">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-sliders" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z"/>
                             </svg>
                         </button>
-                        <button type="button" class="btn btn-sm btn-primary" id="shareButton">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="shareButton">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-share-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
                             </svg>
@@ -61,14 +61,14 @@
                     </div>
 
                     <div class="btn-group mr-1">
-                        <button type="button" class="btn btn-sm btn-primary" id="infoButton">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="infoButton">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-info-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                 <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588z"/>
                                 <circle cx="8" cy="4.5" r="1"/>
                             </svg>
                         </button>
-                        <button type="button" class="btn btn-sm btn-primary" id="codeButton">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="codeButton">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-code-square" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                                 <path fill-rule="evenodd" d="M6.854 4.646a.5.5 0 0 1 0 .708L4.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0zm2.292 0a.5.5 0 0 0 0 .708L11.793 8l-2.647 2.646a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708 0z"/>
@@ -78,13 +78,13 @@
 
                     <div class="btn-group">
                         <div class="dropdown">
-                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-info-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                     <path fill-rule="evenodd" d="M2 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v11.5a.5.5 0 0 1-.777.416L7 13.101l-4.223 2.815A.5.5 0 0 1 2 15.5V4zm2-1a1 1 0 0 0-1 1v10.566l3.723-2.482a.5.5 0 0 1 .554 0L11 14.566V4a1 1 0 0 0-1-1H4z"/>
                                     <path fill-rule="evenodd" d="M4.268 1H12a1 1 0 0 1 1 1v11.768l.223.148A.5.5 0 0 0 14 13.5V2a2 2 0 0 0-2-2H6a2 2 0 0 0-1.732 1z"/>
                                 </svg>
                             </button>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <a class="dropdown-item" href="#" id="bookmarkButton">Opslaan</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#">Opgeslagen 1</a>
@@ -93,11 +93,11 @@
                         </div>
                     </div>
                 </div>
-
-                <span class="mouseCoord">
-                </span>
             </div>
-            <div id="cutoutList">
+        </div>
+
+        <div class="control-pane control-pane-cutout-list">
+            <div id="cutoutList" class="control-pane-content">
                 <div
                         v-for="cutout in cutouts"
                         class="cutout mb-2"
@@ -115,19 +115,19 @@
                         </div>
                         <div>
                             <div class="btn-group">
-                                <button class="btn btn-sm btn-outline-secondary border-top-0" style="border-top-left-radius: 0;" v-bind:id="'cutout_' + cutout.id + '_settings'">
+                                <button class="btn btn-sm btn-control border-top-0" style="border-top-left-radius: 0;" v-bind:id="'cutout_' + cutout.id + '_settings'">
                                     <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-sliders" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z"/>
                                     </svg>
                                 </button>
-                                <button class="btn btn-sm btn-outline-secondary border-top-0" v-on:click="print(cutout)">
+                                <button class="btn btn-sm btn-control border-top-0" v-on:click="print(cutout)">
                                     <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-printer" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M11 2H5a1 1 0 0 0-1 1v2H3V3a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h-1V3a1 1 0 0 0-1-1zm3 4H2a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h1v1H2a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1z"/>
                                         <path fill-rule="evenodd" d="M11 9H5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1zM5 8a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H5z"/>
                                         <path d="M3 7.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/>
                                     </svg>
                                 </button>
-                                <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-menu">
                                     <button class="dropdown-item" type="button" v-on:click="duplicateCutout(cutout)">
                                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-files" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                             <path fill-rule="evenodd" d="M4 2h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4z"/>
@@ -158,7 +158,7 @@
                                         Verwijder
                                     </button>
                                 </div>
-                                <button class="btn btn-sm btn-outline-secondary border-top-0" style="border-top-right-radius: 0;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button class="btn btn-sm btn-control border-top-0" style="border-top-right-radius: 0;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-three-dots-vertical" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                         <path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
                                     </svg>
@@ -175,7 +175,7 @@
             </div>
         </div>
     </div>
-</div>
-<div id="mainLoadingIndicator"></div>
+
+    <div id="mainLoadingIndicator"></div>
 </body>
 </html>
