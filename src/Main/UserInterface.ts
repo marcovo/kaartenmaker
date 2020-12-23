@@ -1,15 +1,12 @@
 import Map from "./Map";
 import Cutout from "./Cutout";
 import Container from "./Container";
-import Cache from "../Util/Cache";
 const $ = require( 'jquery' );
 import Vue from 'vue/dist/vue.esm.js';
-import * as L from 'leaflet';
 import ActionHistory from "../ActionHistory/ActionHistory";
 import AddCutoutAction from "../ActionHistory/AddCutoutAction";
 import DeleteCutoutAction from "../ActionHistory/DeleteCutoutAction";
 import CutoutTemplate from "./CutoutTemplate";
-import Printer from "./Printer";
 require('../Lib/LeafletDrag');
 require("./Cutout"); // If we don't explicitly require this, the application crashes...
 
@@ -29,7 +26,7 @@ export default class UserInterface {
 
     constructor() {
 
-        this.colors = ['#03f', 'aqua', 'black', 'blue', 'fuchsia', 'green', 'lime', 'maroon', 'navy', 'olive', 'orange', 'purple', 'red', 'teal', 'yellow'];
+        this.colors = ['blue', 'orange', 'green', 'fuchsia', 'lime', '#f33', '#ee0', 'aqua', 'black', 'maroon', 'navy', 'purple', 'teal', 'olive'];
 
         this.actionHistory = new ActionHistory();
 
@@ -134,10 +131,34 @@ export default class UserInterface {
         $('#mainLoadingIndicator').hide();
     }
 
+    newColor(): string {
+        const colorCounts = {};
+        for(const color of this.colors) {
+            colorCounts[color] = 0;
+        }
+
+        this.getCutouts().forEach((cutout) => {
+            if(colorCounts.hasOwnProperty(cutout.color)) {
+                colorCounts[cutout.color]++;
+            }
+        });
+
+        let lowestCountColor = null;
+        let lowestCount = null;
+        for(const color in colorCounts) {
+            if(lowestCount === null || colorCounts[color] < lowestCount) {
+                lowestCount = colorCounts[color];
+                lowestCountColor = color;
+            }
+        }
+
+        return lowestCountColor;
+    }
+
     addCutoutFromTemplate(cutoutTemplate: CutoutTemplate<any, any, any>): Promise<void> {
         return cutoutTemplate.makeCutout(this).then((cutout) => {
             cutout.name = 'Mijn kaart ' + (cutout.id+1);
-            cutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+            cutout.color = this.newColor();
 
             this.actionHistory.addAction(new AddCutoutAction(
                 cutout,
@@ -209,7 +230,7 @@ export default class UserInterface {
         const newCutout = sourceCutout.clone();
 
         newCutout.name = sourceCutout.name + ' (kopie)';
-        newCutout.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+        newCutout.color = this.newColor();
 
         this.actionHistory.addAction(new AddCutoutAction(
             newCutout,
