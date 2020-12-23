@@ -174,7 +174,10 @@ export default class Wmts implements MapImageProvider {
                 if(scaleNode === null) {
                     throw new UserError('Could not find tilematrix scale');
                 }
-                let scaleRatio = parseFloat(scaleNode.textContent) / scale;
+
+                // We generally want finer scales on paper than on screen. Hence, we decide to aim
+                // for half the scale instead of the original scale
+                let scaleRatio = parseFloat(scaleNode.textContent) / (scale * 0.5);
                 if(scaleRatio < 1) {
                     scaleRatio = 1 / scaleRatio;
                 }
