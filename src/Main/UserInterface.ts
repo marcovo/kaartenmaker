@@ -17,6 +17,7 @@ export default class UserInterface {
 
     private cutoutList: Vue;
     private cutoutTemplateList: Vue;
+    private cutoutDropdownMenu: Vue;
     private actionHistoryButtons: Vue;
     private lastAddedCutoutTemplateId: number = null;
 
@@ -97,6 +98,27 @@ export default class UserInterface {
             }
         });
 
+        this.cutoutDropdownMenu = new Vue({
+            el: '#cutoutDropdownMenu',
+            data: {
+                cutout: null,
+            },
+            methods: {
+                print: (cutout: Cutout<any, any, any>) => {
+                    this.print(cutout);
+                },
+                deleteCutout: (cutout: Cutout<any, any, any>) => {
+                    this.deleteCutout(cutout);
+                },
+                duplicateCutout: (cutout: Cutout<any, any, any>) => {
+                    this.duplicateCutout(cutout);
+                },
+                downloadLegend: (cutout: Cutout<any, any, any>) => {
+                    cutout.getProjection().getMapImageProvider().downloadLegend();
+                },
+            }
+        });
+
         this.actionHistoryButtons = new Vue({
             el: '#actionHistoryButtons',
             data: {
@@ -117,6 +139,19 @@ export default class UserInterface {
                 this.actionHistory.clear();
             }
         });
+    }
+
+    openCutoutDropdownMenu(cutout: Cutout<any, any, any>, evt) {
+        this.cutoutDropdownMenu.cutout = cutout;
+
+        $('#cutoutDropdownMenuButton')
+            .dropdown('show')
+            .siblings('.dropdown-menu')
+            .css({
+                top: evt.originalEvent.clientY + 'px',
+                left: evt.originalEvent.clientX + 'px',
+            })
+        ;
     }
 
     private loadingIndicatorCounter: number = 0;

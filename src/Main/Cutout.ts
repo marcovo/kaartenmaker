@@ -249,6 +249,10 @@ export default class Cutout<
             ));
         });
 
+        this.leafletPolygon.on('contextmenu', (evt) => {
+            this.userInterface.openCutoutDropdownMenu(this, evt);
+        });
+
         this.mouseout();
     }
 

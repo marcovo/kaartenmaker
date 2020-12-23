@@ -45,6 +45,12 @@
     background-color: #eeeeee;
 }
 
+#cutoutDropdownMenu {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
 #mainLoadingIndicator {
     position: fixed;
     top: 0;
