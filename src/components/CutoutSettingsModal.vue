@@ -4,7 +4,7 @@
       tabindex="-1"
       role="dialog"
       v-bind:id="'cutout_settings_modal_' + cutout.id"
-      data-backdrop="static"
+      data-backdrop="false"
       data-keyboard="false"
   >
     <div class="modal-dialog modal-lg" role="document">
