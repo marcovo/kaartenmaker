@@ -42,8 +42,12 @@ export default class ActionHistory {
         this.pointer = null;
     }
 
+    public canUndo(): boolean {
+        return this.pointer !== null;
+    }
+
     public undo() {
-        if(this.pointer === null) {
+        if(!this.canUndo()) {
             return;
         }
 
@@ -56,8 +60,12 @@ export default class ActionHistory {
         }
     }
 
+    public canRedo(): boolean {
+        return this.actionList.length > 0 && (this.pointer === null || this.pointer < this.actionList.length - 1);
+    }
+
     public redo() {
-        if(this.actionList.length === 0 || (this.pointer !== null && this.pointer >= this.actionList.length - 1)) {
+        if(!this.canRedo()) {
             return;
         }
 

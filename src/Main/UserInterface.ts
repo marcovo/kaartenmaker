@@ -20,6 +20,7 @@ export default class UserInterface {
 
     private cutoutList: Vue;
     private cutoutTemplateList: Vue;
+    private actionHistoryButtons: Vue;
     private lastAddedCutoutTemplateId: number = null;
 
     readonly colors: string[];
@@ -34,14 +35,6 @@ export default class UserInterface {
 
         $(() => {
             this.onLoad();
-
-            $('#undoButton').on('click', () => {
-                this.actionHistory.undo();
-            });
-
-            $('#redoButton').on('click', () => {
-                this.actionHistory.redo();
-            });
         });
 
     }
@@ -101,6 +94,21 @@ export default class UserInterface {
                 click: (cutoutTemplate: CutoutTemplate<any, any, any>) => {
                     this.addCutoutFromTemplate(cutoutTemplate);
                     toggle_menu(false);
+                },
+            }
+        });
+
+        this.actionHistoryButtons = new Vue({
+            el: '#actionHistoryButtons',
+            data: {
+                actionHistory: this.actionHistory,
+            },
+            methods: {
+                undo: () => {
+                    this.actionHistory.undo();
+                },
+                redo: () => {
+                    this.actionHistory.redo();
                 },
             }
         });
