@@ -5,12 +5,19 @@
     left: 0;
     height: 100vh;
     width: 100vw;
-    z-index: -1;
+    z-index: 1;
 }
 
 #map-canvas {
     width: 100%;
     height: 100%;
+}
+
+.control-panes {
+    position: relative;
+    margin-left: 10px;
+    width: 350px;
+    z-index: 2;
 }
 
 .control-pane {
@@ -22,14 +29,10 @@
 
 .control-pane.control-pane-general-tools {
     margin-top: 10px;
-    margin-left: 10px;
-    width: 350px;
 }
 
 .control-pane.control-pane-cutout-list {
     margin-top: 10px;
-    margin-left: 10px;
-    width: 350px;
 }
 
 .control-pane.control-pane-cutout-list .control-pane-content {
