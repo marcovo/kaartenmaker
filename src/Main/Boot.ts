@@ -3,11 +3,11 @@ import WGS84, {WGS84System} from "../Coordinates/WGS84";
 import {DutchGridSystem} from "../Coordinates/DutchGrid";
 import {UTMSystem} from "../Coordinates/UTM";
 import Container from "./Container";
-import Wms from "../Util/Wms";
+import Wms from "../Projection/Wms";
 import CutoutTemplate from "./CutoutTemplate";
 import {A3L, A3P, A4L, A4P, A5L, A5P} from "../Util/Paper";
 import WmsProjection from "../Projection/WmsProjection";
-import Wmts from "../Util/Wmts";
+import Wmts from "../Projection/Wmts";
 import WmtsProjection from "../Projection/WmtsProjection";
 
 CoordinateConverter.registerCoordinateSystem(new WGS84System());

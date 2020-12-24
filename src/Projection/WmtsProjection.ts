@@ -1,5 +1,5 @@
 import Coordinate from "../Coordinates/Coordinate";
-import Wmts, {WmtsParams} from "../Util/Wmts";
+import Wmts, {WmtsParams} from "./Wmts";
 import Cutout from "../Main/Cutout";
 import Cache from "../Util/Cache";
 import {Point} from "../Util/Math";

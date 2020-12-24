@@ -7,7 +7,7 @@ import Projection from "../Projection/Projection";
 import Grid from "./Grid";
 import Cutout from "./Cutout";
 import UserInterface from "./UserInterface";
-import MapImageProvider from "../Util/MapImageProvider";
+import MapImageProvider from "../Projection/MapImageProvider";
 
 export type CutoutOptions = {
     margin_top: millimeter,

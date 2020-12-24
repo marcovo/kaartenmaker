@@ -2,8 +2,8 @@ import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import Coordinate from "../Coordinates/Coordinate";
 import Container from "../Main/Container";
 import MapImageProvider from "./MapImageProvider";
-import UserError from "./UserError";
-import {findChildNode} from "./functions";
+import UserError from "../Util/UserError";
+import {findChildNode} from "../Util/functions";
 
 const $ = require( 'jquery' );
 

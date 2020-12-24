@@ -15,7 +15,7 @@ import Grid from "./Grid";
 import MoveCutoutAction from "../ActionHistory/MoveCutoutAction";
 import CutoutTemplate from "./CutoutTemplate";
 import Printer from "./Printer";
-import MapImageProvider from "../Util/MapImageProvider";
+import MapImageProvider from "../Projection/MapImageProvider";
 
 export default class Cutout<
     WorkspaceCoordinate extends Coordinate & LeafletConvertibleCoordinate,

@@ -1,5 +1,5 @@
 import Coordinate from "../Coordinates/Coordinate";
-import Wms, {WmsParams} from "../Util/Wms";
+import Wms, {WmsParams} from "./Wms";
 import Cutout from "../Main/Cutout";
 import Cache from "../Util/Cache";
 import {Point} from "../Util/Math";
@@ -7,7 +7,7 @@ import {jsPDF} from "jspdf";
 import Paper from "../Util/Paper";
 import Container from "../Main/Container";
 import Projection from "./Projection";
-import MapImageProvider from "../Util/MapImageProvider";
+import MapImageProvider from "./MapImageProvider";
 
 const MM_PER_INCH = 25.4;
 

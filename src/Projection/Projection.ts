@@ -7,7 +7,7 @@ import {Point, PointSystem} from "../Util/Math";
 import {jsPDF} from "jspdf";
 import Paper from "../Util/Paper";
 import CartesianTransformation from "../Conversion/CartesianTransformation";
-import MapImageProvider from "../Util/MapImageProvider";
+import MapImageProvider from "./MapImageProvider";
 
 export default abstract class Projection<C extends Coordinate, MIP extends MapImageProvider> {
 

@@ -1,9 +1,9 @@
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
-import CoordinateConverter from "./CoordinateConverter";
+import CoordinateConverter from "../Util/CoordinateConverter";
 import Coordinate from "../Coordinates/Coordinate";
 import Container from "../Main/Container";
 import MapImageProvider from "./MapImageProvider";
-import UserError from "./UserError";
+import UserError from "../Util/UserError";
 
 const $ = require( 'jquery' );
 

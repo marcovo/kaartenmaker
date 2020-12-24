@@ -1,8 +1,8 @@
 import Cache from "../Util/Cache";
 import CutoutTemplate from "./CutoutTemplate";
-import MapImageProvider from "../Util/MapImageProvider";
-import Wms from "../Util/Wms";
-import Wmts from "../Util/Wmts";
+import MapImageProvider from "../Projection/MapImageProvider";
+import Wms from "../Projection/Wms";
+import Wmts from "../Projection/Wmts";
 import Paper from "../Util/Paper";
 
 export default class Container {

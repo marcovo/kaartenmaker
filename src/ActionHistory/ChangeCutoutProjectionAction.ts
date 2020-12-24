@@ -2,7 +2,7 @@ import Action from "./Action";
 import Cutout from "../Main/Cutout";
 import Projection from "../Projection/Projection";
 import Coordinate from "../Coordinates/Coordinate";
-import MapImageProvider from "../Util/MapImageProvider";
+import MapImageProvider from "../Projection/MapImageProvider";
 
 export default class ChangeCutoutProjectionAction<C extends Coordinate> implements Action {
 
