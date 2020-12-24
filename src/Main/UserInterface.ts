@@ -7,6 +7,7 @@ import ActionHistory from "../ActionHistory/ActionHistory";
 import AddCutoutAction from "../ActionHistory/AddCutoutAction";
 import DeleteCutoutAction from "../ActionHistory/DeleteCutoutAction";
 import CutoutTemplate from "./CutoutTemplate";
+import Serializer from "./Serializer";
 require('../Lib/LeafletDrag');
 require("./Cutout"); // If we don't explicitly require this, the application crashes...
 
@@ -46,6 +47,10 @@ export default class UserInterface {
             this.addCutout();
         });
 
+        $('#shareButton').on('click', () => {
+            window.open((new Serializer()).createWorkspaceLink(this));
+        });
+
         this.cutoutList = new Vue({
             el: '#cutoutList',
             data: {
@@ -60,6 +65,9 @@ export default class UserInterface {
                 },
                 duplicateCutout: (cutout: Cutout<any, any, any>) => {
                     this.duplicateCutout(cutout);
+                },
+                shareCutout: (cutout: Cutout<any, any, any>) => {
+                    window.open((new Serializer()).createCutoutLink(cutout));
                 },
                 downloadLegend: (cutout: Cutout<any, any, any>) => {
                     cutout.getProjection().getMapImageProvider().downloadLegend();
@@ -117,6 +125,9 @@ export default class UserInterface {
                 duplicateCutout: (cutout: Cutout<any, any, any>) => {
                     this.duplicateCutout(cutout);
                 },
+                shareCutout: (cutout: Cutout<any, any, any>) => {
+                    window.open((new Serializer()).createCutoutLink(cutout));
+                },
                 downloadLegend: (cutout: Cutout<any, any, any>) => {
                     cutout.getProjection().getMapImageProvider().downloadLegend();
                 },
@@ -138,11 +149,17 @@ export default class UserInterface {
             }
         });
 
-        this.addCutout().then(() => {
-            if(this.actionHistory.getLength() === 1) {
-                this.actionHistory.clear();
-            }
-        });
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlWorkspace = urlParams.get('workspace');
+        if(urlWorkspace !== null) {
+            (new Serializer()).importFromLink(urlWorkspace, this);
+        } else {
+            this.addCutout().then(() => {
+                if(this.actionHistory.getLength() === 1) {
+                    this.actionHistory.clear();
+                }
+            });
+        }
     }
 
     openCutoutDropdownMenu(cutout: Cutout<any, any, any>, evt) {
@@ -252,6 +269,14 @@ export default class UserInterface {
 
     getCutouts() {
         return this.cutouts;
+    }
+
+    setFromUnserialize(cutouts: Cutout<any, any, any>[]) {
+        this.actionHistory.clear();
+        this.cutouts.splice(0);
+        for(const cutout of cutouts) {console.log(cutout);
+            this.attachCutout(cutout, this.cutouts.length);
+        }
     }
 
     print(cutout: Cutout<any, any, any>): void {

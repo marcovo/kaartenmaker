@@ -7,7 +7,7 @@ require('./components/CutoutSettingsModal.vue');
 
 (() => {
     window.addEventListener('error', function(event) {
-        if(event.error.isUserError) {
+        if(event.error && event.error.isUserError) {
             alert(event.error.message);
             event.preventDefault();
         }

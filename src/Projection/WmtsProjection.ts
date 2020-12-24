@@ -7,6 +7,7 @@ import {jsPDF} from "jspdf";
 import Paper from "../Util/Paper";
 import Container from "../Main/Container";
 import Projection from "./Projection";
+import {Serialization} from "../Main/Serializer";
 
 const MM_PER_INCH = 25.4;
 
@@ -49,6 +50,23 @@ export default class WmtsProjection<C extends Coordinate> extends Projection<C, 
             this.getScale(),
             this.getTileMatrixId(),
         );
+    }
+
+    serialize(): Serialization {
+        return {
+            type: 'wmts',
+            mip: this.mapImageProvider.name,
+            scale: this.scale,
+            tileMatrixId: this.tileMatrixId,
+        };
+    }
+
+    static unserialize(serialized: Serialization): WmtsProjection<Coordinate> {
+        const projection = new WmtsProjection(serialized.mip, serialized.scale);
+        if(serialized.tileMatrixId) {
+            projection.setTileMatrixId(serialized.tileMatrixId);
+        }
+        return projection;
     }
 
     attach(cutout: Cutout<any, C, any>) {

@@ -3,6 +3,7 @@ import CoordinateSystem from "./CoordinateSystem";
 import Conversion from "../Conversion/Conversion";
 import UTM_WGS84 from "../Conversion/UTM_WGS84";
 import {trimTrailingZeroDecimalPlaces} from "../Util/functions";
+import {Point} from "../Util/Math";
 
 export class UTMSystem implements CoordinateSystem<UTM> {
     readonly name = 'EPSG:25832';
@@ -15,6 +16,10 @@ export class UTMSystem implements CoordinateSystem<UTM> {
             throw new Error('Cannot create UTM coordinate from incomplete system specification');
         }
         return new UTM(E, N, this.zone, this.hemi);
+    }
+
+    fromPoint(point: Point): UTM {
+        return new UTM(point.getX(), point.getY(), this.zone, this.hemi);
     }
 
     conversions(): Conversion<UTM, Coordinate>[] {

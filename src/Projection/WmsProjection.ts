@@ -8,6 +8,7 @@ import Paper from "../Util/Paper";
 import Container from "../Main/Container";
 import Projection from "./Projection";
 import MapImageProvider from "./MapImageProvider";
+import {Serialization} from "../Main/Serializer";
 
 const MM_PER_INCH = 25.4;
 
@@ -43,6 +44,23 @@ export default class WmsProjection<C extends Coordinate> extends Projection<C, W
             this.mapImageProvider.name,
             this.getScale(),
         );
+    }
+
+    serialize(): Serialization {
+        return {
+            type: 'wms',
+            mip: this.mapImageProvider.name,
+            scale: this.scale,
+            dpi: this.dpi,
+        };
+    }
+
+    static unserialize(serialized: Serialization): WmsProjection<Coordinate> {
+        const projection = new WmsProjection(serialized.mip, serialized.scale);
+        if(serialized.dpi) {
+            projection.setDpi(serialized.dpi);
+        }
+        return projection;
     }
 
     attach(cutout: Cutout<any, C, any>) {

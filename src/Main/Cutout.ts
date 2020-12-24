@@ -2,7 +2,7 @@ import Coordinate from "../Coordinates/Coordinate";
 import Paper, {millimeter} from "../Util/Paper";
 import * as L from 'leaflet';
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
-import {walkLine} from "../Util/Math";
+import {Point, walkLine} from "../Util/Math";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
 import Map from "./Map";
 import * as _ from "lodash";
@@ -16,6 +16,10 @@ import MoveCutoutAction from "../ActionHistory/MoveCutoutAction";
 import CutoutTemplate from "./CutoutTemplate";
 import Printer from "./Printer";
 import MapImageProvider from "../Projection/MapImageProvider";
+import {Serialization} from "./Serializer";
+import Container from "./Container";
+import WmsProjection from "../Projection/WmsProjection";
+import WmtsProjection from "../Projection/WmtsProjection";
 
 export default class Cutout<
     WorkspaceCoordinate extends Coordinate & LeafletConvertibleCoordinate,
@@ -64,6 +68,56 @@ export default class Cutout<
             this.getProjection().clone(),
             new Grid(this.getGrid().coordinateSystem)
         );
+    }
+
+    serialize(): Serialization {
+        return {
+            name: this.name,
+            options: Object.assign({}, this.options),
+            anchor: {
+                system: this.anchorWorkspaceCoordinate.name,
+                x: this.anchorWorkspaceCoordinate.getX(),
+                y: this.anchorWorkspaceCoordinate.getY(),
+            },
+            color: this.color,
+            paper: this.paper.name,
+            projection: this.projection.serialize(),
+            grid: this.grid.serialize(),
+        };
+    }
+
+    static unserialize(serialized: Serialization, userInterface: UserInterface): Promise<Cutout<any, any, any>> {
+        return new Promise(((resolve, reject) => {
+            const coordinateSystem = CoordinateConverter.getCoordinateSystem(serialized.anchor.system);
+            const coordinate = coordinateSystem.fromPoint(new Point(serialized.anchor.x, serialized.anchor.y));
+
+            let projection = null;
+            if(serialized.projection.type === 'wms') {
+                projection = WmsProjection.unserialize(serialized.projection);
+            } else if(serialized.projection.type === 'wmts') {
+                projection = WmtsProjection.unserialize(serialized.projection);
+            } else {
+                throw new Error('Invalid projection type');
+            }
+
+            const cutout = new Cutout(
+                userInterface,
+                Container.getPaper(serialized.paper || 'A4L'),
+                // @ts-ignore
+                coordinate,
+                coordinateSystem,
+                projection,
+                Grid.unserialize(serialized.grid),
+            );
+
+            cutout.name = serialized.name;
+            cutout.color = serialized.color;
+            cutout.options = Object.assign({}, cutout.options, serialized.options);
+
+            cutout.getProjection().initialize().then(() => {
+                resolve(cutout);
+            })
+        }));
     }
 
     computeProjectionPolygon(anchorProjection: ProjectionCoordinate): ProjectionCoordinate[] {

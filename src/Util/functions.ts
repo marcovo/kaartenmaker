@@ -64,3 +64,17 @@ export function findChildNode(node: Node, callback: (node) => boolean): Node|nul
     }
     return null;
 }
+
+export function uint8arrayToString(input: Uint8Array): string {
+    const output = [];
+
+    for (let i = 0; i < input.length; i++) {
+        output.push(String.fromCharCode(input[i]));
+    }
+
+    return output.join('');
+}
+
+export function stringToUnit8array(input: string): Uint8Array {
+    return Uint8Array.from(input, (char) => char.charCodeAt(0));
+}

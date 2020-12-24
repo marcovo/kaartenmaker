@@ -5,6 +5,7 @@ import {jsPDF} from "jspdf";
 import {lineSegmentsIntersection, Point} from "../Util/Math";
 import CoordinateConverter from "../Util/CoordinateConverter";
 import ConversionComposition from "../Conversion/ConversionComposition";
+import {Serialization} from "./Serializer";
 
 export type EdgeIntersection<C extends Coordinate> = {
     paperCoord: Point,
@@ -17,6 +18,16 @@ export default class Grid<C extends Coordinate> {
 
     constructor(readonly coordinateSystem: CoordinateSystem<C>) {
 
+    }
+
+    serialize(): Serialization {
+        return {
+            system: this.coordinateSystem.name,
+        };
+    }
+
+    static unserialize(serialized: Serialization): Grid<Coordinate> {
+        return new Grid(CoordinateConverter.getCoordinateSystem(serialized.system));
     }
 
     attach(cutout: Cutout<any, any, any>) {

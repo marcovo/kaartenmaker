@@ -6,12 +6,17 @@ import LeafletConvertibleCoordinateSystem from "./LeafletConvertibleCoordinateSy
 import Conversion from "../Conversion/Conversion";
 import WGS84_DutchGrid from "../Conversion/WGS84_DutchGrid";
 import WGS84_UTM from "../Conversion/WGS84_UTM";
+import {Point} from "../Util/Math";
 
 export class WGS84System implements CoordinateSystem<WGS84>, LeafletConvertibleCoordinateSystem<WGS84> {
     readonly name = 'EPSG:4326';
 
     make(lat: number, lng: number): WGS84 {
         return new WGS84(lat, lng);
+    }
+
+    fromPoint(point: Point): WGS84 {
+        return new WGS84(point.getY(), point.getX());
     }
 
     fromLeaflet(source: L.LatLng): WGS84 {

@@ -13,6 +13,10 @@ export class PointSystem implements CoordinateSystem<Point> {
         return new Point(x, y);
     }
 
+    fromPoint(point: Point): Point {
+        return new Point(point.getX(), point.getY());
+    }
+
     rebase(c: Point): CoordinateSystem<Point> {
         return this;
     }

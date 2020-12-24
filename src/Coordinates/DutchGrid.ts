@@ -3,12 +3,17 @@ import CoordinateSystem from "./CoordinateSystem";
 import Conversion from "../Conversion/Conversion";
 import DutchGrid_WGS84 from "../Conversion/DutchGrid_WGS84";
 import {trimTrailingZeroDecimalPlaces} from "../Util/functions";
+import {Point} from "../Util/Math";
 
 export class DutchGridSystem implements CoordinateSystem<DutchGrid> {
     readonly name = 'EPSG:28992';
 
     make(x: number, y: number): DutchGrid {
         return new DutchGrid(x, y);
+    }
+
+    fromPoint(point: Point): DutchGrid {
+        return new DutchGrid(point.getX(), point.getY());
     }
 
     conversions(): Conversion<DutchGrid, Coordinate>[] {
