@@ -48,7 +48,7 @@ export default class UserInterface {
         });
 
         $('#shareButton').on('click', () => {
-            window.open((new Serializer()).createWorkspaceLink(this));
+            this.displayShareModal((new Serializer()).createWorkspaceLink(this));
         });
 
         this.cutoutList = new Vue({
@@ -67,7 +67,7 @@ export default class UserInterface {
                     this.duplicateCutout(cutout);
                 },
                 shareCutout: (cutout: Cutout<any, any, any>) => {
-                    window.open((new Serializer()).createCutoutLink(cutout));
+                    this.displayShareModal((new Serializer()).createCutoutLink(cutout));
                 },
                 downloadLegend: (cutout: Cutout<any, any, any>) => {
                     cutout.getProjection().getMapImageProvider().downloadLegend();
@@ -126,7 +126,7 @@ export default class UserInterface {
                     this.duplicateCutout(cutout);
                 },
                 shareCutout: (cutout: Cutout<any, any, any>) => {
-                    window.open((new Serializer()).createCutoutLink(cutout));
+                    this.displayShareModal((new Serializer()).createCutoutLink(cutout));
                 },
                 downloadLegend: (cutout: Cutout<any, any, any>) => {
                     cutout.getProjection().getMapImageProvider().downloadLegend();
@@ -211,6 +211,11 @@ export default class UserInterface {
         }
 
         return lowestCountColor;
+    }
+
+    displayShareModal(link: string) {
+        $('#shareUrlModalInput').val(link);
+        $('#shareUrlModal').modal('show');
     }
 
     addCutoutFromTemplate(cutoutTemplate: CutoutTemplate<any, any, any>): Promise<void> {

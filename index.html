@@ -230,5 +230,42 @@
     </div>
 
     <div id="mainLoadingIndicator"></div>
+
+    <div
+            id="shareUrlModal"
+            class="modal"
+            tabindex="-1"
+            role="dialog"
+            data-backdrop="false"
+            data-keyboard="false"
+    >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kaart delen</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Gebruik onderstaande link om het geselecteerde te delen met anderen.
+                    </p>
+                    <div class="form-group">
+                        <input
+                                type="text"
+                                class="form-control"
+                                id="shareUrlModalInput"
+                                readonly
+                                onClick="this.setSelectionRange(0, this.value.length)"
+                        >
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
