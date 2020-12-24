@@ -104,6 +104,10 @@ export default class UserInterface {
                 cutout: null,
             },
             methods: {
+                settings: (cutout: Cutout<any, any, any>) => {
+                    // TODO: kind of ugly...
+                    $('#cutout_' + cutout.id + '_settings').trigger('click');
+                },
                 print: (cutout: Cutout<any, any, any>) => {
                     this.print(cutout);
                 },
