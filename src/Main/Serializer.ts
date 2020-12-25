@@ -35,6 +35,10 @@ export default class Serializer {
         return this.import(inflatedString, userInterface);
     }
 
+    serializeWorkspace(userInterface: UserInterface): Serialization {
+        return this.serialize(userInterface.getCutouts(), userInterface);
+    }
+
     private export(cutouts: Cutout<any, any, any>[], userInterface: UserInterface): string {
         return JSON.stringify(this.serialize(cutouts, userInterface));
     }
@@ -55,7 +59,7 @@ export default class Serializer {
         return serialized;
     }
 
-    private unserialize(serialized: Serialization, userInterface: UserInterface): Promise<void> {
+    unserialize(serialized: Serialization, userInterface: UserInterface): Promise<void> {
         const promises: Promise<void>[] = [];
         const cutouts: Cutout<any, any, any>[] = [];
         if(serialized.cutouts !== undefined) {

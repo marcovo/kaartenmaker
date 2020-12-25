@@ -8,6 +8,7 @@ import AddCutoutAction from "../ActionHistory/AddCutoutAction";
 import DeleteCutoutAction from "../ActionHistory/DeleteCutoutAction";
 import CutoutTemplate from "./CutoutTemplate";
 import Serializer from "./Serializer";
+import Bookmarks from "./Bookmarks";
 require('../Lib/LeafletDrag');
 require("./Cutout"); // If we don't explicitly require this, the application crashes...
 
@@ -15,9 +16,11 @@ export default class UserInterface {
 
     private map: Map;
     private cutouts: Cutout<any, any, any>[] = [];
+    private bookmarks: Bookmarks;
 
     private cutoutList: Vue;
     private cutoutTemplateList: Vue;
+    private bookmarksWrapper: Vue;
     private cutoutDropdownMenu: Vue;
     private actionHistoryButtons: Vue;
     private lastAddedCutoutTemplateId: number = null;
@@ -33,6 +36,7 @@ export default class UserInterface {
         this.colors = ['blue', 'orange', 'green', 'fuchsia', 'lime', '#f33', '#ee0', 'aqua', 'black', 'maroon', 'navy', 'purple', 'teal', 'olive'];
 
         this.actionHistory = new ActionHistory();
+        this.bookmarks = new Bookmarks(this);
 
         $(() => {
             this.onLoad();
@@ -104,6 +108,13 @@ export default class UserInterface {
                     toggle_menu(false);
                 },
             }
+        });
+
+        this.bookmarksWrapper = new Vue({
+            el: '#bookmarksWrapper',
+            data: {
+                bookmarks: this.bookmarks,
+            },
         });
 
         this.cutoutDropdownMenu = new Vue({
@@ -278,8 +289,11 @@ export default class UserInterface {
 
     setFromUnserialize(cutouts: Cutout<any, any, any>[]) {
         this.actionHistory.clear();
+        for(const cutout of this.cutouts) {
+            cutout.removeFromMap(this.map);
+        }
         this.cutouts.splice(0);
-        for(const cutout of cutouts) {console.log(cutout);
+        for(const cutout of cutouts) {
             this.attachCutout(cutout, this.cutouts.length);
         }
     }
