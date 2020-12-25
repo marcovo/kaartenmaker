@@ -92,6 +92,7 @@
                         v-bind:id="'cutout_' + cutout.id"
                         v-on:mouseover="mouseover(cutout)"
                         v-on:mouseout="mouseout(cutout)"
+                        :key="cutout.id"
                 >
                     <div class="d-flex">
                         <div style="width: 12px;">
