@@ -296,6 +296,7 @@ export default class UserInterface {
         for(const cutout of cutouts) {
             this.attachCutout(cutout, this.cutouts.length);
         }
+        this.map.fitToCutouts(this.cutouts);
     }
 
     print(cutout: Cutout<any, any, any>): void {

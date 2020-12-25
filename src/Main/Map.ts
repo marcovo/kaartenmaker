@@ -1,6 +1,9 @@
 
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import Cutout from "./Cutout";
+import Coordinate from "../Coordinates/Coordinate";
+import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
 
 export default class Map {
 
@@ -39,5 +42,37 @@ export default class Map {
 
     getLeafletMap(): L.map {
         return this.leafletMap;
+    }
+
+    fitToCutouts(cutouts: Cutout<Coordinate & LeafletConvertibleCoordinate, any, any>[]): void {
+        if(cutouts.length === 0) {
+            return;
+        }
+
+        let minLat = null, maxLat = null, minLng = null, maxLng = null;
+
+        for(const cutout of cutouts) {
+            for(const wsCoordinate of cutout.mapPolygonWorkspace) {
+                const coord = wsCoordinate.toLeaflet();
+                if(minLat === null || coord.lat < minLat) {
+                    minLat = coord.lat;
+                }
+                if(maxLat === null || coord.lat > maxLat) {
+                    maxLat = coord.lat;
+                }
+
+                if(minLng === null || coord.lng < minLng) {
+                    minLng = coord.lng;
+                }
+                if(maxLng === null || coord.lng > maxLng) {
+                    maxLng = coord.lng;
+                }
+            }
+        }
+
+        this.leafletMap.fitBounds([
+            [minLat, minLng],
+            [maxLat, maxLng],
+        ]);
     }
 }
