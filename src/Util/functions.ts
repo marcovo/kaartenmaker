@@ -78,3 +78,13 @@ export function uint8arrayToString(input: Uint8Array): string {
 export function stringToUnit8array(input: string): Uint8Array {
     return Uint8Array.from(input, (char) => char.charCodeAt(0));
 }
+
+export function formatDateTime(date: Date|number): string {
+    if(!(date instanceof Date)) {
+        date = new Date(date);
+    }
+
+    const minutes = date.getMinutes();
+    const minuteString = ((minutes < 10) ? '0' : '') + minutes.toString();
+    return date.getDay() + '-' + date.getMonth() + '-' + date.getFullYear() + ' ' + date.getHours() + ':' + minuteString;
+}

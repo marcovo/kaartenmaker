@@ -11,13 +11,18 @@
         <a class="dropdown-item" href="#" v-on:click="addBookmark">Opslaan...</a>
         <div class="dropdown-divider" v-if="bookmarkList.length > 0"></div>
         <div class="dropdown-item d-flex mr-3" type="button" v-for="bookmark in bookmarkList" :key="bookmark.name" v-on:click="openBookmark(bookmark)">
-          <div class="flex-grow-1">{{ bookmark.name }}</div>
+          <div class="flex-grow-1">
+            <p class="mb-0">{{ bookmark.name }}</p>
+            <p class="mb-0 font-italic small text-muted">{{ formatDateTime(bookmark.date) }}</p>
+          </div>
 
-          <button class="btn btn-sm btn-control" type="button" v-on:click="deleteBookmark($event, bookmark)">
-            <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
-            </svg>
-          </button>
+          <div class="d-flex flex-column justify-content-center">
+            <button class="btn btn-sm btn-control" type="button" v-on:click="deleteBookmark($event, bookmark)">
+              <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -60,14 +65,14 @@
               <hr />
               <h5>Een bestaande werkruimte overschrijven</h5>
               <div class="list-group">
-                <button
-                    type="button"
-                    class="list-group-item list-group-item-action"
+                <div
+                    class="list-group-item list-group-item-action d-flex cursor-pointer"
                     v-for="bookmark in bookmarkList"
                     v-on:click="updateBookmark(bookmark)"
                 >
-                  {{ bookmark.name }}
-                </button>
+                  <div class="flex-grow-1">{{ bookmark.name }}</div>
+                  <div class="font-italic small text-muted">{{ formatDateTime(bookmark.date) }}</div>
+                </div>
               </div>
             </div>
 
@@ -82,6 +87,7 @@
 import Vue from 'vue/dist/vue.esm.js';
 import * as $ from "jquery";
 import Bookmarks, {Bookmark} from "../Main/Bookmarks";
+import {formatDateTime} from "../Util/functions";
 
 export default Vue.component('bookmarks', {
   props: {
@@ -102,6 +108,7 @@ export default Vue.component('bookmarks', {
     }
   },
   methods: {
+    formatDateTime,
     addBookmark() {
       $('#bookmark_name').val('');
       $('#bookmarks_add_modal').modal();

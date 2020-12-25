@@ -62,6 +62,10 @@
     display: none;
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
 /* btn-control based on btn-outline-secondary */
 .btn-control {
     color:#999999;
