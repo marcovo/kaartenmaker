@@ -122,7 +122,7 @@ export default Vue.component('bookmarks', {
       }
     },
     deleteBookmark(event, bookmark: Bookmark) {
-      event.preventDefault();
+      event.stopPropagation();
       if(confirm('Weet je zeker dat je "'+bookmark.name+'" wilt verwijderen? Deze actie kan niet worden teruggedraaid.')) {
         this.bookmarks.deleteBookmark(bookmark.name);
         this.bookmarkListRecomputeCounter++;
