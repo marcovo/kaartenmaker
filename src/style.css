@@ -75,7 +75,7 @@
 }
 
 .control-pane.control-pane-cutout-list.minimized {
-    display: inline-block;
+    float: left; /* Make sure the containing box is not too large */
     padding: 5px;
 }
 
