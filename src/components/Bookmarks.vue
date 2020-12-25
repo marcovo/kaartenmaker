@@ -110,8 +110,8 @@ export default Vue.component('bookmarks', {
   methods: {
     formatDateTime,
     addBookmark() {
-      $('#bookmark_name').val('');
       $('#bookmarks_add_modal').modal();
+      $('#bookmark_name').val('').focus();
     },
     setBookmark() {
       const name = $('#bookmark_name').val().trim();
