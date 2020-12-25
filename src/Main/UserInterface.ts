@@ -97,6 +97,13 @@ export default class UserInterface {
             toggle_menu();
         });
 
+        $('#cutoutListMinimizer').on('click', () => {
+            $('#cutoutListPane').addClass('minimized');
+        });
+        $('#cutoutListMaximizer').on('click', () => {
+            $('#cutoutListPane').removeClass('minimized');
+        });
+
         this.cutoutTemplateList = new Vue({
             el: '#cutoutTemplateList',
             data: {

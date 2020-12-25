@@ -33,12 +33,50 @@
 
 .control-pane.control-pane-cutout-list {
     margin-top: 10px;
+    padding-top: 0px;
 }
 
-.control-pane.control-pane-cutout-list .control-pane-content {
+.control-pane.control-pane-cutout-list .control-pane-content#cutoutList {
     min-height: 200px;
     max-height: 80vh;
     overflow: auto;
+}
+
+.control-pane.control-pane-cutout-list .control-pane-content#cutoutListMinimized {
+    display: none;
+}
+
+#cutoutListMinimizer {
+    cursor: row-resize;
+    height: 15px;
+}
+
+#cutoutListMinimizer:hover::after {
+    transform: translate(0, 6px);
+    display: block;
+    content: "";
+    width: 100%;
+    height: 3px;
+    background-color: rgba(0, 0, 0, 0.2);
+    background: linear-gradient(
+            180deg,
+            rgba(0,0,0,0.05) 0%,
+            rgba(0,0,0,0.15) 50%,
+            rgba(0,0,0,0.05) 100%
+    );
+}
+
+.control-pane.control-pane-cutout-list.minimized .control-pane-content#cutoutList {
+    display: none;
+}
+
+.control-pane.control-pane-cutout-list.minimized .control-pane-content#cutoutListMinimized {
+    display: block;
+}
+
+.control-pane.control-pane-cutout-list.minimized {
+    display: inline-block;
+    padding: 5px;
 }
 
 .cutout.hover {
