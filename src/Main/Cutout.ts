@@ -81,6 +81,7 @@ export default class Cutout<
                 y: this.anchorWorkspaceCoordinate.getY(),
             },
             color: this.color,
+            visibleOnMap: this.visibleOnMap, // This is not immediately honored, but it is later enforced in userInterface.setFromUnserialize()
             paper: this.paper.name,
             projection: this.projection.serialize(),
             grid: this.grid.serialize(),
@@ -113,6 +114,7 @@ export default class Cutout<
 
             cutout.name = serialized.name;
             cutout.color = serialized.color;
+            cutout.visibleOnMap = serialized.visibleOnMap;
             cutout.options = Object.assign({}, cutout.options, serialized.options);
 
             cutout.getProjection().initialize().then(() => {

@@ -299,13 +299,20 @@ export default class UserInterface {
 
     setFromUnserialize(cutouts: Cutout<any, any, any>[]) {
         this.actionHistory.clear();
+
         for(const cutout of this.cutouts) {
             cutout.removeFromMap(this.map);
         }
         this.cutouts.splice(0);
+
         for(const cutout of cutouts) {
+            const shouldBeVisible = cutout.visibleOnMap;
             this.attachCutout(cutout, this.cutouts.length);
+            if(!shouldBeVisible) {
+                cutout.toggleVisibleOnMap(this.map, false);
+            }
         }
+
         this.map.fitToCutouts(this.cutouts);
     }
 
