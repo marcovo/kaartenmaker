@@ -61,7 +61,7 @@
                     </div>
 
                     <div class="btn-group mr-1">
-                        <button type="button" class="btn btn-sm btn-outline-primary" id="infoButton">
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#infoModal">
                             <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-info-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                                 <path d="M8.93 6.588l-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588z"/>
@@ -271,6 +271,57 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div
+            id="infoModal"
+            class="modal"
+            tabindex="-1"
+            role="dialog"
+            data-backdrop="false"
+            data-keyboard="false"
+    >
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kaartenmaker</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Welkom op kaartenmaker, hier kun je topografische kaarten genereren in verschillende schalen (1:25.000, 1:50.000, etc.) van Nederland en Rheinland-Pfalz. Als je de PDF downloadt en print op 100%/ware grootte, zal de resulterende uitdraai precies op schaal zijn.</p>
+
+                    <h4>Kaartbronnen</h4>
+                    <p>Er wordt gebruik gemaakt van verschillende kaartbronnen.</p>
+                    <ul>
+                        <li><a href="https://www.pdok.nl/geo-services/-/article/dataset-basisregistratie-topografie-brt-topraster" target="_blank">TOPRaster</a>, de topografische kaarten van Kadaster Nederland. Gebruik onder CC-BY 4.0 licentie.</li>
+                        <li><a href="https://www.opentopo.nl/" target="_blank">OpenTopo</a>, een uitgebreidere topografische kaart van Nederland. Gebruik onder CC-BY licentie. Kan in deze applicatie alleen via <a href="https://www.pdok.nl/geo-services/-/article/opentopo" target="_blank">WMTS</a> gebruikt worden, dit betekent een iets lagere kwaliteit op papier.</li>
+                        <li><a href="https://lvermgeo.rlp.de/de/geodaten/opendata/" target="_blank">DTK Rheinland-Pfalz</a>, topografische kaarten van de duitse staat Rheinland-Pfalz. Gebruik onder dl-de/by-2-0 licentie.</li>
+                    </ul>
+
+                    <h4>Werking</h4>
+                    <p>Deze applicatie bouwt kaarten op basis van WMS en WMTS bronnen. Zowel het opstellen als het genereren van de kaarten wordt geheel gedaan in de browser, dit betekent dat de snelheid van het genereren van de kaart met name afhankelijk is van de snelheid van je eigen browser/apparaat en internet. Gedownloade kaartstukken worden 1 dag in de browser gebufferd zodat opvolgende kaart-downloads significant sneller zijn.</p>
+
+                    <h4>Software-bibliotheken</h4>
+                    <p>Voor de bouw van deze applicatie wordt gebruik gemaakt van de volgende technologieën:</p>
+                    <ul>
+                        <li>De werkkaart wordt gebouwd met <a href="http://leafletjs.com/" target="_blank">Leaflet</a>, met kaartdata van <a href="http://www.openstreetmap.org/copyright" target="_blank">Open street map</a>.</li>
+                        <li>De PDF kaart wordt opgebouwd met behulp van <a href="https://github.com/MrRio/jsPDF" target="_blank">jsPDF</a>.</li>
+                        <li>Verder wordt er nog onder andere gebruik gemaakt van <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a>, <a href="https://vuejs.org/" target="_blank">Vue.js</a>, <a href="https://getbootstrap.com/" target="_blank">Bootstrap</a> (<a href="https://icons.getbootstrap.com/" target="_blank">icons</a>) en <a href="https://jquery.com/" target="_blank">jQuery</a>.</li>
+                    </ul>
+
+                    <p>De ontwikkeling van deze applicatie kan worden gevolgd op <a href="https://github.com/marcovo" target="_blank">de Github-pagina</a>. Eventuele fouten of functionaliteitsverzoeken kunnen daar worden ingezonden.</p>
+
+                    <h4>Niet gevonden wat je zoekt?</h4>
+                    <p>Geen enkele applicatie werkt perfect voor iedereen. Hieronder vindt je een aantal alternatieven en aanvullingen op deze applicatie.</p>
+                    <ul>
+                        <li><a href="https://scoutingtools.nl/" target="_blank">scoutingtools.nl</a> biedt soortgelijke functionaliteit, met een geheel andere technische implementatie.</li>
+                        <li><a href="https://www.gpscoordinaten.nl/converteer-gps-coordinaten.php" target="_blank">gpscoordinaten.nl</a> biedt functionaliteit om GPS coördinaten om te zetten naar rijksdriehoekscoördinaten en vice versa.</li>
+                    </ul>
                 </div>
             </div>
         </div>

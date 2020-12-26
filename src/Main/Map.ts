@@ -1,6 +1,7 @@
 
 // The four imports below are ordered according to the requirements of ghybs/leaflet-defaulticon-compatibility
 // As we don't have lots of markers, using that plugin to fix leaflet+webpack is not a problem here
+// https://github.com/Leaflet/Leaflet/issues/4968
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css';
 import * as L from 'leaflet';
