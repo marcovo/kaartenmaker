@@ -99,8 +99,8 @@
                         v-bind:class="'cutout mb-2' + (cutout.visibleOnMap ? '' : ' cutout-hidden')"
                         v-bind:style="{ borderTop: '2px solid', borderColor: cutout.color }"
                         v-bind:id="'cutout_' + cutout.id"
-                        v-on:mouseover="mouseover(cutout)"
-                        v-on:mouseout="mouseout(cutout)"
+                        v-on:mouseenter="mouseover(cutout)"
+                        v-on:mouseleave="mouseout(cutout)"
                         :key="cutout.id"
                 >
                     <div class="d-flex">
