@@ -320,6 +320,7 @@ export default class Cutout<
         if(this.leafletPolygon !== null) {
             map.getLeafletMap().removeLayer(this.leafletPolygon);
         }
+        this.visibleOnMap = false;
     }
 
     toggleVisibleOnMap(map: Map, visible: boolean = null) {
@@ -328,10 +329,9 @@ export default class Cutout<
         }
 
         if(visible && !this.visibleOnMap) {
-            this.visibleOnMap = true;
             this.leafletPolygon.addTo(map.getLeafletMap());
+            this.visibleOnMap = true;
         } else if(!visible && this.visibleOnMap) {
-            this.visibleOnMap = false;
             this.removeFromMap(map);
         }
     }
