@@ -26,7 +26,7 @@ Container.registerMapImageProvider(new Wms(
     'nl_kad_25',
     'Kadaster (NL) 1:25.000',
     'https://geodata.nationaalgeoregister.nl/top25raster/wms',
-    '© Kadaster NL TOP25Raster (CC BY 4.0)',
+    'Bron: Kadaster NL TOP25Raster (CC BY 4.0)',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),
     25000,
     {
@@ -39,7 +39,7 @@ Container.registerMapImageProvider(new Wms(
     'nl_kad_50',
     'Kadaster (NL) 1:50.000',
     'https://geodata.nationaalgeoregister.nl/top50raster/wms',
-    '© Kadaster NL TOP50Raster (CC BY 4.0)',
+    'Bron: Kadaster NL TOP50Raster (CC BY 4.0)',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),
     50000,
     {
@@ -52,7 +52,7 @@ Container.registerMapImageProvider(new Wms(
     'nl_kad_100',
     'Kadaster (NL) 1:100.000',
     'https://geodata.nationaalgeoregister.nl/top100raster/wms',
-    '© Kadaster NL TOP100Raster (CC BY 4.0)',
+    'Bron: Kadaster NL TOP100Raster (CC BY 4.0)',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),
     100000,
     {
@@ -65,7 +65,7 @@ Container.registerMapImageProvider(new Wms(
     'nl_kad_250',
     'Kadaster (NL) 1:250.000',
     'https://geodata.nationaalgeoregister.nl/top250raster/wms',
-    '© Kadaster NL TOP250Raster (CC BY 4.0)',
+    'Bron: Kadaster NL TOP250Raster (CC BY 4.0)',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),
     250000,
     {
@@ -78,7 +78,7 @@ Container.registerMapImageProvider(new Wms(
     'nl_kad_500',
     'Kadaster (NL) 1:500.000',
     'https://geodata.nationaalgeoregister.nl/top500raster/wms',
-    '© Kadaster NL TOP500Raster (CC BY 4.0)',
+    'Bron: Kadaster NL TOP500Raster (CC BY 4.0)',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),
     500000,
     {
@@ -91,7 +91,7 @@ Container.registerMapImageProvider(new Wms(
     'nl_kad_1000',
     'Kadaster (NL) 1:1.000.000',
     'https://geodata.nationaalgeoregister.nl/top1000raster/wms',
-    '© Kadaster NL TOP1000Raster (CC BY 4.0)',
+    'Bron: Kadaster NL TOP1000Raster (CC BY 4.0)',
     CoordinateConverter.getCoordinateSystem('EPSG:28992'),
     1000000,
     {
