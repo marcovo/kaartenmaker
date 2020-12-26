@@ -31,6 +31,7 @@ export default class Cutout<
     mapPolygonProjection: ProjectionCoordinate[];
 
     leafletPolygon: L.polygon;
+    visibleOnMap: boolean = false;
 
     static readonly pointsOnEdge = 5;
 
@@ -172,6 +173,7 @@ export default class Cutout<
         this.leafletPolygon = L.polygon(coords, {color: this.color, weight: 3, draggable: true});
 
         this.leafletPolygon.addTo(map.getLeafletMap());
+        this.visibleOnMap = true;
         this.leafletPolygon.dragging.enable();
 
         this.leafletPolygon.on('prelatlng', (evt) => {
@@ -205,6 +207,10 @@ export default class Cutout<
 
             this.userInterface.getCutouts().forEach((cutout) => {
                 if(cutout.id === this.id) {
+                    return;
+                }
+
+                if(!cutout.visibleOnMap) {
                     return;
                 }
 
@@ -313,6 +319,20 @@ export default class Cutout<
     removeFromMap(map: Map) {
         if(this.leafletPolygon !== null) {
             map.getLeafletMap().removeLayer(this.leafletPolygon);
+        }
+    }
+
+    toggleVisibleOnMap(map: Map, visible: boolean = null) {
+        if(visible === null) {
+            visible = !this.visibleOnMap;
+        }
+
+        if(visible && !this.visibleOnMap) {
+            this.visibleOnMap = true;
+            this.leafletPolygon.addTo(map.getLeafletMap());
+        } else if(!visible && this.visibleOnMap) {
+            this.visibleOnMap = false;
+            this.removeFromMap(map);
         }
     }
 

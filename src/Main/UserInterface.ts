@@ -61,6 +61,9 @@ export default class UserInterface {
                 cutouts: this.cutouts,
             },
             methods: {
+                toggleHidden: (cutout: Cutout<any, any, any>) => {
+                    cutout.toggleVisibleOnMap(this.map);
+                },
                 print: (cutout: Cutout<any, any, any>) => {
                     this.print(cutout);
                 },
