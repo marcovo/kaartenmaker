@@ -1,6 +1,11 @@
 
-import * as L from 'leaflet';
+// The four imports below are ordered according to the requirements of ghybs/leaflet-defaulticon-compatibility
+// As we don't have lots of markers, using that plugin to fix leaflet+webpack is not a problem here
 import 'leaflet/dist/leaflet.css';
+import 'leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.webpack.css';
+import * as L from 'leaflet';
+import 'leaflet-defaulticon-compatibility';
+
 import Cutout from "./Cutout";
 import Coordinate from "../Coordinates/Coordinate";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
@@ -17,6 +22,8 @@ export default class Map {
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(this.leafletMap);
+
+        //const marker = L.marker([52.1, 5.0]).addTo(this.leafletMap);
 
         this.leafletMap.zoomControl.setPosition('bottomright');
 
