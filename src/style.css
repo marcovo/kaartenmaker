@@ -83,6 +83,10 @@
     background-color: #eeeeee;
 }
 
+.cutout.cutout-hidden {
+    opacity: 0.5;
+}
+
 #cutoutDropdownMenu {
     position: absolute;
     top: 0;

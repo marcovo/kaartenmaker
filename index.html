@@ -96,7 +96,7 @@
                 <div id="cutoutListMinimizer"></div>
                 <div
                         v-for="cutout in cutouts"
-                        class="cutout mb-2"
+                        v-bind:class="'cutout mb-2' + (cutout.visibleOnMap ? '' : ' cutout-hidden')"
                         v-bind:style="{ borderTop: '2px solid', borderColor: cutout.color }"
                         v-bind:id="'cutout_' + cutout.id"
                         v-on:mouseover="mouseover(cutout)"
