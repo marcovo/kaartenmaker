@@ -109,14 +109,14 @@ export default class WGS84 implements Coordinate, LeafletConvertibleCoordinate {
     }
 
     private formatDeg(degrees: number) {
-        return trimTrailingZeroDecimalPlaces(degrees, 6) + '°';
+        return degrees.toFixed(6) + '°';
     }
 
     private formatDegMin(degrees: number) {
         const deg = Math.floor(degrees);
         const min = (degrees - deg) * 60;
 
-        return deg + '°' + (min < 10 ? '0' : '') + trimTrailingZeroDecimalPlaces(min, 3) + "'";
+        return deg + '°' + (min < 10 ? '0' : '') + min.toFixed(3) + "'";
     }
 
     private formatDegMinSec(degrees: number) {
@@ -125,6 +125,6 @@ export default class WGS84 implements Coordinate, LeafletConvertibleCoordinate {
         const min = Math.floor(minutes);
         const sec = (minutes - min) * 60;
 
-        return deg + '°' + padLeadingZeros(min, 2) + "'" + (sec < 10 ? '0' : '') + trimTrailingZeroDecimalPlaces(sec, 2) + '"';
+        return deg + '°' + padLeadingZeros(min, 2) + "'" + (sec < 10 ? '0' : '') + sec.toFixed(2) + '"';
     }
 }

@@ -70,10 +70,10 @@ export default class DutchGrid implements Coordinate {
                 return Math.round(this.x) + ', ' + Math.round(this.y);
             },
             km3: (): string => {
-                return (Math.round(this.x)/1000) + ' - ' + (Math.round(this.y)/1000);
+                return (Math.round(this.x)/1000).toFixed(3) + ' - ' + (Math.round(this.y)/1000).toFixed(3);
             },
             km2: (): string => {
-                return (Math.round(this.x/10)/100) + ' - ' + (Math.round(this.y/10)/100);
+                return (Math.round(this.x/10)/100).toFixed(2) + ' - ' + (Math.round(this.y/10)/100).toFixed(2);
             },
         };
     }
