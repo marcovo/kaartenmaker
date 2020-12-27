@@ -7,6 +7,7 @@ import Conversion from "../Conversion/Conversion";
 import WGS84_DutchGrid from "../Conversion/WGS84_DutchGrid";
 import WGS84_UTM from "../Conversion/WGS84_UTM";
 import {Point} from "../Util/Math";
+import {trimTrailingZeroDecimalPlaces} from "../Util/functions";
 
 export class WGS84System implements CoordinateSystem<WGS84>, LeafletConvertibleCoordinateSystem<WGS84> {
     readonly name = 'EPSG:4326';
@@ -72,5 +73,58 @@ export default class WGS84 implements Coordinate, LeafletConvertibleCoordinate {
 
     formatOrdinateForPdf(dimension: 'x' | 'y'): string {
         return ''; // TODO
+    }
+
+    formats(): Record<string, () => string> {
+        return {
+            raw: (): string => {
+                const lat = trimTrailingZeroDecimalPlaces(this.lat, 6);
+                const lng = trimTrailingZeroDecimalPlaces(this.lng, 6);
+                return lat + ',' + lng;
+            },
+            deg: (): string => {
+                return this.formatDeg(Math.abs(this.lat)) + this.formatNS(this.lat)
+                    + ', '
+                    + this.formatDeg(Math.abs(this.lng)) + this.formatWE(this.lng);
+            },
+            degmin: (): string => {
+                return this.formatDegMin(Math.abs(this.lat)) + this.formatNS(this.lat)
+                    + ', '
+                    + this.formatDegMin(Math.abs(this.lng)) + this.formatWE(this.lng);
+            },
+            degminsec: (): string => {
+                return this.formatDegMinSec(Math.abs(this.lat)) + this.formatNS(this.lat)
+                    + ', '
+                    + this.formatDegMinSec(Math.abs(this.lng)) + this.formatWE(this.lng);
+            },
+        };
+    }
+
+    private formatNS(degrees: number): string {
+        return degrees < 0 ? 'S' : 'N';
+    }
+
+    private formatWE(degrees: number): string {
+        return degrees < 0 ? 'W' : 'E';
+    }
+
+    private formatDeg(degrees: number) {
+        return trimTrailingZeroDecimalPlaces(degrees, 6) + '°';
+    }
+
+    private formatDegMin(degrees: number) {
+        const deg = Math.floor(degrees);
+        const min = (degrees - deg) * 60;
+
+        return deg + '°' + trimTrailingZeroDecimalPlaces(min, 3) + "'";
+    }
+
+    private formatDegMinSec(degrees: number) {
+        const deg = Math.floor(degrees);
+        const minutes = (degrees - deg) * 60;
+        const min = Math.floor(minutes);
+        const sec = (minutes - min) * 60;
+
+        return deg + '°' + min + "'" + trimTrailingZeroDecimalPlaces(sec, 2) + '"';
     }
 }

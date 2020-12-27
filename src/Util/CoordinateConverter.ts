@@ -20,8 +20,9 @@ export default class CoordinateConverter {
         throw new Error('Unknown coordinate system "' + name + '"');
     }
 
-    static convert(source: Coordinate, targetSystem: CoordinateSystem<Coordinate>) {
+    static convert<C extends Coordinate>(source: Coordinate, targetSystem: CoordinateSystem<C>): C {
         if(source.name === targetSystem.name) {
+            // @ts-ignore
             return source;
         }
 

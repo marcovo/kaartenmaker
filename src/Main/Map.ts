@@ -24,8 +24,6 @@ export default class Map {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(this.leafletMap);
 
-        //const marker = L.marker([52.1, 5.0]).addTo(this.leafletMap);
-
         this.leafletMap.zoomControl.setPosition('bottomright');
 
         this.leafletMap.on('contextmenu', function(e) {

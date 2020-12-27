@@ -70,4 +70,8 @@ export default class UTM implements Coordinate {
         const ordinate = (dimension === 'x') ? this.getX() : this.getY();
         return trimTrailingZeroDecimalPlaces(ordinate / 1000, 1);
     }
+
+    formats(): Record<string, () => string> {
+        return {};
+    }
 }

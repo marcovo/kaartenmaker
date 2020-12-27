@@ -9,6 +9,7 @@ import DeleteCutoutAction from "../ActionHistory/DeleteCutoutAction";
 import CutoutTemplate from "./CutoutTemplate";
 import Serializer from "./Serializer";
 import Bookmarks from "./Bookmarks";
+import {WGS84System} from "../Coordinates/WGS84";
 require('../Lib/LeafletDrag');
 require("./Cutout"); // If we don't explicitly require this, the application crashes...
 
@@ -21,6 +22,7 @@ export default class UserInterface {
     private cutoutList: Vue;
     private cutoutTemplateList: Vue;
     private bookmarksWrapper: Vue;
+    private coordinatePanelWrapper: Vue;
     private cutoutDropdownMenu: Vue;
     private actionHistoryButtons: Vue;
     private lastAddedCutoutTemplateId: number = null;
@@ -42,6 +44,10 @@ export default class UserInterface {
             this.onLoad();
         });
 
+    }
+
+    getMap(): Map {
+        return this.map;
     }
 
     onLoad() {
@@ -124,6 +130,14 @@ export default class UserInterface {
             el: '#bookmarksWrapper',
             data: {
                 bookmarks: this.bookmarks,
+            },
+        });
+
+        this.coordinatePanelWrapper = new Vue({
+            el: '#coordinatePanelWrapper',
+            data: {
+                userInterface: this,
+                leafletConvertibleCoordinateSystem: new WGS84System(),
             },
         });
 

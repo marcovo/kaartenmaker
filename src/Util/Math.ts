@@ -60,6 +60,10 @@ export class Point implements Coordinate {
     formatOrdinateForPdf(dimension: 'x' | 'y'): string {
         throw new Error('No formatting available for Point');
     }
+
+    formats(): Record<string, () => string> {
+        throw new Error('No formatting available for Point');
+    }
 }
 
 export function walkLine<C extends Coordinate, S extends CoordinateSystem<C>>(s: S, a: C, b: C, steps: number, callback: (c: C, step: number) => void) {

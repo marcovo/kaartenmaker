@@ -14,4 +14,6 @@ export default interface Coordinate {
     clone(): this;
 
     formatOrdinateForPdf(dimension: 'x' | 'y'): string;
+
+    formats(): Record<string, () => string>;
 }

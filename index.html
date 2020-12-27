@@ -7,6 +7,27 @@
     <link rel="stylesheet" href="dist/bundle.css" />
 </head>
 <body>
+    <!-- First make sure that no margin-top is pushing our body down -->
+    <div style="width: 0; height: 0;">&nbsp;</div>
+
+    <!-- We don't want to use position: absolute; as it does not play well with z-index <-> bootstrap components. Hence we use some trickery -->
+    <div class="float-left">
+        <div class="d-flex flex-column justify-content-end position-relative vh-100" style="width: 0; z-index: 2;">
+            <div class="d-flex justify-content-center vw-100" style="height: 0;">
+                <div style="transform: rotate(180deg);">
+                    <div style="transform: rotate(180deg);">
+                        <div id="coordinatePanelWrapper">
+                            <coordinate-panel
+                                    v-bind:user-interface="userInterface"
+                                    v-bind:leaflet-convertible-coordinate-system="leafletConvertibleCoordinateSystem"
+                            ></coordinate-panel>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="mapContainer">
         <div id="map-canvas"></div>
     </div>

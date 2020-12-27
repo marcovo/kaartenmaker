@@ -63,4 +63,18 @@ export default class DutchGrid implements Coordinate {
         const ordinate = (dimension === 'x') ? this.getX() : this.getY();
         return trimTrailingZeroDecimalPlaces(ordinate / 1000, 3);
     }
+
+    formats(): Record<string, () => string> {
+        return {
+            meter: (): string => {
+                return Math.round(this.x) + ', ' + Math.round(this.y);
+            },
+            km3: (): string => {
+                return (Math.round(this.x)/1000) + ' - ' + (Math.round(this.y)/1000);
+            },
+            km2: (): string => {
+                return (Math.round(this.x/10)/100) + ' - ' + (Math.round(this.y/10)/100);
+            },
+        };
+    }
 }

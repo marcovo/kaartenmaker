@@ -47,6 +47,10 @@ class Bessel implements Coordinate {
     formatOrdinateForPdf(dimension: 'x' | 'y'): string {
         throw new Error('No formatting available for Bessel');
     }
+
+    formats(): Record<string, () => string> {
+        throw new Error('No formatting available for Bessel');
+    }
 }
 
 export default class WGS84_DutchGrid implements Conversion<WGS84, DutchGrid> {
