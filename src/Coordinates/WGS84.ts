@@ -7,7 +7,7 @@ import Conversion from "../Conversion/Conversion";
 import WGS84_DutchGrid from "../Conversion/WGS84_DutchGrid";
 import WGS84_UTM from "../Conversion/WGS84_UTM";
 import {Point} from "../Util/Math";
-import {trimTrailingZeroDecimalPlaces} from "../Util/functions";
+import {padLeadingZeros, trimTrailingZeroDecimalPlaces} from "../Util/functions";
 
 export class WGS84System implements CoordinateSystem<WGS84>, LeafletConvertibleCoordinateSystem<WGS84> {
     readonly name = 'EPSG:4326';
@@ -116,7 +116,7 @@ export default class WGS84 implements Coordinate, LeafletConvertibleCoordinate {
         const deg = Math.floor(degrees);
         const min = (degrees - deg) * 60;
 
-        return deg + '°' + trimTrailingZeroDecimalPlaces(min, 3) + "'";
+        return deg + '°' + (min < 10 ? '0' : '') + trimTrailingZeroDecimalPlaces(min, 3) + "'";
     }
 
     private formatDegMinSec(degrees: number) {
@@ -125,6 +125,6 @@ export default class WGS84 implements Coordinate, LeafletConvertibleCoordinate {
         const min = Math.floor(minutes);
         const sec = (minutes - min) * 60;
 
-        return deg + '°' + min + "'" + trimTrailingZeroDecimalPlaces(sec, 2) + '"';
+        return deg + '°' + padLeadingZeros(min, 2) + "'" + (sec < 10 ? '0' : '') + trimTrailingZeroDecimalPlaces(sec, 2) + '"';
     }
 }

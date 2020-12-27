@@ -16,6 +16,14 @@ export function trimTrailingZeroDecimalPlaces(number: number, fractionDigits: nu
     return text;
 }
 
+export function padLeadingZeros(number: number|string, length: number) {
+    number = number + '';
+    while(number.length < length) {
+        number = '0' + number;
+    }
+    return number;
+}
+
 export function formatCm(number: number, decimals: number = 1): string {
     return formatMeters(number/100, decimals, -2);
 }
