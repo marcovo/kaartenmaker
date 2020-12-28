@@ -66,6 +66,15 @@ export default class UserInterface {
             copyInput('#shareUrlModalInput');
         });
 
+        $('#clearCacheButton').on('click', () => {
+            if(confirm('De buffer omvat gedownloade kaartstukken, opgeslagen werkruimtes en voorkeuren. Wil je deze verwijderen?')) {
+                this.showLoadingIndicator();
+                Container.clearCaches().finally(() => {
+                    this.hideLoadingIndicator();
+                });
+            }
+        })
+
         this.cutoutList = new Vue({
             el: '#cutoutList',
             data: {

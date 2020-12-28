@@ -101,6 +101,18 @@ export default class Cache {
         });
     }
 
+    close(): void {
+        this.db.close();
+    }
+
+    static drop(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const request = window.indexedDB.deleteDatabase(Cache.indexedDbName);
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject();
+        });
+    }
+
     clean(): Promise<void> {
         return new Promise((resolve, reject) => {
             const cacheObjectStore = this.getObjectStore('readwrite');

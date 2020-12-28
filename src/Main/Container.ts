@@ -83,4 +83,23 @@ export default class Container {
             }
         });
     }
+
+    static clearCaches(): Promise<void> {
+        return new Promise(((resolve, reject) => {
+            if(this.cache !== null) {
+                this.cache.close();
+                this.cache = null;
+            }
+
+            Cache.drop().then(() => {
+                window.localStorage.clear();
+                resolve();
+            }, reject);
+        })).then(() => {
+            alert('De buffers zijn geleegd');
+        }).catch((...args) => {
+            console.log(...args);
+            alert('Something went wrong clearing the cache');
+        });
+    }
 }
