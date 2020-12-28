@@ -10,7 +10,8 @@ export default class Container {
 
     private static paperFormats: Record<string, Paper> = {};
 
-    private static cutoutTemplates: CutoutTemplate<any, any, any>[] = [];
+    private static systemCutoutTemplates: CutoutTemplate<any, any, any>[] = [];
+    private static customCutoutTemplates: CutoutTemplate<any, any, any>[] = [];
 
     private static cache: Cache = null;
 
@@ -62,12 +63,31 @@ export default class Container {
         return Object.values(this.paperFormats);
     }
 
-    static registerCutoutTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {
-        Container.cutoutTemplates.push(cutoutTemplate);
+    static registerSystemCutoutTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {
+        Container.systemCutoutTemplates.push(cutoutTemplate);
+    }
+
+    static registerCustomCutoutTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {
+        Container.customCutoutTemplates.push(cutoutTemplate);
+    }
+
+    static removeCustomCutoutTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {
+        const index = Container.customCutoutTemplates.indexOf(cutoutTemplate);
+        if(index > -1) {
+            Container.customCutoutTemplates.splice(index, 1);
+        }
     }
 
     static cutoutTemplateList(): CutoutTemplate<any, any, any>[] {
-        return Container.cutoutTemplates;
+        return [...Container.systemCutoutTemplates, ...Container.customCutoutTemplates];
+    }
+
+    static systemCutoutTemplateList(): CutoutTemplate<any, any, any>[] {
+        return Container.systemCutoutTemplates;
+    }
+
+    static customCutoutTemplateList(): CutoutTemplate<any, any, any>[] {
+        return Container.customCutoutTemplates;
     }
 
     static getCache(): Promise<Cache> {

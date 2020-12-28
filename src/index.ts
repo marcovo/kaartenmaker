@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
 import Vue from 'vue/dist/vue.esm.js';
 require('./components/CutoutSettingsModal.vue');
+require('./components/CutoutTemplates.vue');
 require('./components/Bookmarks.vue');
 require('./components/CoordinatePanel.vue');
 

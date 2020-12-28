@@ -13,19 +13,24 @@ import UserInterface from "./UserInterface";
 import CoordinateConverter from "../Util/CoordinateConverter";
 import Grid from "./Grid";
 import MoveCutoutAction from "../ActionHistory/MoveCutoutAction";
-import CutoutTemplate from "./CutoutTemplate";
 import Printer from "./Printer";
 import MapImageProvider from "../Projection/MapImageProvider";
 import {Serialization} from "./Serializer";
 import Container from "./Container";
 import WmsProjection from "../Projection/WmsProjection";
 import WmtsProjection from "../Projection/WmtsProjection";
+import AbstractCutout from "./AbstractCutout";
+import CutoutTemplate from "./CutoutTemplate";
+
+type Color = string;
 
 export default class Cutout<
     WorkspaceCoordinate extends Coordinate & LeafletConvertibleCoordinate,
     ProjectionCoordinate extends Coordinate,
     WorkspaceCoordinateSystem extends CoordinateSystem<WorkspaceCoordinate> & LeafletConvertibleCoordinateSystem<WorkspaceCoordinate>
-    > extends CutoutTemplate<WorkspaceCoordinate, ProjectionCoordinate, WorkspaceCoordinateSystem> {
+    > extends AbstractCutout<WorkspaceCoordinate, ProjectionCoordinate, WorkspaceCoordinateSystem> {
+
+    color: Color;
 
     mapPolygonWorkspace: WorkspaceCoordinate[];
     mapPolygonProjection: ProjectionCoordinate[];
@@ -61,7 +66,7 @@ export default class Cutout<
     }
 
     clone(): Cutout<WorkspaceCoordinate, ProjectionCoordinate, WorkspaceCoordinateSystem> {
-        return new Cutout(
+        const cutout = new Cutout(
             this.userInterface,
             this.getPaper(),
             this.anchorWorkspaceCoordinate.clone(),
@@ -69,6 +74,25 @@ export default class Cutout<
             this.getProjection().clone(),
             new Grid(this.getGrid().coordinateSystem)
         );
+
+        cutout.options = Object.assign({}, cutout.options, this.options);
+
+        return cutout;
+    }
+
+    makeTemplate(): CutoutTemplate<WorkspaceCoordinate, ProjectionCoordinate, WorkspaceCoordinateSystem> {
+        const template = new CutoutTemplate<any, any, any>(
+            this.getPaper(),
+            this.anchorWorkspaceCoordinate.clone(),
+            this.workspaceCoordinateSystem,
+            this.getProjection().clone(),
+            this.getGrid().clone(),
+            ''
+        );
+
+        template.options = Object.assign({}, template.options, this.options);
+
+        return template;
     }
 
     serialize(): Serialization {

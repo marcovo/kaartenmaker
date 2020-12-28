@@ -21,7 +21,7 @@ export default class UserInterface {
     private bookmarks: Bookmarks;
 
     private cutoutList: Vue;
-    private cutoutTemplateList: Vue;
+    private cutoutTemplatesWrapper: Vue;
     private bookmarksWrapper: Vue;
     private coordinatePanelWrapper: Vue;
     private cutoutDropdownMenu: Vue;
@@ -93,6 +93,9 @@ export default class UserInterface {
                 duplicateCutout: (cutout: Cutout<any, any, any>) => {
                     this.duplicateCutout(cutout);
                 },
+                makeCutoutTemplate: (cutout: Cutout<any, any, any>) => {
+                    this.makeCutoutTemplate(cutout);
+                },
                 shareCutout: (cutout: Cutout<any, any, any>) => {
                     this.displayShareModal((new Serializer()).createCutoutLink(cutout));
                 },
@@ -108,18 +111,6 @@ export default class UserInterface {
             }
         });
 
-        let add_menu_showing = false;
-        const toggle_menu = (show: boolean = null) => {
-            if(show === null) {
-                show = !add_menu_showing;
-            }
-            $('#add_menu').toggle(show);
-            add_menu_showing = show;
-        };
-        $('#add_button').on('click', () => {
-            toggle_menu();
-        });
-
         $('#cutoutListMinimizer').on('click', () => {
             $('#cutoutListPane').addClass('minimized');
         });
@@ -127,17 +118,12 @@ export default class UserInterface {
             $('#cutoutListPane').removeClass('minimized');
         });
 
-        this.cutoutTemplateList = new Vue({
-            el: '#cutoutTemplateList',
+        this.cutoutTemplatesWrapper = new Vue({
+            el: '#cutoutTemplatesWrapper',
             data: {
-                cutoutTemplates: Container.cutoutTemplateList(),
+                userInterface: this,
+                newCutoutTemplate: null,
             },
-            methods: {
-                click: (cutoutTemplate: CutoutTemplate<any, any, any>) => {
-                    this.addCutoutFromTemplate(cutoutTemplate);
-                    toggle_menu(false);
-                },
-            }
         });
 
         this.bookmarksWrapper = new Vue({
@@ -173,6 +159,9 @@ export default class UserInterface {
                 },
                 duplicateCutout: (cutout: Cutout<any, any, any>) => {
                     this.duplicateCutout(cutout);
+                },
+                makeCutoutTemplate: (cutout: Cutout<any, any, any>) => {
+                    this.makeCutoutTemplate(cutout);
                 },
                 shareCutout: (cutout: Cutout<any, any, any>) => {
                     this.displayShareModal((new Serializer()).createCutoutLink(cutout));
@@ -369,6 +358,10 @@ export default class UserInterface {
             this,
             this.cutouts.length
         ));
+    }
+
+    makeCutoutTemplate(sourceCutout: Cutout<any, any, any>): void {
+        this.cutoutTemplatesWrapper.newCutoutTemplate = sourceCutout.makeTemplate();
     }
 
 }

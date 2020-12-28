@@ -30,6 +30,10 @@ export default class Grid<C extends Coordinate> {
         return new Grid(CoordinateConverter.getCoordinateSystem(serialized.system));
     }
 
+    clone(): Grid<C> {
+        return new Grid(this.coordinateSystem);
+    }
+
     attach(cutout: Cutout<any, any, any>) {
         if(this.cutout !== null) {
             throw new Error('Already attached');

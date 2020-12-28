@@ -176,7 +176,7 @@ Container.registerMapImageProvider(new Wms(
     }
 ));
 
-Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(
+Container.registerSystemCutoutTemplate(new CutoutTemplate<any, any, any>(
     new A4L(),
     new WGS84(52, 5),
     new WGS84System(),
@@ -185,7 +185,7 @@ Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(
     '(NL) Kadaster 1:25.000'
 ));
 
-Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(
+Container.registerSystemCutoutTemplate(new CutoutTemplate<any, any, any>(
     new A4L(),
     new WGS84(52, 5),
     new WGS84System(),
@@ -194,7 +194,7 @@ Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(
     '(NL) OpenTopo 1:25.000'
 ));
 
-Container.registerCutoutTemplate(new CutoutTemplate<any, any, any>(
+Container.registerSystemCutoutTemplate(new CutoutTemplate<any, any, any>(
     new A4L(),
     new WGS84(50, 7),
     new WGS84System(),
