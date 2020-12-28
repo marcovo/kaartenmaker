@@ -1,4 +1,6 @@
 
+const $ = require( 'jquery' );
+
 export function trimTrailingZeroDecimalPlaces(number: number, fractionDigits: number): string {
     let text = number.toFixed(fractionDigits);
 
@@ -95,4 +97,10 @@ export function formatDateTime(date: Date|number): string {
     const minutes = date.getMinutes();
     const minuteString = ((minutes < 10) ? '0' : '') + minutes.toString();
     return date.getDay() + '-' + date.getMonth() + '-' + date.getFullYear() + ' ' + date.getHours() + ':' + minuteString;
+}
+
+export function copyInput(selector) {
+    const $input = $(selector);
+    $input[0].select();
+    document.execCommand('copy');
 }

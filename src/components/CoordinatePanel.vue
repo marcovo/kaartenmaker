@@ -16,6 +16,17 @@
 
             <div class="input-group-append dropup">
               <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  v-on:click="copyInput('#coord_panel_input_' + coordinateInSystem.id)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="align-baseline bi bi-clipboard-plus" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7z"/>
+                  <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                  <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                </svg>
+              </button>
+              <button
                   class="btn btn-outline-secondary dropdown-toggle"
                   type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                   v-on:click="updateFormatDropdownWidth"
@@ -29,12 +40,24 @@
                       <input
                           type="text"
                           class="form-control"
+                          v-bind:id="'coord_panel_input_' + coordinateInSystem.id + '_' + formatName"
                           readonly
                           v-bind:value="coordinate"
                           aria-label="Coordinate"
                       >
 
                       <div class="input-group-append dropup">
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary"
+                            v-on:click="copyInput('#coord_panel_input_' + coordinateInSystem.id + '_' + formatName)"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="align-baseline bi bi-clipboard-plus" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7z"/>
+                            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                          </svg>
+                        </button>
                         <button
                             type="button"
                             class="btn btn-outline-secondary"
@@ -68,6 +91,7 @@ import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoord
 import LeafletConvertibleCoordinateSystem from "../Coordinates/LeafletConvertibleCoordinateSystem";
 import CoordinateConverter from "../Util/CoordinateConverter";
 import Coordinate from "../Coordinates/Coordinate";
+import {copyInput} from "../Util/functions";
 
 const PREFERRED_FORMATS_LOCALSTORAGE_KEY = 'coord_panel_preferred_formats';
 
@@ -141,7 +165,7 @@ export default Vue.component('coordinate-panel', {
           }
 
           coordinateInSystems.push({
-            id: coordinateSystem.code.replace(/[^a-z0-9]/, '_'),
+            id: coordinateSystem.code.replace(/[^a-z0-9]/g, '_'),
             coordinate: converted,
             name: coordinateSystem.name,
             formatted: formatted,
@@ -155,6 +179,7 @@ export default Vue.component('coordinate-panel', {
     }
   },
   methods: {
+    copyInput,
     updateFormatDropdownWidth(event) {
       const $btn = $(event.target);
       $btn.siblings('.dropdown-menu').width($btn.closest('#coordinateControlPanelContent').width());
