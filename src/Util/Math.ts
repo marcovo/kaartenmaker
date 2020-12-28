@@ -3,7 +3,8 @@ import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import Conversion from "../Conversion/Conversion";
 
 export class PointSystem implements CoordinateSystem<Point> {
-    readonly code: '';
+    readonly code = '';
+    readonly name = '';
 
     conversions(): Conversion<Point, Coordinate>[] {
         return [];
@@ -62,6 +63,10 @@ export class Point implements Coordinate {
     }
 
     formats(): Record<string, () => string> {
+        throw new Error('No formatting available for Point');
+    }
+
+    defaultFormat(): string {
         throw new Error('No formatting available for Point');
     }
 }

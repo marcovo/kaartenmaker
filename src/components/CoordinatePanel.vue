@@ -2,7 +2,7 @@
   <div class="control-pane control-pane-coordinate-panel d-none" id="coordinatePanel">
     <div class="control-pane-content">
       <div v-for="coordinateInSystem in coordinateInSystems">
-        {{ coordinateInSystem.code }} ;
+        {{ coordinateInSystem.name }} ;
         {{ coordinateInSystem.coordinate }}
       </div>
     </div>
@@ -15,16 +15,25 @@ import * as $ from "jquery";
 import * as L from 'leaflet';
 import UserInterface from "../Main/UserInterface";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
+import LeafletConvertibleCoordinateSystem from "../Coordinates/LeafletConvertibleCoordinateSystem";
 import CoordinateConverter from "../Util/CoordinateConverter";
+
+const PREFERRED_FORMATS_LOCALSTORAGE_KEY = 'coord_panel_preferred_formats';
 
 export default Vue.component('coordinate-panel', {
   props: {
     userInterface: UserInterface,
-    leafletConvertibleCoordinateSystem: Object, // LeafletConvertibleCoordinateSystem
+    leafletConvertibleCoordinateSystem: <LeafletConvertibleCoordinateSystem<LeafletConvertibleCoordinate>><unknown>Object,
     coordinateMarker: L.marker,
+    preferredFormats: <Record<string, string>>{},
   },
   data () {
     this.coordinateMarker = null;
+    this.preferredFormats = window.localStorage.getItem(PREFERRED_FORMATS_LOCALSTORAGE_KEY);
+    if(this.preferredFormats === null) {
+      this.preferredFormats = {};
+    }
+
     const leafletMap = this.userInterface.getMap().getLeafletMap();
 
     leafletMap.on('click', (e) => {
@@ -62,17 +71,24 @@ export default Vue.component('coordinate-panel', {
 
       const coordinateInSystems = [];
       for(const code of coordinateSystemCodes) {
-        const converted = CoordinateConverter.convert(baseCoord, CoordinateConverter.getCoordinateSystem(code));
+        const coordinateSystem = CoordinateConverter.getCoordinateSystem(code);
+        const converted = CoordinateConverter.convert(baseCoord, coordinateSystem);
         const formats = converted.formats();
         const formatNames = Object.keys(formats);
 
         if(formatNames.length > 0) {
+          let formatName;
+          if(this.preferredFormats.hasOwnProperty(code) && formats.hasOwnProperty(this.preferredFormats[code])) {
+            formatName = this.preferredFormats[code];
+          } else {
+            formatName = converted.defaultFormat();
+          }
+
           coordinateInSystems.push({
-            name: code,
-            coordinate: formats[formatNames[0]](),
+            name: coordinateSystem.name,
+            coordinate: formats[formatName](),
           });
         }
-
       }
 
       return coordinateInSystems;

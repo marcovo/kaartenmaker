@@ -7,6 +7,7 @@ import {Point} from "../Util/Math";
 
 export class UTMSystem implements CoordinateSystem<UTM> {
     readonly code = 'EPSG:25832';
+    readonly name = 'UTM';
 
     constructor(readonly zone: number = null, readonly hemi: number = null) {
     }
@@ -73,5 +74,9 @@ export default class UTM implements Coordinate {
 
     formats(): Record<string, () => string> {
         return {};
+    }
+
+    defaultFormat(): string {
+        return undefined;
     }
 }

@@ -7,6 +7,7 @@ import {Point} from "../Util/Math";
 
 export class DutchGridSystem implements CoordinateSystem<DutchGrid> {
     readonly code = 'EPSG:28992';
+    readonly name = 'RD Nederland';
 
     make(x: number, y: number): DutchGrid {
         return new DutchGrid(x, y);
@@ -70,11 +71,19 @@ export default class DutchGrid implements Coordinate {
                 return Math.round(this.x) + ', ' + Math.round(this.y);
             },
             km3: (): string => {
-                return (Math.round(this.x)/1000).toFixed(3) + ' - ' + (Math.round(this.y)/1000).toFixed(3);
+                return (Math.round(this.x)/1000).toFixed(3).replace('.', ',')
+                    + ' - '
+                    + (Math.round(this.y)/1000).toFixed(3).replace('.', ',');
             },
             km2: (): string => {
-                return (Math.round(this.x/10)/100).toFixed(2) + ' - ' + (Math.round(this.y/10)/100).toFixed(2);
+                return (Math.round(this.x/10)/100).toFixed(2).replace('.', ',')
+                    + ' - '
+                    + (Math.round(this.y/10)/100).toFixed(2).replace('.', ',');
             },
         };
+    }
+
+    defaultFormat(): string {
+        return 'km2';
     }
 }

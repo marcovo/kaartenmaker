@@ -51,6 +51,10 @@ class Bessel implements Coordinate {
     formats(): Record<string, () => string> {
         throw new Error('No formatting available for Bessel');
     }
+
+    defaultFormat(): string {
+        throw new Error('No formatting available for Bessel');
+    }
 }
 
 export default class WGS84_DutchGrid implements Conversion<WGS84, DutchGrid> {

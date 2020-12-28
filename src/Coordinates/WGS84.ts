@@ -11,6 +11,7 @@ import {padLeadingZeros, trimTrailingZeroDecimalPlaces} from "../Util/functions"
 
 export class WGS84System implements CoordinateSystem<WGS84>, LeafletConvertibleCoordinateSystem<WGS84> {
     readonly code = 'EPSG:4326';
+    readonly name = 'WGS 84';
 
     make(lat: number, lng: number): WGS84 {
         return new WGS84(lat, lng);
@@ -98,6 +99,10 @@ export default class WGS84 implements Coordinate, LeafletConvertibleCoordinate {
                     + this.formatDegMinSec(Math.abs(this.lng)) + this.formatWE(this.lng);
             },
         };
+    }
+
+    defaultFormat(): string {
+        return 'degmin';
     }
 
     private formatNS(degrees: number): string {

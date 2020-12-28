@@ -4,6 +4,7 @@ import {Point} from "../Util/Math";
 
 export default interface CoordinateSystem<C extends Coordinate> {
     readonly code: string;
+    readonly name: string;
 
     make(...args: any): C;
 
