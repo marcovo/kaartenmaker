@@ -1,9 +1,59 @@
 <template>
   <div class="control-pane control-pane-coordinate-panel d-none" id="coordinatePanel">
-    <div class="control-pane-content">
-      <div v-for="coordinateInSystem in coordinateInSystems">
-        {{ coordinateInSystem.name }} ;
-        {{ coordinateInSystem.coordinate }}
+    <div class="control-pane-content" id="coordinateControlPanelContent">
+      <div v-for="coordinateInSystem in coordinateInSystems" :key="coordinateInSystem.id">
+        <div class="form-group">
+          <label v-bind:for="'coord_panel_input_' + coordinateInSystem.id">{{ coordinateInSystem.name }}</label>
+          <div class="input-group">
+            <input
+                type="text"
+                class="form-control"
+                v-bind:id="'coord_panel_input_' + coordinateInSystem.id"
+                readonly
+                v-bind:value="coordinateInSystem.showFormatted"
+                aria-label="Coordinate"
+            >
+
+            <div class="input-group-append dropup">
+              <button
+                  class="btn btn-outline-secondary dropdown-toggle"
+                  type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                  v-on:click="updateFormatDropdownWidth"
+              ></button>
+              <div class="dropdown-menu dropdown-menu-right">
+                <div class="mx-2">
+                  <label>{{ coordinateInSystem.name }}</label>
+
+                  <div v-for="(coordinate, formatName) in coordinateInSystem.formatted" :key="formatName">
+                    <div class="input-group mb-1">
+                      <input
+                          type="text"
+                          class="form-control"
+                          readonly
+                          v-bind:value="coordinate"
+                          aria-label="Coordinate"
+                      >
+
+                      <div class="input-group-append dropup">
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary"
+                            v-bind:disabled="formatName === coordinateInSystem.showFormatName"
+                            v-on:click="setPreferredFormatName(coordinateInSystem.coordinate, formatName)"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="align-baseline bi bi-box-arrow-in-down" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M3.5 6a.5.5 0 0 0-.5.5v8a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-8a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 1 0-1h2A1.5 1.5 0 0 1 14 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-8A1.5 1.5 0 0 1 3.5 5h2a.5.5 0 0 1 0 1h-2z"/>
+                            <path fill-rule="evenodd" d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -17,6 +67,7 @@ import UserInterface from "../Main/UserInterface";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
 import LeafletConvertibleCoordinateSystem from "../Coordinates/LeafletConvertibleCoordinateSystem";
 import CoordinateConverter from "../Util/CoordinateConverter";
+import Coordinate from "../Coordinates/Coordinate";
 
 const PREFERRED_FORMATS_LOCALSTORAGE_KEY = 'coord_panel_preferred_formats';
 
@@ -25,14 +76,9 @@ export default Vue.component('coordinate-panel', {
     userInterface: UserInterface,
     leafletConvertibleCoordinateSystem: <LeafletConvertibleCoordinateSystem<LeafletConvertibleCoordinate>><unknown>Object,
     coordinateMarker: L.marker,
-    preferredFormats: <Record<string, string>>{},
   },
   data () {
     this.coordinateMarker = null;
-    this.preferredFormats = window.localStorage.getItem(PREFERRED_FORMATS_LOCALSTORAGE_KEY);
-    if(this.preferredFormats === null) {
-      this.preferredFormats = {};
-    }
 
     const leafletMap = this.userInterface.getMap().getLeafletMap();
 
@@ -46,6 +92,7 @@ export default Vue.component('coordinate-panel', {
       $('#coordinatePanel').toggleClass('d-none', this.coordinateMarker === null);
     });
     return {
+      coordinatePanelRecomputeCounter: 0,
     };
   },
   watch: {
@@ -53,6 +100,8 @@ export default Vue.component('coordinate-panel', {
   },
   computed: {
     coordinateInSystems: function() {
+      this.coordinatePanelRecomputeCounter;
+
       if(this.coordinateMarker === null) {
         return null;
       }
@@ -69,6 +118,8 @@ export default Vue.component('coordinate-panel', {
       const coordinateSystemCodes = Object.keys(coordinateSystemsRecord);
       coordinateSystemCodes.sort();
 
+      const preferredFormats = getPreferredFormats();
+
       const coordinateInSystems = [];
       for(const code of coordinateSystemCodes) {
         const coordinateSystem = CoordinateConverter.getCoordinateSystem(code);
@@ -77,16 +128,25 @@ export default Vue.component('coordinate-panel', {
         const formatNames = Object.keys(formats);
 
         if(formatNames.length > 0) {
-          let formatName;
-          if(this.preferredFormats.hasOwnProperty(code) && formats.hasOwnProperty(this.preferredFormats[code])) {
-            formatName = this.preferredFormats[code];
+          let showFormatName;
+          if(preferredFormats.hasOwnProperty(code) && formats.hasOwnProperty(preferredFormats[code])) {
+            showFormatName = preferredFormats[code];
           } else {
-            formatName = converted.defaultFormat();
+            showFormatName = converted.defaultFormat();
+          }
+
+          const formatted: Record<string, string> = {};
+          for(const formatName of formatNames) {
+            formatted[formatName] = formats[formatName]();
           }
 
           coordinateInSystems.push({
+            id: coordinateSystem.code.replace(/[^a-z0-9]/, '_'),
+            coordinate: converted,
             name: coordinateSystem.name,
-            coordinate: formats[formatName](),
+            formatted: formatted,
+            showFormatName: showFormatName,
+            showFormatted: formatted[showFormatName],
           });
         }
       }
@@ -95,9 +155,30 @@ export default Vue.component('coordinate-panel', {
     }
   },
   methods: {
-
+    updateFormatDropdownWidth(event) {
+      const $btn = $(event.target);
+      $btn.siblings('.dropdown-menu').width($btn.closest('#coordinateControlPanelContent').width());
+    },
+    setPreferredFormatName(coordinate: Coordinate, formatName: string) {
+      const formats = coordinate.formats();
+      if(formats.hasOwnProperty(formatName)) {
+        const preferredFormats = getPreferredFormats();
+        preferredFormats[coordinate.code] = formatName;
+        window.localStorage.setItem(PREFERRED_FORMATS_LOCALSTORAGE_KEY, JSON.stringify(preferredFormats));
+      }
+      this.coordinatePanelRecomputeCounter++;
+    },
   }
 });
+
+function getPreferredFormats(): Record<string, string> {
+  let preferredFormats = window.localStorage.getItem(PREFERRED_FORMATS_LOCALSTORAGE_KEY);
+  if(preferredFormats === null) {
+    return {};
+  } else {
+    return JSON.parse(preferredFormats);
+  }
+}
 </script>
 
 <style scoped>
