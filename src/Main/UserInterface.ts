@@ -10,6 +10,7 @@ import CutoutTemplate from "./CutoutTemplate";
 import Serializer from "./Serializer";
 import Bookmarks from "./Bookmarks";
 import {WGS84System} from "../Coordinates/WGS84";
+import {copyInput} from "../Util/functions";
 require('../Lib/LeafletDrag');
 require("./Cutout"); // If we don't explicitly require this, the application crashes...
 
@@ -59,6 +60,10 @@ export default class UserInterface {
 
         $('#shareButton').on('click', () => {
             this.displayShareModal((new Serializer()).createWorkspaceLink(this));
+        });
+
+        $('#shareUrlModalCopy').on('click', () => {
+            copyInput('#shareUrlModalInput');
         });
 
         this.cutoutList = new Vue({

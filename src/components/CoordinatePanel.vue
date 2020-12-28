@@ -46,7 +46,7 @@
                           aria-label="Coordinate"
                       >
 
-                      <div class="input-group-append dropup">
+                      <div class="input-group-append">
                         <button
                             type="button"
                             class="btn btn-outline-secondary"
