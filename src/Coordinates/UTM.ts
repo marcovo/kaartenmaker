@@ -4,6 +4,8 @@ import Conversion from "../Conversion/Conversion";
 import UTM_WGS84 from "../Conversion/UTM_WGS84";
 import {trimTrailingZeroDecimalPlaces} from "../Util/functions";
 import {Point} from "../Util/Math";
+import CoordinateConverter from "../Util/CoordinateConverter";
+import WGS84 from "./WGS84";
 
 export class UTMSystem implements CoordinateSystem<UTM> {
     readonly code = 'EPSG:25832';
@@ -73,10 +75,26 @@ export default class UTM implements Coordinate {
     }
 
     formats(): Record<string, () => string> {
-        return {};
+        const wgs = <WGS84>CoordinateConverter.convert(this, CoordinateConverter.getCoordinateSystem('EPSG:4326'));
+
+        const bands = ['C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'];
+        const bandNr = Math.floor((wgs.lat + 80) / 8);
+        const band = (0 <= bandNr && bandNr < 20) ? bands[bandNr] : null;
+
+        return {
+            ns: (): string => {
+                return this.zone + (this.hemi === -1 ? 'South' : 'North') + ' ' + Math.round(this.E) + ' ' + Math.round(this.N);
+            },
+            band: (): string => {
+                if(band === null) {
+                    return '(Out of range)';
+                }
+                return this.zone.toString() + band + ' ' + Math.round(this.E) + ' ' + Math.round(this.N);
+            },
+        };
     }
 
     defaultFormat(): string {
-        return undefined;
+        return 'band';
     }
 }
