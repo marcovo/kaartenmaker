@@ -1,7 +1,7 @@
 import CoordinateSystem from "./CoordinateSystem";
 
 export default interface Coordinate {
-    readonly name: string;
+    readonly code: string;
 
     getX(): number;
 

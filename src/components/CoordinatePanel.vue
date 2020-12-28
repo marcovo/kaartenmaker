@@ -2,7 +2,7 @@
   <div class="control-pane control-pane-coordinate-panel d-none" id="coordinatePanel">
     <div class="control-pane-content">
       <div v-for="coordinateInSystem in coordinateInSystems">
-        {{ coordinateInSystem.name }} ;
+        {{ coordinateInSystem.code }} ;
         {{ coordinateInSystem.coordinate }}
       </div>
     </div>
@@ -52,23 +52,23 @@ export default Vue.component('coordinate-panel', {
 
       const coordinateSystemsRecord: Record<string, boolean> = {};
       for(const cutout of this.userInterface.getCutouts()) {
-        coordinateSystemsRecord[cutout.workspaceCoordinateSystem.name] = true;
-        coordinateSystemsRecord[cutout.getProjection().coordinateSystem.name] = true;
-        coordinateSystemsRecord[cutout.getGrid().coordinateSystem.name] = true;
+        coordinateSystemsRecord[cutout.workspaceCoordinateSystem.code] = true;
+        coordinateSystemsRecord[cutout.getProjection().coordinateSystem.code] = true;
+        coordinateSystemsRecord[cutout.getGrid().coordinateSystem.code] = true;
       }
       
-      const coordinateSystemNames = Object.keys(coordinateSystemsRecord);
-      coordinateSystemNames.sort();
+      const coordinateSystemCodes = Object.keys(coordinateSystemsRecord);
+      coordinateSystemCodes.sort();
 
       const coordinateInSystems = [];
-      for(const name of coordinateSystemNames) {
-        const converted = CoordinateConverter.convert(baseCoord, CoordinateConverter.getCoordinateSystem(name));
+      for(const code of coordinateSystemCodes) {
+        const converted = CoordinateConverter.convert(baseCoord, CoordinateConverter.getCoordinateSystem(code));
         const formats = converted.formats();
         const formatNames = Object.keys(formats);
 
         if(formatNames.length > 0) {
           coordinateInSystems.push({
-            name: name,
+            name: code,
             coordinate: formats[formatNames[0]](),
           });
         }

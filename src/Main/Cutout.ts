@@ -76,7 +76,7 @@ export default class Cutout<
             name: this.name,
             options: Object.assign({}, this.options),
             anchor: {
-                system: this.anchorWorkspaceCoordinate.name,
+                system: this.anchorWorkspaceCoordinate.code,
                 x: this.anchorWorkspaceCoordinate.getX(),
                 y: this.anchorWorkspaceCoordinate.getY(),
             },

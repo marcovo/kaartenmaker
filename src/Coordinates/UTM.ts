@@ -6,7 +6,7 @@ import {trimTrailingZeroDecimalPlaces} from "../Util/functions";
 import {Point} from "../Util/Math";
 
 export class UTMSystem implements CoordinateSystem<UTM> {
-    readonly name = 'EPSG:25832';
+    readonly code = 'EPSG:25832';
 
     constructor(readonly zone: number = null, readonly hemi: number = null) {
     }
@@ -37,7 +37,7 @@ export class UTMSystem implements CoordinateSystem<UTM> {
 }
 
 export default class UTM implements Coordinate {
-    readonly name = 'EPSG:25832';
+    readonly code = 'EPSG:25832';
 
     constructor(readonly E: number, readonly N: number, readonly zone: number, readonly hemi: number) {
     }
@@ -59,7 +59,7 @@ export default class UTM implements Coordinate {
     }
 
     belongsTo(coordinateSystem: CoordinateSystem<Coordinate>): boolean {
-        if(this.name !== coordinateSystem.name || !(coordinateSystem instanceof UTMSystem)) {
+        if(this.code !== coordinateSystem.code || !(coordinateSystem instanceof UTMSystem)) {
             return false;
         }
 

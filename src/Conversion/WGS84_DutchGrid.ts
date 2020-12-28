@@ -13,7 +13,7 @@ import CoordinateSystem from "../Coordinates/CoordinateSystem";
  */
 
 class Bessel implements Coordinate {
-    readonly name = 'EPSG:7004'; // Correct?
+    readonly code = 'EPSG:7004'; // Correct?
 
     readonly lat: number;
     readonly lng: number;
@@ -37,7 +37,7 @@ class Bessel implements Coordinate {
     }
 
     belongsTo(coordinateSystem: CoordinateSystem<Coordinate>): boolean {
-        return this.name === coordinateSystem.name;
+        return this.code === coordinateSystem.code;
     }
 
     clone<C extends this>(): C {

@@ -3,7 +3,7 @@ import Conversion from "../Conversion/Conversion";
 import {Point} from "../Util/Math";
 
 export default interface CoordinateSystem<C extends Coordinate> {
-    readonly name: string;
+    readonly code: string;
 
     make(...args: any): C;
 

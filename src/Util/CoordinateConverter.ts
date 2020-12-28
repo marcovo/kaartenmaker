@@ -9,48 +9,48 @@ export default class CoordinateConverter {
     private static conversions: Record<string, Record<string, Conversion<Coordinate, Coordinate>>> = {};
 
     static registerCoordinateSystem(s: CoordinateSystem<Coordinate>) {
-        CoordinateConverter.coordinateSystems[s.name] = s;
+        CoordinateConverter.coordinateSystems[s.code] = s;
     }
 
-    static getCoordinateSystem(name: string) {
-        if(CoordinateConverter.coordinateSystems.hasOwnProperty(name)) {
-            return CoordinateConverter.coordinateSystems[name];
+    static getCoordinateSystem(code: string) {
+        if(CoordinateConverter.coordinateSystems.hasOwnProperty(code)) {
+            return CoordinateConverter.coordinateSystems[code];
         }
 
-        throw new Error('Unknown coordinate system "' + name + '"');
+        throw new Error('Unknown coordinate system "' + code + '"');
     }
 
     static convert<C extends Coordinate>(source: Coordinate, targetSystem: CoordinateSystem<C>): C {
-        if(source.name === targetSystem.name) {
+        if(source.code === targetSystem.code) {
             // @ts-ignore
             return source;
         }
 
-        return this.conversion(CoordinateConverter.getCoordinateSystem(source.name), targetSystem).convert(source);
+        return this.conversion(CoordinateConverter.getCoordinateSystem(source.code), targetSystem).convert(source);
     }
 
     static conversion(sourceSystem: CoordinateSystem<Coordinate>, targetSystem: CoordinateSystem<Coordinate>) {
-        if(sourceSystem.name === targetSystem.name) {
+        if(sourceSystem.code === targetSystem.code) {
             return CartesianTransformation.build(sourceSystem).make();
         }
 
         let conversion = null;
-        if(CoordinateConverter.conversions.hasOwnProperty(sourceSystem.name)) {
-            if(CoordinateConverter.conversions[sourceSystem.name].hasOwnProperty(targetSystem.name)) {
-                conversion = CoordinateConverter.conversions[sourceSystem.name][targetSystem.name];
+        if(CoordinateConverter.conversions.hasOwnProperty(sourceSystem.code)) {
+            if(CoordinateConverter.conversions[sourceSystem.code].hasOwnProperty(targetSystem.code)) {
+                conversion = CoordinateConverter.conversions[sourceSystem.code][targetSystem.code];
             }
         }
 
         if(conversion === null) {
-            conversion = CoordinateConverter.fetchConversion(CoordinateConverter.getCoordinateSystem(sourceSystem.name), targetSystem);
+            conversion = CoordinateConverter.fetchConversion(CoordinateConverter.getCoordinateSystem(sourceSystem.code), targetSystem);
             if(conversion === null) {
-                throw new Error('Could not find conversion between "' + sourceSystem.name + '" and "' + targetSystem.name + '"');
+                throw new Error('Could not find conversion between "' + sourceSystem.code + '" and "' + targetSystem.code + '"');
             }
 
-            if(!CoordinateConverter.conversions.hasOwnProperty(sourceSystem.name)) {
-                CoordinateConverter.conversions[sourceSystem.name] = {};
+            if(!CoordinateConverter.conversions.hasOwnProperty(sourceSystem.code)) {
+                CoordinateConverter.conversions[sourceSystem.code] = {};
             }
-            CoordinateConverter.conversions[sourceSystem.name][targetSystem.name] = conversion;
+            CoordinateConverter.conversions[sourceSystem.code][targetSystem.code] = conversion;
         }
 
         return conversion;
@@ -62,17 +62,17 @@ export default class CoordinateConverter {
         seen: string[] = []
     ): Conversion<Coordinate, Coordinate>|null {
         const conversions = sourceSystem.conversions();
-        seen.push(sourceSystem.name);
+        seen.push(sourceSystem.code);
 
         for(const conversion of conversions) {
-            if(conversion.targetSystem().name === targetSystem.name) {
+            if(conversion.targetSystem().code === targetSystem.code) {
                 return conversion;
             }
         }
 
         for(const conversion of conversions) {
             const nextSystem = conversion.targetSystem();
-            if(seen.indexOf(nextSystem.name) > -1) {
+            if(seen.indexOf(nextSystem.code) > -1) {
                 continue;
             }
 

@@ -6,7 +6,7 @@ import {trimTrailingZeroDecimalPlaces} from "../Util/functions";
 import {Point} from "../Util/Math";
 
 export class DutchGridSystem implements CoordinateSystem<DutchGrid> {
-    readonly name = 'EPSG:28992';
+    readonly code = 'EPSG:28992';
 
     make(x: number, y: number): DutchGrid {
         return new DutchGrid(x, y);
@@ -28,7 +28,7 @@ export class DutchGridSystem implements CoordinateSystem<DutchGrid> {
 }
 
 export default class DutchGrid implements Coordinate {
-    readonly name = 'EPSG:28992';
+    readonly code = 'EPSG:28992';
 
     readonly x: number;
     readonly y: number;
@@ -56,7 +56,7 @@ export default class DutchGrid implements Coordinate {
     }
 
     belongsTo(coordinateSystem: CoordinateSystem<Coordinate>): boolean {
-        return this.name === coordinateSystem.name;
+        return this.code === coordinateSystem.code;
     }
 
     formatOrdinateForPdf(dimension: 'x' | 'y'): string {

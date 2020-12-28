@@ -22,7 +22,7 @@ export default class Grid<C extends Coordinate> {
 
     serialize(): Serialization {
         return {
-            system: this.coordinateSystem.name,
+            system: this.coordinateSystem.code,
         };
     }
 

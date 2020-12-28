@@ -3,7 +3,7 @@ import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import Conversion from "../Conversion/Conversion";
 
 export class PointSystem implements CoordinateSystem<Point> {
-    readonly name: '';
+    readonly code: '';
 
     conversions(): Conversion<Point, Coordinate>[] {
         return [];
@@ -23,7 +23,7 @@ export class PointSystem implements CoordinateSystem<Point> {
 }
 
 export class Point implements Coordinate {
-    readonly name = '';
+    readonly code = '';
 
     readonly x: number;
     readonly y: number;
@@ -50,7 +50,7 @@ export class Point implements Coordinate {
     }
 
     belongsTo(coordinateSystem: CoordinateSystem<Coordinate>): boolean {
-        return this.name === coordinateSystem.name;
+        return this.code === coordinateSystem.code;
     }
 
     clone<P extends this>(): P {
