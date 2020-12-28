@@ -16,6 +16,10 @@ export default class Bookmarks {
 
     }
 
+    getUserInterface(): UserInterface {
+        return this.userInterface;
+    }
+
     private fetchBookmarks(): Record<string, Bookmark> {
         const item = window.localStorage.getItem(Bookmarks.LOCALSTORAGE_KEY);
         if(item === null) {

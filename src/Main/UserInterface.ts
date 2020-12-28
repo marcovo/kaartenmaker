@@ -33,6 +33,7 @@ export default class UserInterface {
     readonly colors: string[];
 
     readonly actionHistory: ActionHistory;
+    private listeners: Record<string, (() => void)[]> = {};
 
     constructor() {
 
@@ -67,13 +68,22 @@ export default class UserInterface {
         });
 
         $('#clearCacheButton').on('click', () => {
-            if(confirm('De buffer omvat gedownloade kaartstukken, opgeslagen werkruimtes en voorkeuren. Wil je deze verwijderen?')) {
+            if(confirm('De buffer bevat gedownloade kaartstukken. Wil je deze verwijderen?')) {
                 this.showLoadingIndicator();
                 Container.clearCaches().finally(() => {
                     this.hideLoadingIndicator();
                 });
             }
-        })
+        });
+
+        $('#resetStorageButton').on('click', () => {
+            if(confirm('Wil je alle opgeslagen werkruimtes, sjablonen en andere voorkeuren verwijderen?')) {
+                this.showLoadingIndicator();
+                Container.resetStorage();
+                this.trigger('storage-reset');
+                this.hideLoadingIndicator();
+            }
+        });
 
         this.cutoutList = new Vue({
             el: '#cutoutList',
@@ -197,6 +207,23 @@ export default class UserInterface {
                     this.actionHistory.clear();
                 }
             });
+        }
+    }
+
+    on(key: string, callback: () => void) {
+        if(this.listeners[key] === undefined) {
+            this.listeners[key] = [];
+        }
+        this.listeners[key].push(callback);
+    }
+
+    trigger(key: string) {
+        if(this.listeners[key] === undefined) {
+            return;
+        }
+
+        for(const listener of this.listeners[key]) {
+            listener();
         }
     }
 

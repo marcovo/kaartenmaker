@@ -99,6 +99,10 @@ export default Vue.component('cutoutTemplates', {
     newCutoutTemplate: <CutoutTemplate<any, any, any>>null,
   },
   data () {
+    this.userInterface.on('storage-reset', () => {
+      this.templateListRecomputeCounter++;
+    });
+
     return {
       templateListRecomputeCounter: 0,
     };

@@ -94,6 +94,10 @@ export default Vue.component('bookmarks', {
     bookmarks: Bookmarks,
   },
   data () {
+    this.bookmarks.getUserInterface().on('storage-reset', () => {
+      this.bookmarkListRecomputeCounter++;
+    });
+
     return {
       bookmarkListRecomputeCounter: 0,
     };

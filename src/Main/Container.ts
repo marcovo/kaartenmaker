@@ -63,7 +63,7 @@ export default class Container {
     }
 
     static getPaperList(): Paper[] {
-        return Object.values(this.paperFormats);
+        return Object.values(Container.paperFormats);
     }
 
     static registerSystemCutoutTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {
@@ -124,12 +124,12 @@ export default class Container {
 
     static getCache(): Promise<Cache> {
         return new Promise((resolve, reject) => {
-            if(this.cache !== null) {
-                resolve(this.cache);
+            if(Container.cache !== null) {
+                resolve(Container.cache);
             } else {
                 const cache = new Cache();
                 cache.initialize().then(() => {
-                    this.cache = cache;
+                    Container.cache = cache;
                     resolve(cache);
                 });
             }
@@ -137,21 +137,24 @@ export default class Container {
     }
 
     static clearCaches(): Promise<void> {
-        return new Promise(((resolve, reject) => {
-            if(this.cache !== null) {
-                this.cache.close();
-                this.cache = null;
+        return new Promise((resolve, reject) => {
+            if(Container.cache !== null) {
+                Container.cache.close();
+                Container.cache = null;
             }
 
-            Cache.drop().then(() => {
-                window.localStorage.clear();
-                resolve();
-            }, reject);
-        })).then(() => {
+            Cache.drop().then(resolve, reject);
+        }).then(() => {
             alert('De buffers zijn geleegd');
         }).catch((...args) => {
             console.log(...args);
             alert('Something went wrong clearing the cache');
         });
+    }
+
+    static resetStorage(): void {
+        window.localStorage.clear();
+        Container.customCutoutTemplates = [];
+        alert('De voorkeuren zijn gewist');
     }
 }
