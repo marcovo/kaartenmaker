@@ -144,7 +144,7 @@ export default Vue.component('cutoutTemplates', {
         }
 
         this.newCutoutTemplate.name = name;
-        Container.registerCustomCutoutTemplate(this.newCutoutTemplate);
+        Container.addCustomCutoutTemplate(this.newCutoutTemplate);
         this.templateListRecomputeCounter++;
         $('#templates_add_modal').modal('hide');
       }
@@ -154,7 +154,7 @@ export default Vue.component('cutoutTemplates', {
       if(confirm('Weet je zeker dat je "'+name+'" wilt overschrijven?')) {
         Container.removeCustomCutoutTemplate(oldTemplate);
         this.newCutoutTemplate.name = name;
-        Container.registerCustomCutoutTemplate(this.newCutoutTemplate);
+        Container.addCustomCutoutTemplate(this.newCutoutTemplate);
         this.templateListRecomputeCounter++;
         $('#templates_add_modal').modal('hide');
       }

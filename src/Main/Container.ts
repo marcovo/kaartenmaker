@@ -4,8 +4,11 @@ import MapImageProvider from "../Projection/MapImageProvider";
 import Wms from "../Projection/Wms";
 import Wmts from "../Projection/Wmts";
 import Paper from "../Util/Paper";
+import {Serialization} from "./Serializer";
 
 export default class Container {
+    static readonly CUSTOM_CUTOUT_TEMPLATE_LOCALSTORAGE_KEY = 'custom_cutout_templates';
+
     private static mapImageProviders: Record<string, MapImageProvider> = {};
 
     private static paperFormats: Record<string, Paper> = {};
@@ -71,11 +74,40 @@ export default class Container {
         Container.customCutoutTemplates.push(cutoutTemplate);
     }
 
+    static getSerializedCustomCutoutTemplatesFromStorage(): Record<string, Serialization> {
+        const entry = window.localStorage.getItem(Container.CUSTOM_CUTOUT_TEMPLATE_LOCALSTORAGE_KEY);
+        if(entry === null) {
+            return {};
+        }
+        return <Record<string, Serialization>>JSON.parse(entry);
+    }
+
+    static registerCustomCutoutTemplates(): void {
+        const serializedTemplates = Container.getSerializedCustomCutoutTemplatesFromStorage();
+        for(const name in serializedTemplates) {
+            const serialized = serializedTemplates[name];
+            const cutoutTemplate = CutoutTemplate.unserialize(serialized);
+            Container.registerCustomCutoutTemplate(cutoutTemplate);
+        }
+    }
+
+    static addCustomCutoutTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {
+        Container.customCutoutTemplates.push(cutoutTemplate);
+
+        const serializedTemplates = Container.getSerializedCustomCutoutTemplatesFromStorage();
+        serializedTemplates[cutoutTemplate.name] = cutoutTemplate.serialize();
+        window.localStorage.setItem(Container.CUSTOM_CUTOUT_TEMPLATE_LOCALSTORAGE_KEY, JSON.stringify(serializedTemplates));
+    }
+
     static removeCustomCutoutTemplate(cutoutTemplate: CutoutTemplate<any, any, any>) {
         const index = Container.customCutoutTemplates.indexOf(cutoutTemplate);
         if(index > -1) {
             Container.customCutoutTemplates.splice(index, 1);
         }
+
+        const serializedTemplates = Container.getSerializedCustomCutoutTemplatesFromStorage();
+        delete serializedTemplates[cutoutTemplate.name];
+        window.localStorage.setItem(Container.CUSTOM_CUTOUT_TEMPLATE_LOCALSTORAGE_KEY, JSON.stringify(serializedTemplates));
     }
 
     static cutoutTemplateList(): CutoutTemplate<any, any, any>[] {

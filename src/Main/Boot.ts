@@ -202,3 +202,5 @@ Container.registerSystemCutoutTemplate(new CutoutTemplate<any, any, any>(
     null,
     '(DE) Rheinland-Pfalz 1:25.000'
 ));
+
+Container.registerCustomCutoutTemplates();
