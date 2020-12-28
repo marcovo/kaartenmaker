@@ -89,6 +89,7 @@ export default class UTM implements Coordinate {
                 if(band === null) {
                     return '(Out of range)';
                 }
+                // The bands used here ignore the few exceptions in the UTM system bands definition
                 return this.zone.toString() + band + ' ' + Math.round(this.E) + ' ' + Math.round(this.N);
             },
         };
