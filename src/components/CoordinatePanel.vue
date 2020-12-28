@@ -133,6 +133,7 @@ export default Vue.component('coordinate-panel', {
       const baseCoord: LeafletConvertibleCoordinate = this.leafletConvertibleCoordinateSystem.fromLeaflet(this.coordinateMarker.getLatLng());
 
       const coordinateSystemsRecord: Record<string, boolean> = {};
+      coordinateSystemsRecord['EPSG:4326'] = true; // Always show WGS84
       for(const cutout of this.userInterface.getCutouts()) {
         coordinateSystemsRecord[cutout.workspaceCoordinateSystem.code] = true;
         coordinateSystemsRecord[cutout.getProjection().coordinateSystem.code] = true;
