@@ -141,6 +141,11 @@
                             <div class="text-md text-black">{{ cutout.name }}</div>
                         </div>
                         <div>
+                            <div class="lds-dual-ring lds-dual-ring-hidden" v-bind:id="'cutout_' + cutout.id + '_loading'">
+                                <div><div v-bind:id="'cutout_' + cutout.id + '_loading_progress'"></div></div>
+                            </div>
+                        </div>
+                        <div>
                             <div class="btn-group">
                                 <button class="btn btn-sm btn-control border-top-0" style="border-top-left-radius: 0;" v-on:click="toggleHidden(cutout)">
                                     <svg v-if="cutout.visibleOnMap" width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-eye" fill="currentColor" xmlns="http://www.w3.org/2000/svg">

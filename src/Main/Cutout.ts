@@ -372,8 +372,8 @@ export default class Cutout<
         this.leafletPolygon.setLatLngs(coords);
     }
 
-    print(): Promise<void> {
-        return (new Printer(this)).print();
+    print(progressCallback: ((evt) => void)|null = null): Promise<void> {
+        return (new Printer(this, progressCallback)).print();
     }
 
     mouseover() {

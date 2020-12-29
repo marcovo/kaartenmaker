@@ -106,7 +106,7 @@ export default class WmsProjection<C extends Coordinate> extends Projection<C, W
         });
     }
 
-    projectToPdf(doc: jsPDF, paper: Paper, cache: Cache): Promise<void> {
+    projectToPdf(doc: jsPDF, paper: Paper, cache: Cache, progressCallback: ((evt) => void)|null): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             // real mm: mm in physical world
             // paper mm: mm on paper map
@@ -140,6 +140,7 @@ export default class WmsProjection<C extends Coordinate> extends Projection<C, W
             const maxY = Math.ceil(Math.max(p[0].getY(), p[1].getY(), p[2].getY(), p[3].getY())/unitsPerTile)*unitsPerTile;
 
             const promises: Promise<void>[] = [];
+            let done = 0;
             for(let x=minX; x<maxX; x+= unitsPerTile) {
                 for(let y=minY; y<maxY; y+= unitsPerTile) {
                     const imagePromise: Promise<HTMLImageElement> = this.downloadPrintImage(cache, [
@@ -156,6 +157,14 @@ export default class WmsProjection<C extends Coordinate> extends Projection<C, W
 
                     const addImagePromise = imagePromise.then((img) => {
                         doc.addImage(img, 'PNG', paperCoord.getX(), paperCoord.getY(), paperMmPerTile, paperMmPerTile);
+
+                        done++;
+                        if(progressCallback) {
+                            progressCallback({
+                                done: done,
+                                total: promises.length,
+                            })
+                        }
                     })
 
                     promises.push(addImagePromise);

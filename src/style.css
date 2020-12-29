@@ -142,3 +142,52 @@
 .btn-control:not(:disabled):not(.disabled).active:focus, .btn-control:not(:disabled):not(.disabled):active:focus, .show>.btn-control.dropdown-toggle:focus {
     box-shadow:0 0 0 .2rem rgba(108, 117, 125, .5);
 }
+
+/* Loader */
+.lds-dual-ring {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+}
+.lds-dual-ring::after {
+    content: " ";
+    display: block;
+    width: 80%;
+    height: 80%;
+    margin: 10%;
+    border-radius: 50%;
+    border: 0.1em solid currentColor;
+    border-color: currentColor transparent currentColor transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+}
+.lds-dual-ring > div {
+    float: left;
+    width: calc(80% - 0.15em);
+    height: calc(80% - 0.15em);
+    margin: calc(10% + 0.075em);
+    border-radius: 50%;
+    overflow: hidden;
+}
+.lds-dual-ring > div > div {
+    height: 100%;
+    background-color: currentColor;
+    opacity: 0.4;
+    width: 0;
+}
+@keyframes lds-dual-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.lds-dual-ring-hidden {
+    display: none;
+}
+
+.cutout .lds-dual-ring {
+    font-size: 24px;
+    vertical-align: middle;
+    color: #007bff;
+}

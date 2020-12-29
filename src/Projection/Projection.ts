@@ -89,5 +89,5 @@ export default abstract class Projection<C extends Coordinate, MIP extends MapIm
             .make();
     }
 
-    abstract projectToPdf(doc: jsPDF, paper: Paper, cache: Cache);
+    abstract projectToPdf(doc: jsPDF, paper: Paper, cache: Cache, progressCallback: ((evt) => void)|null);
 }

@@ -101,7 +101,7 @@ export default class WmtsProjection<C extends Coordinate> extends Projection<C, 
         return pxPerPaperMm * MM_PER_INCH;
     }
 
-    projectToPdf(doc: jsPDF, paper: Paper, cache: Cache): Promise<void> {
+    projectToPdf(doc: jsPDF, paper: Paper, cache: Cache, progressCallback: ((evt) => void)|null): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             // real mm: mm in physical world
             // paper mm: mm on paper map
@@ -140,6 +140,7 @@ export default class WmtsProjection<C extends Coordinate> extends Projection<C, 
             const rowMin = Math.floor((tileMatrixMaxY - maxY) / tileSpanY);
 
             const promises: Promise<void>[] = [];
+            let done = 0;
             for(let col = colMin; col < colMax; col++) {
                 for(let row = rowMin; row < rowMax; row++) {
                     const imagePromise: Promise<HTMLImageElement> = this.downloadPrintImage(cache, {
@@ -155,6 +156,14 @@ export default class WmtsProjection<C extends Coordinate> extends Projection<C, 
 
                     const addImagePromise = imagePromise.then((img) => {
                         doc.addImage(img, 'PNG', paperCoord.getX(), paperCoord.getY(), paperMmPerTile, paperMmPerTile);
+
+                        done++;
+                        if(progressCallback) {
+                            progressCallback({
+                                done: done,
+                                total: promises.length,
+                            })
+                        }
                     })
 
                     promises.push(addImagePromise);

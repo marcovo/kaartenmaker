@@ -253,6 +253,16 @@ export default class UserInterface {
         $('#mainLoadingIndicator').hide();
     }
 
+    cutoutLoading(cutout: Cutout<any, any, any>, progress: number|null) {
+        if(progress === null) {
+            $('#cutout_' + cutout.id + '_loading').addClass('lds-dual-ring-hidden');
+            $('#cutout_' + cutout.id + '_loading_progress').css({width: 0});
+        } else {
+            $('#cutout_' + cutout.id + '_loading').removeClass('lds-dual-ring-hidden');
+            $('#cutout_' + cutout.id + '_loading_progress').css({width: (progress*100) + '%'});
+        }
+    }
+
     newColor(): string {
         const colorCounts = {};
         for(const color of this.colors) {
@@ -360,9 +370,17 @@ export default class UserInterface {
     }
 
     print(cutout: Cutout<any, any, any>): void {
-        cutout.print().catch((e) => {
+        this.cutoutLoading(cutout, 0);
+
+        const progressCallback = (evt) => {
+            this.cutoutLoading(cutout, evt.done / evt.total);
+        };
+
+        cutout.print(progressCallback).catch((e) => {
             console.log(e);
             alert('Something went wrong while printing');
+        }).finally(() => {
+            this.cutoutLoading(cutout, null);
         });
     }
 

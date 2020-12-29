@@ -17,7 +17,7 @@ export default class Printer {
 
     private drawnBoxes: DrawBox[] = [];
 
-    constructor(private cutout: Cutout<any, any, any>) {
+    constructor(private cutout: Cutout<any, any, any>, private progressCallback: ((evt) => void)|null = null) {
         this.paper = this.cutout.getPaper();
     }
 
@@ -55,7 +55,7 @@ export default class Printer {
             format: [this.paper.width, this.paper.height],
         });
 
-        return this.cutout.getProjection().projectToPdf(doc, this.paper, cache).then(() => {
+        return this.cutout.getProjection().projectToPdf(doc, this.paper, cache, this.progressCallback).then(() => {
 
             const edgeIntersections = this.cutout.getGrid().drawOnPdf(doc);
 
