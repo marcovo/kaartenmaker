@@ -74,14 +74,24 @@ export default class Grid<C extends Coordinate> {
             this.cutout.getProjection().paperCoordinateConversion()
         );
 
-        const targetPaperMmPerLine = 40;
-        const targetRealMmPerLine = realMmPerPaperMm * targetPaperMmPerLine;
-        const targetRealMmPerLineOrder = 10 ** Math.floor(Math.log10(targetRealMmPerLine));
-        const realMmPerLine = Math.round(targetRealMmPerLine / targetRealMmPerLineOrder) * targetRealMmPerLineOrder;
-        const unitsPerLine = realMmPerLine / realMmPerUnit;
+        let unitsPerLineX, unitsPerLineY, baseX, baseY;
+        const mipDrawnGrid = this.cutout.getProjection().getMipDrawnGrid();
+        if(mipDrawnGrid !== null) {
+            baseX = mipDrawnGrid.base_x;
+            baseY = mipDrawnGrid.base_y;
+            unitsPerLineX = mipDrawnGrid.delta_x;
+            unitsPerLineY = mipDrawnGrid.delta_y;
+        } else {
+            const targetPaperMmPerLine = 40;
+            const targetRealMmPerLine = realMmPerPaperMm * targetPaperMmPerLine;
+            const targetRealMmPerLineOrder = 10 ** Math.floor(Math.log10(targetRealMmPerLine));
+            const realMmPerLine = Math.round(targetRealMmPerLine / targetRealMmPerLineOrder) * targetRealMmPerLineOrder;
+            unitsPerLineX = unitsPerLineY = realMmPerLine / realMmPerUnit;
+            baseX = baseY = 0;
+        }
 
-        const minXFloor = Math.floor(minX / unitsPerLine) * unitsPerLine;
-        const minYFloor = Math.floor(minY / unitsPerLine) * unitsPerLine;
+        const minXFloor = Math.floor((minX - baseX) / unitsPerLineX) * unitsPerLineX + baseX;
+        const minYFloor = Math.floor((minY - baseY) / unitsPerLineY) * unitsPerLineY + baseY;
 
         const edgeIntersections = {
             top: [],
@@ -105,11 +115,11 @@ export default class Grid<C extends Coordinate> {
         };
 
         doc.setLineWidth(0.1);
-        for(let x=minXFloor; x<maxX; x+= unitsPerLine) {
-            for(let y=minYFloor; y<maxY; y+= unitsPerLine) {
+        for(let x=minXFloor; x<maxX; x+= unitsPerLineX) {
+            for(let y=minYFloor; y<maxY; y+= unitsPerLineY) {
                 const from = toPaperCoord.convert(coordinateSystem.make(x, y));
-                const toX = toPaperCoord.convert(coordinateSystem.make(x+unitsPerLine, y));
-                const toY = toPaperCoord.convert(coordinateSystem.make(x, y+unitsPerLine));
+                const toX = toPaperCoord.convert(coordinateSystem.make(x+unitsPerLineX, y));
+                const toY = toPaperCoord.convert(coordinateSystem.make(x, y+unitsPerLineY));
                 if(this.cutout.options.draw_grid) {
                     doc.line(from.getX(), from.getY(), toX.getX(), toX.getY());
                     doc.line(from.getX(), from.getY(), toY.getX(), toY.getY());

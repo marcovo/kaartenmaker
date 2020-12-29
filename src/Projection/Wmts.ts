@@ -1,7 +1,7 @@
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import Coordinate from "../Coordinates/Coordinate";
 import Container from "../Main/Container";
-import MapImageProvider from "./MapImageProvider";
+import MapImageProvider, {MipDrawnGrid} from "./MapImageProvider";
 import UserError from "../Util/UserError";
 import {findChildNode} from "../Util/functions";
 
@@ -35,6 +35,8 @@ export default class Wmts implements MapImageProvider {
 
     readonly params: WmtsParams;
 
+    private mipDrawnGridFn: (tileMatrixId: string) => (MipDrawnGrid|null) = null;
+
     constructor(
         readonly name: string,
         readonly title: string,
@@ -48,6 +50,15 @@ export default class Wmts implements MapImageProvider {
             version: '1.0.0',
             service: 'WMTS',
         }, params);
+    }
+
+    includesDrawnGrid(mapDrawnGridFn: (tileMatrixId: string) => (MipDrawnGrid|null)) {
+        this.mipDrawnGridFn = mapDrawnGridFn;
+        return this;
+    }
+
+    getDrawnGrid(tileMatrixId: string): MipDrawnGrid {
+        return this.mipDrawnGridFn(tileMatrixId);
     }
 
     getCopyright(): string {

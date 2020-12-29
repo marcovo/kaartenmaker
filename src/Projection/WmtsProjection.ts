@@ -8,6 +8,7 @@ import Paper from "../Util/Paper";
 import Container from "../Main/Container";
 import Projection from "./Projection";
 import {Serialization} from "../Main/Serializer";
+import {MipDrawnGrid} from "./MapImageProvider";
 
 const MM_PER_INCH = 25.4;
 
@@ -74,6 +75,10 @@ export default class WmtsProjection<C extends Coordinate> extends Projection<C, 
 
         // Preload capabilities upon attaching
         this.initialize();
+    }
+
+    getMipDrawnGrid(): MipDrawnGrid | null {
+        return this.mapImageProvider.getDrawnGrid(this.tileMatrixId);
     }
 
     getTileMatrixId(): string {

@@ -7,7 +7,7 @@ import {Point, PointSystem} from "../Util/Math";
 import {jsPDF} from "jspdf";
 import Paper from "../Util/Paper";
 import CartesianTransformation from "../Conversion/CartesianTransformation";
-import MapImageProvider from "./MapImageProvider";
+import MapImageProvider, {MipDrawnGrid} from "./MapImageProvider";
 import {Serialization} from "../Main/Serializer";
 
 export default abstract class Projection<C extends Coordinate, MIP extends MapImageProvider> {
@@ -24,6 +24,8 @@ export default abstract class Projection<C extends Coordinate, MIP extends MapIm
     abstract serialize(): Serialization;
 
     abstract initialize(): Promise<void>;
+
+    abstract getMipDrawnGrid(): MipDrawnGrid|null;
 
     detach() {
         if(this.cutout === null) {

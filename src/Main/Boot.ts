@@ -33,7 +33,7 @@ Container.registerMapImageProvider(new Wms(
         CRS: 'EPSG:28992',
         layers: 'top25raster',
     }
-));
+).includesDrawnGrid(0, 1000, 0, 1000));
 
 Container.registerMapImageProvider(new Wms(
     'nl_kad_50',
@@ -46,7 +46,7 @@ Container.registerMapImageProvider(new Wms(
         CRS: 'EPSG:28992',
         layers: 'top50raster',
     }
-));
+).includesDrawnGrid(0, 1000, 0, 1000));
 
 Container.registerMapImageProvider(new Wms(
     'nl_kad_100',
@@ -59,7 +59,7 @@ Container.registerMapImageProvider(new Wms(
         CRS: 'EPSG:28992',
         layers: 'top100raster',
     }
-));
+).includesDrawnGrid(0, 2000, 1000, 2000));
 
 Container.registerMapImageProvider(new Wms(
     'nl_kad_250',
@@ -72,7 +72,7 @@ Container.registerMapImageProvider(new Wms(
         CRS: 'EPSG:28992',
         layers: 'top250raster',
     }
-));
+).includesDrawnGrid(0, 10000, 5000, 10000));
 
 Container.registerMapImageProvider(new Wms(
     'nl_kad_500',
@@ -85,7 +85,7 @@ Container.registerMapImageProvider(new Wms(
         CRS: 'EPSG:28992',
         layers: 'top500raster',
     }
-));
+).includesDrawnGrid(10000, 25000, 0, 25000));
 
 Container.registerMapImageProvider(new Wms(
     'nl_kad_1000',
@@ -111,7 +111,26 @@ Container.registerMapImageProvider(new Wmts(
         tilematrixset: 'EPSG:28992',
         layer: 'opentopo',
     }
-));
+).includesDrawnGrid((tileMatrixId: string) => {
+    switch (tileMatrixId) {
+        case '00': return null;
+        case '01': return null;
+        case '02': return null;
+        case '03': return null;
+        case '04': return null;
+        case '05': return null;
+        case '06': return {base_x: 0, delta_x: 10000, base_y: 0, delta_y: 10000};
+        case '07': return {base_x: 0, delta_x: 10000, base_y: 0, delta_y: 10000};
+        case '08': return {base_x: 0, delta_x: 10000, base_y: 0, delta_y: 10000};
+        case '09': return {base_x: 0, delta_x: 1000, base_y: 0, delta_y: 1000};
+        case '10': return {base_x: 0, delta_x: 1000, base_y: 0, delta_y: 1000};
+        case '11': return {base_x: 0, delta_x: 1000, base_y: 0, delta_y: 1000};
+        case '12': return {base_x: 0, delta_x: 1000, base_y: 0, delta_y: 1000};
+        case '13': return null;
+        case '14': return null;
+        default: return null;
+    }
+}));
 
 // DE RP, https://lvermgeo.rlp.de/de/geodaten/opendata/
 
