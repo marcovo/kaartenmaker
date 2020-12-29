@@ -153,7 +153,10 @@
                 role="tabpanel"
                 v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_grid-tab'"
             >
-              Grid
+              <div class="form-check">
+                <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_draw_grid'" type="checkbox" value="1" v-bind:checked="cutout.options.draw_grid">
+                <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_draw_grid'">Raster tekenen</label>
+              </div>
             </div>
 
             <div
@@ -386,7 +389,7 @@ export default Vue.component('cutout-settings-modal', {
         });
       }
 
-      for(const optionKey of ['display_name', 'display_scale', 'rotate_y_coords']) {
+      for(const optionKey of ['draw_grid', 'display_name', 'display_scale', 'rotate_y_coords']) {
         $('#csm_' + cutout.id + '_' + optionKey).on('change', function() {
           const newVal = $(this).prop('checked');
           if(newVal !== cutout.options[optionKey]) {

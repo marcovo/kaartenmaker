@@ -110,8 +110,10 @@ export default class Grid<C extends Coordinate> {
                 const from = toPaperCoord.convert(coordinateSystem.make(x, y));
                 const toX = toPaperCoord.convert(coordinateSystem.make(x+unitsPerLine, y));
                 const toY = toPaperCoord.convert(coordinateSystem.make(x, y+unitsPerLine));
-                doc.line(from.getX(), from.getY(), toX.getX(), toX.getY());
-                doc.line(from.getX(), from.getY(), toY.getX(), toY.getY());
+                if(this.cutout.options.draw_grid) {
+                    doc.line(from.getX(), from.getY(), toX.getX(), toX.getY());
+                    doc.line(from.getX(), from.getY(), toY.getX(), toY.getY());
+                }
 
                 // Register intersection points of grid with frame border
                 let paperCoord;
