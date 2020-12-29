@@ -360,7 +360,7 @@ export default Vue.component('cutout-settings-modal', {
 
       $('#csm_' + cutout.id + '_scale').on('change keyup input blur', function() {
         const newScale = parseInt($(this).val());
-        if(newScale !== cutout.getProjection().getScale()) {
+        if(!isNaN(newScale) && newScale !== cutout.getProjection().getScale()) {
           cutout.userInterface.actionHistory.addAction(new ChangeCutoutScaleAction(cutout, newScale));
         }
       });
@@ -379,7 +379,7 @@ export default Vue.component('cutout-settings-modal', {
 
         $('#csm_' + cutout.id + '_margin_' + side).on('change keyup input blur', function() {
           const newVal = parseInt($(this).val());
-          if(newVal !== cutout.options['margin_'+side]) {
+          if(!isNaN(newVal) && newVal !== cutout.options['margin_'+side]) {
             cutout.userInterface.actionHistory.addAction(new UpdateCutoutOptionAction(
                 cutout,
                 'margin_'+side,
@@ -432,7 +432,7 @@ export default Vue.component('cutout-settings-modal', {
     changeDpi(event, cutout: Cutout<any, any, any>) {
       const newDpi = parseInt($('#csm_' + cutout.id + '_dpi').val());
       const projection = cutout.getProjection();
-      if(projection instanceof WmsProjection && newDpi !== projection.getDpi()) {
+      if(!isNaN(newDpi) && projection instanceof WmsProjection && newDpi !== projection.getDpi()) {
         cutout.userInterface.actionHistory.addAction(new ChangeCutoutDpiAction(cutout, newDpi));
       }
     },
