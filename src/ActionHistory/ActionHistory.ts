@@ -2,7 +2,7 @@ import Action from "./Action";
 
 export default class ActionHistory {
 
-    readonly actionLimit = 15;
+    readonly actionLimit = 25;
 
     private actionList: Action[] = [];
     private pointer: number|null = null;

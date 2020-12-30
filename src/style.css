@@ -112,6 +112,10 @@
     cursor: pointer;
 }
 
+h1.underline, h2.underline, h3.underline, h4.underline, h5.underline, h6.underline {
+    border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
 /* btn-control based on btn-outline-secondary */
 .btn-control {
     color:#999999;

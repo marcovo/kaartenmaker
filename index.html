@@ -366,7 +366,7 @@
                 <div class="modal-body">
                     <p>Welkom op kaartenmaker, hier kun je topografische kaarten genereren in verschillende schalen (1:25.000, 1:50.000, etc.) van Nederland en Rheinland-Pfalz. Als je de PDF downloadt en print op 100%/ware grootte, zal de resulterende uitdraai precies op schaal zijn.</p>
 
-                    <h4>Kaartbronnen</h4>
+                    <h4 class="underline">Kaartbronnen</h4>
                     <p>Er wordt gebruik gemaakt van verschillende kaartbronnen.</p>
                     <ul>
                         <li><a href="https://www.pdok.nl/geo-services/-/article/dataset-basisregistratie-topografie-brt-topraster" target="_blank">TOPRaster</a>, de topografische kaarten van Kadaster Nederland. Gebruik onder CC-BY 4.0 licentie.</li>
@@ -374,10 +374,36 @@
                         <li><a href="https://lvermgeo.rlp.de/de/geodaten/opendata/" target="_blank">DTK Rheinland-Pfalz</a>, topografische kaarten van de duitse staat Rheinland-Pfalz. Gebruik onder dl-de/by-2-0 licentie.</li>
                     </ul>
 
-                    <h4>Werking</h4>
+                    <h4 class="underline">Functionaliteit</h4>
+                    <h5>Hoofdmenu</h5>
+                    <p>In het hoofdmenu linksboven zijn vijf (groepen van) knoppen te vinden. Klik op de plus (+, eerste knop) om een kaartuitsnede toe te voegen aan de werkruimte, of op het pijltje om een specifiek soort kaartuitsnede (of sjabloon) toe te voegen. Met de tweede groep knoppen kun je acties ongedaan maken en opnieuw uitvoeren. Met de deel-knop kun je de huidige werkruimte delen met anderen. De bladwijzer-knop biedt in een dropdown functionaliteit om de huidige werkruimte op te slaan en later weer te openen. Onder de laatste knop vallen enkele extra functionaliteiten.</p>
+                    <h5>Kaartuitsnede overzicht</h5>
+                    <p>Onder het hoofdmenu vind je een overzicht van kaartuitsnedes. Dit overzicht is in te klappen door in de bovenste rand te klikken. Per kaartuitsnede vind je knoppen om (in volgorde):</p>
+                    <ul>
+                        <li>De uitsnede te verbergen</li>
+                        <li>Het instellingen scherm voor de uitsnede te openen</li>
+                        <li>De uitsnede af te drukken naar PDF</li>
+                        <li>
+                            Een dropdown te openen, met knoppen om:
+                            <ul>
+                                <li>De uitsnede te dupliceren</li>
+                                <li>De uitsnede op te slaan als sjabloon (verschijnt onder '+'-knop)</li>
+                                <li>De uitsnede te delen met anderen</li>
+                                <li>De legenda voor de uitsnede te downloaden (opent een externe URL in een nieuw tabblad)</li>
+                                <li>De uitsnede te verwijderen</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <h5>Werkkaart</h5>
+                    <p>Kaartuitsnedes zijn te verplaatsen op de werkkaart door deze met de muis te slepen. Als je een kaartuitsnede dicht bij een andere uitsnede sleept, zal de slepende uitsnede vastplakken aan de andere uitsnede, om een naadloze aansluiting te creëren. Houdt <code>ctrl</code> ingedrukt om het vastplakken uit te schakelen. Houdt <code>alt</code> ingedrukt om niet een kaartuitsnede maar de onderliggende werkkaart te verplaatsen. Klik met de rechtermuisknop op een kaartuitsnede om een context-menu te openen. Zodra je op een willekeurig punt op de werkkaart klikt, verschijnen onderaan de coördinaten van het geselecteerde punt.</p>
+
+                    <h5>De kaartuitsnede op de werkkaart lijkt scheef te staan, hoort dat?</h5>
+                    <p>De werkkaart en de kaartuitsnedes gebruiken verschillende kaartprojecties, waardoor deze niet recht zijn ten opzichte van elkaar. Je kunt ook zeggen, deze twee kaarten gebruiken andere <a href="https://nl.wikipedia.org/wiki/Kaartnoorden" target="_blank">kaartnoordes</a>. De kaartuitsnede-vlakken op de werkkaart geven exact aan welk gebied op de PDF terecht zal komen. Tip: open een Kadaster NL kaart met schaal 1:1.000.000 om een idee te krijgen van de hier genoemde vertekening.</p>
+
+                    <h4 class="underline">Werking</h4>
                     <p>Deze applicatie bouwt kaarten op basis van WMS en WMTS bronnen. Zowel het opstellen als het genereren van de kaarten wordt geheel gedaan in de browser, dit betekent dat de snelheid van het genereren van de kaart met name afhankelijk is van de snelheid van je eigen browser/apparaat en internet. Gedownloade kaartstukken worden 1 dag in de browser gebufferd zodat opvolgende kaart-downloads significant sneller zijn.</p>
 
-                    <h4>Software-bibliotheken</h4>
+                    <h4 class="underline">Software-bibliotheken</h4>
                     <p>Voor de bouw van deze applicatie wordt gebruik gemaakt van de volgende technologieën:</p>
                     <ul>
                         <li>De werkkaart wordt gebouwd met <a href="http://leafletjs.com/" target="_blank">Leaflet</a>, met kaartdata van <a href="http://www.openstreetmap.org/copyright" target="_blank">Open street map</a>.</li>
@@ -387,7 +413,7 @@
 
                     <p>De ontwikkeling van deze applicatie kan worden gevolgd op <a href="https://github.com/marcovo" target="_blank">de Github-pagina</a>. Eventuele fouten of functionaliteitsverzoeken kunnen daar worden ingezonden.</p>
 
-                    <h4>Niet gevonden wat je zoekt?</h4>
+                    <h4 class="underline">Niet gevonden wat je zoekt?</h4>
                     <p>Geen enkele applicatie werkt perfect voor iedereen. Hieronder vindt je een aantal alternatieven en aanvullingen op deze applicatie.</p>
                     <ul>
                         <li><a href="https://scoutingtools.nl/" target="_blank">scoutingtools.nl</a> biedt soortgelijke functionaliteit, met een geheel andere technische implementatie.</li>
