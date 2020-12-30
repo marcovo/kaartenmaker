@@ -80,6 +80,10 @@ export default abstract class AbstractCutout<
         this.projection.setAnchor(this.anchorWorkspaceCoordinate);
     }
 
+    setGrid(grid: Grid<Coordinate>): void {
+        this.grid = grid;
+    }
+
     getGrid(): Grid<Coordinate> {
         return this.grid;
     }

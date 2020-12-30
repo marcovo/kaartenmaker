@@ -42,6 +42,14 @@ export default class Grid<C extends Coordinate> {
         this.cutout = cutout;
     }
 
+    detach() {
+        if(this.cutout === null) {
+            throw new Error('Already detached');
+        }
+
+        this.cutout = null;
+    }
+
     getPolygon(): C[] {
         const projectionPolygon = this.cutout.mapPolygonProjection;
 

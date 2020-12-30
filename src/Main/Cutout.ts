@@ -60,6 +60,11 @@ export default class Cutout<
         this.updateMap();
     }
 
+    setGrid(grid: Grid<Coordinate>): void {
+        super.setGrid(grid);
+        this.grid.attach(this);
+    }
+
     setPaper(paper: Paper) {
         this.paper = paper;
         this.updateMap();
