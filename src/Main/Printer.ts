@@ -283,60 +283,73 @@ export default class Printer {
     private drawFrameCoordinate(doc: jsPDF, gridCoordinate: Coordinate, paperCoordinate: Point, side: PdfCoordinateDrawSide) {
         const ordinate = gridCoordinate.formatOrdinateForPdf((side === 'left' || side === 'right') ? 'y' : 'x');
 
-        const fontSize = 8;
-        const mmPerPt = 25.4 / 72;
+        const fontSizeRetries = 6;
+        for(let fontSizeRetry=0; fontSizeRetry <= fontSizeRetries; fontSizeRetry++) {
+            const fontSize = 8 - fontSizeRetry/2;
+            const mmPerPt = 25.4 / 72;
 
-        const strHeight = fontSize * mmPerPt;
-        const strWidth = doc.getStringUnitWidth(ordinate) * strHeight;
+            const strHeight = fontSize * mmPerPt;
+            const strWidth = doc.getStringUnitWidth(ordinate) * strHeight;
 
-        let x = paperCoordinate.getX();
-        let y = paperCoordinate.getY();
-        const textOptions: TextOptionsLight = {};
+            let x = paperCoordinate.getX();
+            let y = paperCoordinate.getY();
+            const textOptions: TextOptionsLight = {};
 
-        if(side === 'left') {
-            if(this.cutout.options.rotate_y_coords) {
-                textOptions.angle = 90;
-                x += -1.0;
-                y += strWidth/2;
-            } else {
-                x += -1.0 - strWidth;
-                y += -0.5 + strHeight/2;
-            }
-        } else if(side === 'top') {
-            x += 0 - strWidth/2;
-            y += -1.0;
-        } else if(side === 'bottom') {
-            x += 0 - strWidth/2;
-            y += strHeight;
-        } else if(side === 'right') {
-            if(this.cutout.options.rotate_y_coords) {
-                textOptions.angle = -90;
-                x += 1.0;
-                y += -strWidth/2;
-            } else {
-                x += 1.0;
-                y += -0.5 + strHeight/2;
-            }
-        }
-
-        const drawBox: DrawBox = {top: y - strHeight, bottom: y, left: x, right: x + strWidth};
-        if(this.cutout.options.rotate_y_coords) {
             if(side === 'left') {
-                drawBox.top = y - strWidth;
-                drawBox.right = x;
-                drawBox.left = x - strHeight;
-
+                if(this.cutout.options.rotate_y_coords) {
+                    textOptions.angle = 90;
+                    x += -1.0;
+                    y += strWidth/2;
+                } else {
+                    x += -1.0 - strWidth;
+                    y += -0.5 + strHeight/2;
+                }
+            } else if(side === 'top') {
+                x += 0 - strWidth/2;
+                y += -1.0;
+            } else if(side === 'bottom') {
+                x += 0 - strWidth/2;
+                y += strHeight;
             } else if(side === 'right') {
-                drawBox.top = y;
-                drawBox.bottom = y + strWidth;
-                drawBox.right = x + strHeight;
+                if(this.cutout.options.rotate_y_coords) {
+                    textOptions.angle = -90;
+                    x += 1.0;
+                    y += -strWidth/2;
+                } else {
+                    x += 1.0;
+                    y += -0.5 + strHeight/2;
+                }
             }
-        }
 
-        doc.setFontSize(fontSize);
+            const drawBox: DrawBox = {top: y - strHeight, bottom: y, left: x, right: x + strWidth};
+            if(this.cutout.options.rotate_y_coords) {
+                if(side === 'left') {
+                    drawBox.top = y - strWidth;
+                    drawBox.right = x;
+                    drawBox.left = x - strHeight;
 
-        if(this.requestDrawBox(drawBox)) {
-            doc.text(ordinate, x, y, textOptions);
+                } else if(side === 'right') {
+                    drawBox.top = y;
+                    drawBox.bottom = y + strWidth;
+                    drawBox.right = x + strHeight;
+                }
+            }
+
+            doc.setFontSize(fontSize);
+
+            if(fontSizeRetry < fontSizeRetries && (
+                drawBox.left < this.cutout.options.margin_left_nonprintable
+                || drawBox.top < this.cutout.options.margin_top_nonprintable
+                || drawBox.bottom > this.cutout.getPaper().height - this.cutout.options.margin_bottom_nonprintable
+                || drawBox.right > this.cutout.getPaper().width - this.cutout.options.margin_right_nonprintable
+            )) {
+                continue;
+            }
+
+            if(this.requestDrawBox(drawBox)) {
+                doc.text(ordinate, x, y, textOptions);
+                break;
+            }
         }
     }
 
