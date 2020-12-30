@@ -153,8 +153,8 @@ export default class Cutout<
     }
 
     computeProjectionPolygon(anchorProjection: ProjectionCoordinate): ProjectionCoordinate[] {
-        const width: millimeter = this.paper.width - this.options.margin_left - this.options.margin_right;
-        const height: millimeter = this.paper.height - this.options.margin_top - this.options.margin_bottom;
+        const width: millimeter = this.paper.width - this.options.margin_left_printable - this.options.margin_left_nonprintable - this.options.margin_right_printable - this.options.margin_right_nonprintable;
+        const height: millimeter = this.paper.height - this.options.margin_top_printable - this.options.margin_top_nonprintable - this.options.margin_bottom_printable - this.options.margin_bottom_nonprintable;
 
         const scale = this.projection.getScale();
         const topRight = this.projection.coordinateSystem.make(anchorProjection.getX() + width*scale/1000, anchorProjection.getY());
@@ -217,8 +217,8 @@ export default class Cutout<
                 this.projection.coordinateSystem
             );
 
-            const width: millimeter = this.paper.width - this.options.margin_left - this.options.margin_right;
-            const height: millimeter = this.paper.height - this.options.margin_top - this.options.margin_bottom;
+            const width: millimeter = this.paper.width - this.options.margin_left_printable - this.options.margin_left_nonprintable - this.options.margin_right_printable - this.options.margin_right_nonprintable;
+            const height: millimeter = this.paper.height - this.options.margin_top_printable - this.options.margin_top_nonprintable - this.options.margin_bottom_printable - this.options.margin_bottom_nonprintable;
             const scale = this.projection.getScale();
             const thisCornerHH = this.projection.coordinateSystem.make(thisCornerLL.getX() + width * scale / 1000, thisCornerLL.getY() + height * scale / 1000);
 

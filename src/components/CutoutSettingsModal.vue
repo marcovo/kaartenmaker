@@ -261,14 +261,33 @@
                 <div class="offset-md-4 col-md-4">
                   <div class="form-group">
                     <div>
-                      <label v-bind:for="'csm_' + cutout.id + '_margin_top'" class="float-left font-italic">Boven</label>
+                      <label v-bind:for="'csm_' + cutout.id + '_margin_top_printable'" class="float-left font-italic">Boven</label>
                       <div class="form-check float-right">
                         <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_top'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_top">
                         <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_top'">Coördinaten</label>
                       </div>
                     </div>
                     <div class="input-group">
-                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_top'" v-bind:value="cutout.options.margin_top">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text" title="Printbaar">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                          </svg>
+                        </span>
+                      </div>
+                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_top_printable'" v-bind:value="cutout.options.margin_top_printable">
+                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                    </div>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text" title="Onprintbaar">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+                          </svg>
+                        </span>
+                      </div>
+                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_top_nonprintable'" v-bind:value="cutout.options.margin_top_nonprintable">
                       <div class="input-group-append"><span class="input-group-text">mm</span></div>
                     </div>
                   </div>
@@ -279,14 +298,33 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <div>
-                      <label v-bind:for="'csm_' + cutout.id + '_margin_left'" class="font-italic">Links</label>
+                      <label v-bind:for="'csm_' + cutout.id + '_margin_left_printable'" class="font-italic">Links</label>
                       <div class="form-check float-right">
                         <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_left'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_left">
                         <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_left'">Coördinaten</label>
                       </div>
                     </div>
                     <div class="input-group">
-                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_left'" v-bind:value="cutout.options.margin_left">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text" title="Printbaar">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                          </svg>
+                        </span>
+                      </div>
+                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_left_printable'" v-bind:value="cutout.options.margin_left_printable">
+                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                    </div>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text" title="Onprintbaar">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+                          </svg>
+                        </span>
+                      </div>
+                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_left_nonprintable'" v-bind:value="cutout.options.margin_left_nonprintable">
                       <div class="input-group-append"><span class="input-group-text">mm</span></div>
                     </div>
                   </div>
@@ -295,14 +333,33 @@
                 <div class="offset-md-4 col-md-4">
                   <div class="form-group">
                     <div>
-                      <label v-bind:for="'csm_' + cutout.id + '_margin_right'" class="font-italic">Rechts</label>
+                      <label v-bind:for="'csm_' + cutout.id + '_margin_right_printable'" class="font-italic">Rechts</label>
                       <div class="form-check float-right">
                         <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_right'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_right">
                         <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_right'">Coördinaten</label>
                       </div>
                     </div>
                     <div class="input-group">
-                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_right'" v-bind:value="cutout.options.margin_right">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text" title="Printbaar">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                          </svg>
+                        </span>
+                      </div>
+                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_right_printable'" v-bind:value="cutout.options.margin_right_printable">
+                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                    </div>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text" title="Onprintbaar">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+                          </svg>
+                        </span>
+                      </div>
+                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_right_nonprintable'" v-bind:value="cutout.options.margin_right_nonprintable">
                       <div class="input-group-append"><span class="input-group-text">mm</span></div>
                     </div>
                   </div>
@@ -313,14 +370,33 @@
                 <div class="offset-md-4 col-md-4">
                   <div class="form-group">
                     <div>
-                      <label v-bind:for="'csm_' + cutout.id + '_margin_bottom'" class="font-italic">Onder</label>
+                      <label v-bind:for="'csm_' + cutout.id + '_margin_bottom_printable'" class="font-italic">Onder</label>
                       <div class="form-check float-right">
                         <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_bottom'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_bottom">
                         <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_bottom'">Coördinaten</label>
                       </div>
                     </div>
                     <div class="input-group">
-                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_bottom'" v-bind:value="cutout.options.margin_bottom">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text" title="Printbaar">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                          </svg>
+                        </span>
+                      </div>
+                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_bottom_printable'" v-bind:value="cutout.options.margin_bottom_printable">
+                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                    </div>
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text" title="Onprintbaar">
+                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+                          </svg>
+                        </span>
+                      </div>
+                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_bottom_nonprintable'" v-bind:value="cutout.options.margin_bottom_nonprintable">
                       <div class="input-group-append"><span class="input-group-text">mm</span></div>
                     </div>
                   </div>
@@ -470,16 +546,18 @@ export default Vue.component('cutout-settings-modal', {
           }
         });
 
-        $('#csm_' + cutout.id + '_margin_' + side).on('change keyup input blur', function() {
-          const newVal = parseInt($(this).val());
-          if(!isNaN(newVal) && newVal !== cutout.options['margin_'+side]) {
-            cutout.userInterface.actionHistory.addAction(new UpdateCutoutOptionAction(
-                cutout,
-                'margin_'+side,
-                newVal
-            ));
-          }
-        });
+        for(const printable of ['printable', 'nonprintable']) {
+          $('#csm_' + cutout.id + '_margin_' + side + '_' + printable).on('change keyup input blur', function() {
+            const newVal = parseFloat($(this).val());
+            if(!isNaN(newVal) && newVal !== cutout.options['margin_' + side + '_' + printable]) {
+              cutout.userInterface.actionHistory.addAction(new UpdateCutoutOptionAction(
+                  cutout,
+                  'margin_' + side + '_' + printable,
+                  newVal
+              ));
+            }
+          });
+        }
       }
 
       for(const optionKey of ['draw_grid', 'display_name', 'display_scale', 'rotate_y_coords']) {

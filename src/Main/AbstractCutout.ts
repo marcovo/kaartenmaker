@@ -8,10 +8,14 @@ import Grid from "./Grid";
 import MapImageProvider from "../Projection/MapImageProvider";
 
 export type CutoutOptions = {
-    margin_top: millimeter,
-    margin_right: millimeter,
-    margin_bottom: millimeter,
-    margin_left: millimeter,
+    margin_top_printable: millimeter,
+    margin_right_printable: millimeter,
+    margin_bottom_printable: millimeter,
+    margin_left_printable: millimeter,
+    margin_top_nonprintable: millimeter,
+    margin_right_nonprintable: millimeter,
+    margin_bottom_nonprintable: millimeter,
+    margin_left_nonprintable: millimeter,
     draw_grid: boolean,
     display_coords_top: boolean,
     display_coords_right: boolean,
@@ -35,10 +39,14 @@ export default abstract class AbstractCutout<
     anchorWorkspaceCoordinate: WorkspaceCoordinate;
 
     static defaultCutoutOptions: CutoutOptions = {
-        margin_top: 10,
-        margin_right: 10,
-        margin_bottom: 10,
-        margin_left: 10,
+        margin_top_printable: 6,
+        margin_right_printable: 6,
+        margin_bottom_printable: 6,
+        margin_left_printable: 6,
+        margin_top_nonprintable: 6,
+        margin_right_nonprintable: 6,
+        margin_bottom_nonprintable: 6,
+        margin_left_nonprintable: 6,
         draw_grid: true,
         display_coords_top: true,
         display_coords_right: true,

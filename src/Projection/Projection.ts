@@ -85,8 +85,8 @@ export default abstract class Projection<C extends Coordinate, MIP extends MapIm
 
             // Move by margin
             .translate(new Point(
-                this.cutout.options.margin_left,
-                this.cutout.getPaper().height - this.cutout.options.margin_bottom
+                this.cutout.options.margin_left_printable + this.cutout.options.margin_left_nonprintable,
+                this.cutout.getPaper().height - this.cutout.options.margin_bottom_printable - this.cutout.options.margin_bottom_nonprintable
             ))
 
             .make();

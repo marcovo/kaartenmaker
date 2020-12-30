@@ -3,8 +3,8 @@ import Cutout from "../Main/Cutout";
 
 export default class UpdateCutoutOptionAction<Type> implements Action {
 
-    static readonly updateMapOptions = ['margin_top', 'margin_left', 'margin_right', 'margin_bottom'];
-    static readonly mergableOptions = ['margin_top', 'margin_left', 'margin_right', 'margin_bottom'];
+    static readonly updateMapOptions = ['margin_top_printable', 'margin_left_printable', 'margin_right_printable', 'margin_bottom_printable', 'margin_top_nonprintable', 'margin_left_nonprintable', 'margin_right_nonprintable', 'margin_bottom_nonprintable'];
+    static readonly mergableOptions = ['margin_top_printable', 'margin_left_printable', 'margin_right_printable', 'margin_bottom_printable', 'margin_top_nonprintable', 'margin_left_nonprintable', 'margin_right_nonprintable', 'margin_bottom_nonprintable'];
 
     private readonly oldValue: Type;
 

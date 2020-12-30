@@ -150,10 +150,22 @@ export default class Grid<C extends Coordinate> {
         };
 
         const corners = {
-            topLeft: new Point(this.cutout.options.margin_left, this.cutout.options.margin_top),
-            topRight: new Point(this.cutout.getPaper().width - this.cutout.options.margin_right, this.cutout.options.margin_top),
-            bottomLeft: new Point(this.cutout.options.margin_left, this.cutout.getPaper().height - this.cutout.options.margin_bottom),
-            bottomRight: new Point(this.cutout.getPaper().width - this.cutout.options.margin_right, this.cutout.getPaper().height - this.cutout.options.margin_bottom),
+            topLeft: new Point(
+                this.cutout.options.margin_left_printable + this.cutout.options.margin_left_nonprintable,
+                this.cutout.options.margin_top_printable + this.cutout.options.margin_top_nonprintable
+            ),
+            topRight: new Point(
+                this.cutout.getPaper().width - this.cutout.options.margin_right_printable - this.cutout.options.margin_right_nonprintable,
+                this.cutout.options.margin_top_printable + this.cutout.options.margin_top_nonprintable
+            ),
+            bottomLeft: new Point(
+                this.cutout.options.margin_left_printable + this.cutout.options.margin_left_nonprintable,
+                this.cutout.getPaper().height - this.cutout.options.margin_bottom_printable - this.cutout.options.margin_bottom_nonprintable
+            ),
+            bottomRight: new Point(
+                this.cutout.getPaper().width - this.cutout.options.margin_right_printable - this.cutout.options.margin_right_nonprintable,
+                this.cutout.getPaper().height - this.cutout.options.margin_bottom_printable - this.cutout.options.margin_bottom_nonprintable
+            ),
         };
 
         const edges = {

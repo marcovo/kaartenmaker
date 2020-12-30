@@ -62,10 +62,10 @@ export default class Printer {
             this.drawFrameBackground(doc);
 
             this.registerDrawBox({
-                top: this.cutout.options.margin_top,
-                bottom: this.paper.height - this.cutout.options.margin_bottom,
-                left: this.cutout.options.margin_left,
-                right: this.paper.width - this.cutout.options.margin_right,
+                top: this.cutout.options.margin_top_printable + this.cutout.options.margin_top_nonprintable,
+                bottom: this.paper.height - this.cutout.options.margin_bottom_printable - this.cutout.options.margin_bottom_nonprintable,
+                left: this.cutout.options.margin_left_printable + this.cutout.options.margin_left_nonprintable,
+                right: this.paper.width - this.cutout.options.margin_right_printable - this.cutout.options.margin_right_nonprintable,
             });
 
             if(this.cutout.options.display_name) {
@@ -182,8 +182,8 @@ export default class Printer {
         const strHeight = fontSize * mmPerPt;
         const strWidth = doc.getStringUnitWidth(name) * strHeight;
 
-        const y = 2 + strHeight;
-        const x = this.cutout.options.margin_left;
+        const y = this.cutout.options.margin_top_nonprintable + strHeight - 2;
+        const x = this.cutout.options.margin_left_printable + this.cutout.options.margin_left_nonprintable;
 
         this.registerDrawBox({top: y - strHeight, bottom: y, left: x, right: x + strWidth});
         doc.setFontSize(fontSize);
@@ -199,8 +199,8 @@ export default class Printer {
         const strHeight = fontSize * mmPerPt;
         const strWidth = doc.getStringUnitWidth(copyright) * strHeight;
 
-        const y = this.paper.height - strHeight - 2;
-        const x = this.paper.width - this.cutout.options.margin_right - strWidth;
+        const y = this.paper.height - this.cutout.options.margin_bottom_nonprintable;
+        const x = this.paper.width - this.cutout.options.margin_right_printable - this.cutout.options.margin_right_nonprintable - strWidth;
 
         this.registerDrawBox({top: y - strHeight, bottom: y, left: x, right: x + strWidth});
         doc.setFillColor(255, 255, 255);
@@ -239,8 +239,8 @@ export default class Printer {
         const str0Width = doc.getStringUnitWidth(str0) * strHeight;
         const str1Width = doc.getStringUnitWidth(str1) * strHeight;
 
-        const x = this.cutout.options.margin_left;
-        const y = this.paper.height - 5.5;
+        const x = this.cutout.options.margin_left_printable + this.cutout.options.margin_left_nonprintable;
+        const y = this.paper.height - this.cutout.options.margin_bottom_nonprintable - barHeight;
 
         this.registerDrawBox({
             top: y,
