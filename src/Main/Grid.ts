@@ -12,6 +12,13 @@ export type EdgeIntersection<C extends Coordinate> = {
     gridCoord: C,
 };
 
+export type GridSpec = {
+    base_x: number,
+    delta_x: number,
+    base_y: number,
+    delta_y: number,
+};
+
 export default class Grid<C extends Coordinate> {
 
     private cutout: Cutout<any, any, any> = null;
@@ -61,7 +68,12 @@ export default class Grid<C extends Coordinate> {
         return gridPolygon;
     }
 
-    drawOnPdf(doc: jsPDF): Record<string, EdgeIntersection<C>[]> {
+    getGridSpec(): GridSpec {
+        const mipDrawnGrid = this.cutout.getProjection().getMipDrawnGrid();
+        if(mipDrawnGrid !== null) {
+            return mipDrawnGrid;
+        }
+
         // real mm: mm in physical world
         // paper mm: mm on paper map
         // unit: unit of measurement of projection coordinate system (e.g., meters)
@@ -69,6 +81,22 @@ export default class Grid<C extends Coordinate> {
         const realMmPerPaperMm = scale;
 
         const realMmPerUnit = 1000;
+
+        const targetPaperMmPerLine = 40;
+        const targetRealMmPerLine = realMmPerPaperMm * targetPaperMmPerLine;
+        const targetRealMmPerLineOrder = 10 ** Math.floor(Math.log10(targetRealMmPerLine));
+        const realMmPerLine = Math.round(targetRealMmPerLine / targetRealMmPerLineOrder) * targetRealMmPerLineOrder;
+        const unitsPerLine = realMmPerLine / realMmPerUnit;
+
+        return {
+            base_x: 0,
+            delta_x: unitsPerLine,
+            base_y: 0,
+            delta_y: unitsPerLine,
+        }
+    }
+
+    drawOnPdf(doc: jsPDF): Record<string, EdgeIntersection<C>[]> {
 
         const p = this.getPolygon();
         const minX = Math.min(p[0].getX(), p[1].getX(), p[2].getX(), p[3].getX());
@@ -82,24 +110,10 @@ export default class Grid<C extends Coordinate> {
             this.cutout.getProjection().paperCoordinateConversion()
         );
 
-        let unitsPerLineX, unitsPerLineY, baseX, baseY;
-        const mipDrawnGrid = this.cutout.getProjection().getMipDrawnGrid();
-        if(mipDrawnGrid !== null) {
-            baseX = mipDrawnGrid.base_x;
-            baseY = mipDrawnGrid.base_y;
-            unitsPerLineX = mipDrawnGrid.delta_x;
-            unitsPerLineY = mipDrawnGrid.delta_y;
-        } else {
-            const targetPaperMmPerLine = 40;
-            const targetRealMmPerLine = realMmPerPaperMm * targetPaperMmPerLine;
-            const targetRealMmPerLineOrder = 10 ** Math.floor(Math.log10(targetRealMmPerLine));
-            const realMmPerLine = Math.round(targetRealMmPerLine / targetRealMmPerLineOrder) * targetRealMmPerLineOrder;
-            unitsPerLineX = unitsPerLineY = realMmPerLine / realMmPerUnit;
-            baseX = baseY = 0;
-        }
+        const gridSpec = this.getGridSpec();
 
-        const minXFloor = Math.floor((minX - baseX) / unitsPerLineX) * unitsPerLineX + baseX;
-        const minYFloor = Math.floor((minY - baseY) / unitsPerLineY) * unitsPerLineY + baseY;
+        const minXFloor = Math.floor((minX - gridSpec.base_x) / gridSpec.delta_x) * gridSpec.delta_x + gridSpec.base_x;
+        const minYFloor = Math.floor((minY - gridSpec.base_y) / gridSpec.delta_y) * gridSpec.delta_y + gridSpec.base_y;
 
         const edgeIntersections = {
             top: [],
@@ -123,11 +137,11 @@ export default class Grid<C extends Coordinate> {
         };
 
         doc.setLineWidth(0.1);
-        for(let x=minXFloor; x<maxX; x+= unitsPerLineX) {
-            for(let y=minYFloor; y<maxY; y+= unitsPerLineY) {
+        for(let x=minXFloor; x<maxX; x+= gridSpec.delta_x) {
+            for(let y=minYFloor; y<maxY; y+= gridSpec.delta_y) {
                 const from = toPaperCoord.convert(coordinateSystem.make(x, y));
-                const toX = toPaperCoord.convert(coordinateSystem.make(x+unitsPerLineX, y));
-                const toY = toPaperCoord.convert(coordinateSystem.make(x, y+unitsPerLineY));
+                const toX = toPaperCoord.convert(coordinateSystem.make(x+gridSpec.delta_x, y));
+                const toY = toPaperCoord.convert(coordinateSystem.make(x, y+gridSpec.delta_y));
                 if(this.cutout.options.draw_grid) {
                     doc.line(from.getX(), from.getY(), toX.getX(), toX.getY());
                     doc.line(from.getX(), from.getY(), toY.getX(), toY.getY());

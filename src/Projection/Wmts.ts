@@ -1,7 +1,8 @@
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import Coordinate from "../Coordinates/Coordinate";
 import Container from "../Main/Container";
-import MapImageProvider, {MipDrawnGrid} from "./MapImageProvider";
+import MapImageProvider from "./MapImageProvider";
+import {GridSpec} from "../Main/Grid";
 import UserError from "../Util/UserError";
 import {findChildNode} from "../Util/functions";
 
@@ -35,7 +36,7 @@ export default class Wmts implements MapImageProvider {
 
     readonly params: WmtsParams;
 
-    private mipDrawnGridFn: (tileMatrixId: string) => (MipDrawnGrid|null) = null;
+    private mipDrawnGridFn: (tileMatrixId: string) => (GridSpec|null) = null;
 
     constructor(
         readonly name: string,
@@ -52,12 +53,12 @@ export default class Wmts implements MapImageProvider {
         }, params);
     }
 
-    includesDrawnGrid(mapDrawnGridFn: (tileMatrixId: string) => (MipDrawnGrid|null)) {
+    includesDrawnGrid(mapDrawnGridFn: (tileMatrixId: string) => (GridSpec|null)) {
         this.mipDrawnGridFn = mapDrawnGridFn;
         return this;
     }
 
-    getDrawnGrid(tileMatrixId: string): MipDrawnGrid {
+    getDrawnGrid(tileMatrixId: string): GridSpec {
         return this.mipDrawnGridFn(tileMatrixId);
     }
 

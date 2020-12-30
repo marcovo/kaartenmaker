@@ -7,7 +7,7 @@ import {jsPDF} from "jspdf";
 import Paper from "../Util/Paper";
 import Container from "../Main/Container";
 import Projection from "./Projection";
-import MapImageProvider, {MipDrawnGrid} from "./MapImageProvider";
+import {GridSpec} from "../Main/Grid";
 import {Serialization} from "../Main/Serializer";
 
 const MM_PER_INCH = 25.4;
@@ -70,7 +70,7 @@ export default class WmsProjection<C extends Coordinate> extends Projection<C, W
         this.initialize();
     }
 
-    getMipDrawnGrid(): MipDrawnGrid | null {
+    getMipDrawnGrid(): GridSpec | null {
         return this.mapImageProvider.getDrawnGrid();
     }
 

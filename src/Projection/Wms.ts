@@ -2,7 +2,8 @@ import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import CoordinateConverter from "../Util/CoordinateConverter";
 import Coordinate from "../Coordinates/Coordinate";
 import Container from "../Main/Container";
-import MapImageProvider, {MipDrawnGrid} from "./MapImageProvider";
+import MapImageProvider from "./MapImageProvider";
+import {GridSpec} from "../Main/Grid";
 import UserError from "../Util/UserError";
 
 const $ = require( 'jquery' );
@@ -28,7 +29,7 @@ export default class Wms implements MapImageProvider {
 
     readonly params: WmsParams;
 
-    private mipDrawnGrid: MipDrawnGrid = null;
+    private mipDrawnGrid: GridSpec = null;
 
     constructor(
         readonly name: string,
@@ -50,7 +51,7 @@ export default class Wms implements MapImageProvider {
         return this;
     }
 
-    getDrawnGrid(): MipDrawnGrid {
+    getDrawnGrid(): GridSpec {
         return this.mipDrawnGrid;
     }
 
