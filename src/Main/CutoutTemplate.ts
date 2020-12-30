@@ -27,7 +27,7 @@ export default class CutoutTemplate<
                 this.anchorWorkspaceCoordinate.clone(),
                 this.workspaceCoordinateSystem,
                 this.getProjection().clone(),
-                new Grid(this.getGrid().coordinateSystem)
+                this.getGrid().clone()
             );
 
             cutout.options = Object.assign({}, cutout.options, this.options);

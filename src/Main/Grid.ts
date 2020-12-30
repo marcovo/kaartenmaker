@@ -23,6 +23,8 @@ export default class Grid<C extends Coordinate> {
 
     private cutout: Cutout<any, any, any> = null;
 
+    private customGridSpec: GridSpec|null = null;
+
     constructor(readonly coordinateSystem: CoordinateSystem<C>) {
 
     }
@@ -30,15 +32,24 @@ export default class Grid<C extends Coordinate> {
     serialize(): Serialization {
         return {
             system: this.coordinateSystem.code,
+            customGridSpec: this.customGridSpec,
         };
     }
 
     static unserialize(serialized: Serialization): Grid<Coordinate> {
-        return new Grid(CoordinateConverter.getCoordinateSystem(serialized.system));
+        const newGrid = new Grid(CoordinateConverter.getCoordinateSystem(serialized.system));
+        if(serialized.customGridSpec) {
+            newGrid.customGridSpec = Object.assign({}, serialized.customGridSpec);
+        }
+        return newGrid;
     }
 
     clone(): Grid<C> {
-        return new Grid(this.coordinateSystem);
+        const newGrid = new Grid(this.coordinateSystem);
+        if(this.customGridSpec !== null) {
+            newGrid.customGridSpec = Object.assign({}, this.customGridSpec);
+        }
+        return newGrid;
     }
 
     attach(cutout: Cutout<any, any, any>) {
@@ -68,10 +79,26 @@ export default class Grid<C extends Coordinate> {
         return gridPolygon;
     }
 
+    getCustomGridSpec(): GridSpec|null {
+        return this.customGridSpec;
+    }
+
+    setCustomGridSpec(gridSpec: GridSpec|null): void {
+        this.customGridSpec = gridSpec;
+    }
+
     getGridSpec(): GridSpec {
+        if(this.customGridSpec !== null) {
+            return this.customGridSpec;
+        }
+
+        return this.computeGridSpec();
+    }
+
+    computeGridSpec(): GridSpec {
         const mipDrawnGrid = this.cutout.getProjection().getMipDrawnGrid();
         if(mipDrawnGrid !== null) {
-            return mipDrawnGrid;
+            return Object.assign({}, mipDrawnGrid);
         }
 
         // real mm: mm in physical world

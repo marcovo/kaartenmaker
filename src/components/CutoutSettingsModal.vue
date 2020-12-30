@@ -153,9 +153,100 @@
                 role="tabpanel"
                 v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_grid-tab'"
             >
-              <div class="form-check">
-                <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_draw_grid'" type="checkbox" value="1" v-bind:checked="cutout.options.draw_grid">
-                <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_draw_grid'">Raster tekenen</label>
+              <div class="form-group">
+                <div class="form-check">
+                  <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_draw_grid'" type="checkbox" value="1" v-bind:checked="cutout.options.draw_grid">
+                  <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_draw_grid'">Raster tekenen</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="form-check">
+                  <input
+                      class="form-check-input"
+                      type="radio"
+                      v-bind:name="'csm_' + cutout.id + '_grid_type'"
+                      v-bind:id="'csm_' + cutout.id + '_grid_type_auto'"
+                      value="auto"
+                      v-bind:checked="cutout.grid.customGridSpec === null"
+                  >
+                  <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_grid_type_auto'">
+                    Automatisch raster
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input
+                      class="form-check-input"
+                      type="radio"
+                      v-bind:name="'csm_' + cutout.id + '_grid_type'"
+                      v-bind:id="'csm_' + cutout.id + '_grid_type_manual'"
+                      value="manual"
+                      v-bind:checked="cutout.grid.customGridSpec !== null"
+                  >
+                  <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_grid_type_manual'">
+                    Handmatig raster
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <table class="table table-sm" v-if="cutout.grid.customGridSpec !== null">
+                  <tr>
+                    <th>Rasterdefinitie</th>
+                    <th>Basis</th>
+                    <th>Stapgrootte</th>
+                  </tr>
+                  <tr>
+                    <th>X</th>
+                    <td>
+                      <input
+                          type="number" class="form-control"
+                          v-bind:id="'csm_' + cutout.id + '_grid_manual_base_x'"
+                          v-bind:value="cutout.grid.customGridSpec.base_x"
+                          v-on:change="changeManualGrid($event, cutout, 'base_x')"
+                          v-on:keyup="changeManualGrid($event, cutout, 'base_x')"
+                          v-on:input="changeManualGrid($event, cutout, 'base_x')"
+                          v-on:blur="changeManualGrid($event, cutout, 'base_x')"
+                      >
+                    </td>
+                    <td>
+                      <input
+                          type="number" class="form-control"
+                          v-bind:id="'csm_' + cutout.id + '_grid_manual_delta_x'"
+                          v-bind:value="cutout.grid.customGridSpec.delta_x"
+                          v-on:change="changeManualGrid($event, cutout, 'delta_x')"
+                          v-on:keyup="changeManualGrid($event, cutout, 'delta_x')"
+                          v-on:input="changeManualGrid($event, cutout, 'delta_x')"
+                          v-on:blur="changeManualGrid($event, cutout, 'delta_x')"
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Y</th>
+                    <td>
+                      <input
+                          type="number" class="form-control"
+                          v-bind:id="'csm_' + cutout.id + '_grid_manual_base_y'"
+                          v-bind:value="cutout.grid.customGridSpec.base_y"
+                          v-on:change="changeManualGrid($event, cutout, 'base_y')"
+                          v-on:keyup="changeManualGrid($event, cutout, 'base_y')"
+                          v-on:input="changeManualGrid($event, cutout, 'base_y')"
+                          v-on:blur="changeManualGrid($event, cutout, 'base_y')"
+                      >
+                    </td>
+                    <td>
+                      <input
+                          type="number" class="form-control"
+                          v-bind:id="'csm_' + cutout.id + '_grid_manual_delta_y'"
+                          v-bind:value="cutout.grid.customGridSpec.delta_y"
+                          v-on:change="changeManualGrid($event, cutout, 'delta_y')"
+                          v-on:keyup="changeManualGrid($event, cutout, 'delta_y')"
+                          v-on:input="changeManualGrid($event, cutout, 'delta_y')"
+                          v-on:blur="changeManualGrid($event, cutout, 'delta_y')"
+                      >
+                    </td>
+                  </tr>
+                </table>
               </div>
             </div>
 
@@ -281,6 +372,8 @@ import Wms from "../Projection/Wms";
 import {trimTrailingZeroDecimalPlaces} from "../Util/functions";
 import ChangeCutoutTileMatrixAction from "../ActionHistory/ChangeCutoutTileMatrixAction";
 import ChangeCutoutPaperAction from "../ActionHistory/ChangeCutoutPaperAction";
+import ChangeCutoutGridTypeAction from "../ActionHistory/ChangeCutoutGridTypeAction";
+import ChangeCutoutManualGridAction from "../ActionHistory/ChangeCutoutManualGridAction";
 
 function checkSuggestedScaleRange(cutout: Cutout<any, any, any>) {
   const projection = cutout.getProjection();
@@ -401,6 +494,13 @@ export default Vue.component('cutout-settings-modal', {
           }
         });
       }
+
+      $('[name="csm_' + cutout.id + '_grid_type"]').on('change', function(evt) {
+        cutout.userInterface.actionHistory.addAction(new ChangeCutoutGridTypeAction(
+            cutout,
+            ($(this).val() === 'manual') ? 'manual' : 'auto',
+        ));
+      });
     });
 
     return {
@@ -442,7 +542,14 @@ export default Vue.component('cutout-settings-modal', {
       if(projection instanceof WmtsProjection && newTileMatrixId !== projection.getTileMatrixId()) {
         cutout.userInterface.actionHistory.addAction(new ChangeCutoutTileMatrixAction(cutout, newTileMatrixId));
       }
-    }
+    },
+    changeManualGrid(event, cutout: Cutout<any, any, any>, key: 'base_x'|'delta_x'|'base_y'|'delta_y') {
+      const newValue = parseInt($('#csm_' + cutout.id + '_grid_manual_' + key).val());
+      const grid = cutout.getGrid();
+      if(!isNaN(newValue) && newValue !== grid.getCustomGridSpec()[key] && (newValue > 0 || (key === 'base_x' || key === 'base_y'))) {
+        cutout.userInterface.actionHistory.addAction(new ChangeCutoutManualGridAction(cutout, key, newValue));
+      }
+    },
   }
 });
 </script>
