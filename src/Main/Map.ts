@@ -20,7 +20,7 @@ export default class Map {
         this.leafletMap = L.map(id).setView([52.1, 5.0], 8);
 
         // add an OpenStreetMap tile layer
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright" target="_blank">OpenStreetMap</a> contributors - <a href="https://www.openstreetmap.org/fixthemap" target="_blank">Fix the map</a> - <a href="https://donate.openstreetmap.org/" target="_blank">Donate</a>'
         }).addTo(this.leafletMap);
 
