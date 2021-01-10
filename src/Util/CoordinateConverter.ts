@@ -29,6 +29,22 @@ export default class CoordinateConverter {
         return this.conversion(CoordinateConverter.getCoordinateSystem(source.code), targetSystem).convert(source);
     }
 
+    static convertPolygon<C extends Coordinate>(sourcePolygon: Coordinate[], targetSystem: CoordinateSystem<C>): C[] {
+        if(sourcePolygon.length === 0 || sourcePolygon[0].code === targetSystem.code) {
+            // @ts-ignore
+            return sourcePolygon;
+        }
+
+        const conversion = this.conversion(CoordinateConverter.getCoordinateSystem(sourcePolygon[0].code), targetSystem);
+
+        const targetPolygon = <C[]>[];
+        for(let i=0; i<sourcePolygon.length; i++) {
+            targetPolygon.push(conversion.convert(sourcePolygon[i]));
+        }
+
+        return targetPolygon;
+    }
+
     static conversion(sourceSystem: CoordinateSystem<Coordinate>, targetSystem: CoordinateSystem<Coordinate>) {
         if(sourceSystem.code === targetSystem.code) {
             return CartesianTransformation.build(sourceSystem).make();

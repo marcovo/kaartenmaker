@@ -69,14 +69,7 @@ export default class Grid<C extends Coordinate> {
     }
 
     getPolygon(): C[] {
-        const projectionPolygon = this.cutout.mapPolygonProjection;
-
-        const gridPolygon = [];
-        for(let i=0; i<projectionPolygon.length; i++) {
-            gridPolygon.push(CoordinateConverter.convert(projectionPolygon[i], this.coordinateSystem));
-        }
-
-        return gridPolygon;
+        return CoordinateConverter.convertPolygon(this.cutout.mapPolygonProjection, this.coordinateSystem);
     }
 
     getCustomGridSpec(): GridSpec|null {

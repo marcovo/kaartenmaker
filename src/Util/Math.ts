@@ -1,6 +1,7 @@
 import Coordinate from "../Coordinates/Coordinate";
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import Conversion from "../Conversion/Conversion";
+import CoordinateConverter from "./CoordinateConverter";
 
 export class PointSystem implements CoordinateSystem<Point> {
     readonly code = '';
@@ -82,6 +83,30 @@ export function walkLine<C extends Coordinate, S extends CoordinateSystem<C>>(s:
 
         callback(c, i);
     }
+}
+
+export function interpolatePolygonEdges<C extends Coordinate>(sourcePolygon: C[], insertionsPerEdge: number): C[] {
+    if(sourcePolygon.length < 2) {
+        return sourcePolygon;
+    }
+
+    const coordinateSystem = <CoordinateSystem<C>>CoordinateConverter.getCoordinateSystem(sourcePolygon[0].code);
+    const interpolatedPolygon = <C[]>[];
+
+    for(let i=0; i<sourcePolygon.length; i++) {
+        walkLine(
+            coordinateSystem,
+            sourcePolygon[i],
+            sourcePolygon[(i+1) % sourcePolygon.length],
+            insertionsPerEdge + 2,
+            (c: C, step): void => {
+                if(step < 1 + insertionsPerEdge) {
+                    interpolatedPolygon.push(c);
+                }
+            }
+        );
+    }
+    return interpolatedPolygon;
 }
 
 export type LineSegment = {from: Point, to: Point};

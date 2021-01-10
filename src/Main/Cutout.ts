@@ -2,7 +2,7 @@ import Coordinate from "../Coordinates/Coordinate";
 import Paper, {millimeter} from "../Util/Paper";
 import * as L from 'leaflet';
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
-import {Point, walkLine} from "../Util/Math";
+import {interpolatePolygonEdges, Point, walkLine} from "../Util/Math";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
 import Map from "./Map";
 import * as _ from "lodash";
@@ -170,22 +170,10 @@ export default class Cutout<
     }
 
     computeWorkspacePolygon(mapPolygonProjection): WorkspaceCoordinate[] {
-        const mapPolygonWorkspace = [];
-
-        for(let i=0; i<4; i++) {
-            walkLine(
-                this.projection.coordinateSystem,
-                mapPolygonProjection[i],
-                mapPolygonProjection[(i+1) % 4],
-                Cutout.pointsOnEdge,
-                (c: ProjectionCoordinate, step): void => {
-                    if(step < Cutout.pointsOnEdge-1) {
-                        mapPolygonWorkspace.push(CoordinateConverter.convert(c, this.workspaceCoordinateSystem));
-                    }
-                }
-            );
-        }
-        return mapPolygonWorkspace;
+        return CoordinateConverter.convertPolygon(
+            interpolatePolygonEdges(mapPolygonProjection, Cutout.pointsOnEdge - 2),
+            this.workspaceCoordinateSystem
+        );
     }
 
     determineWorkspacePolygon(): void {
