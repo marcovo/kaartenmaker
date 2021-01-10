@@ -96,7 +96,7 @@ export function formatDateTime(date: Date|number): string {
 
     const minutes = date.getMinutes();
     const minuteString = ((minutes < 10) ? '0' : '') + minutes.toString();
-    return date.getDay() + '-' + date.getMonth() + '-' + date.getFullYear() + ' ' + date.getHours() + ':' + minuteString;
+    return date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear() + ' ' + date.getHours() + ':' + minuteString;
 }
 
 export function copyInput(selector) {
