@@ -10,6 +10,9 @@ import 'leaflet-defaulticon-compatibility';
 import Cutout from "./Cutout";
 import Coordinate from "../Coordinates/Coordinate";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
+import WGS84 from "../Coordinates/WGS84";
+import CoordinateConverter from "../Util/CoordinateConverter";
+import LeafletConvertibleCoordinateSystem from "../Coordinates/LeafletConvertibleCoordinateSystem";
 
 export default class Map {
 
@@ -48,6 +51,27 @@ export default class Map {
 
     getLeafletMap(): L.map {
         return this.leafletMap;
+    }
+
+    getCenter(): WGS84 {
+        const center = this.leafletMap.getCenter();
+
+        const system = <LeafletConvertibleCoordinateSystem<LeafletConvertibleCoordinate|Coordinate>><unknown>CoordinateConverter.getCoordinateSystem('EPSG:4326');
+
+        return <WGS84>system.fromLeaflet(center);
+    }
+
+    getBoundingPolygon(): WGS84[] {
+        const bounds = this.leafletMap.getBounds();
+
+        const system = <LeafletConvertibleCoordinateSystem<LeafletConvertibleCoordinate|Coordinate>><unknown>CoordinateConverter.getCoordinateSystem('EPSG:4326');
+
+        return <WGS84[]>[
+            system.fromLeaflet(bounds.getSouthWest()),
+            system.fromLeaflet(bounds.getSouthEast()),
+            system.fromLeaflet(bounds.getNorthEast()),
+            system.fromLeaflet(bounds.getNorthWest()),
+        ];
     }
 
     fitToCutouts(cutouts: Cutout<Coordinate & LeafletConvertibleCoordinate, any, any>[]): void {

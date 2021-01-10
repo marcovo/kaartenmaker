@@ -2,7 +2,7 @@ import Coordinate from "../Coordinates/Coordinate";
 import Paper, {millimeter} from "../Util/Paper";
 import * as L from 'leaflet';
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
-import {interpolatePolygonEdges, Point, walkLine} from "../Util/Math";
+import {interpolatePolygonEdges, Point, toTurfPolygon} from "../Util/Math";
 import LeafletConvertibleCoordinate from "../Coordinates/LeafletConvertibleCoordinate";
 import Map from "./Map";
 import * as _ from "lodash";
@@ -21,6 +21,10 @@ import WmsProjection from "../Projection/WmsProjection";
 import WmtsProjection from "../Projection/WmtsProjection";
 import AbstractCutout from "./AbstractCutout";
 import CutoutTemplate from "./CutoutTemplate";
+import intersect from '@turf/intersect';
+import centroid from '@turf/centroid';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import UserError from "../Util/UserError";
 
 type Color = string;
 
@@ -363,6 +367,65 @@ export default class Cutout<
         });
 
         this.leafletPolygon.setLatLngs(coords);
+    }
+
+    moveToWindowCenter(): Promise<boolean> {
+        return this.projection.mapImageProvider.getBoundingPolygon().then((imageProviderBoundingPolygon) => {
+            const windowCenter = this.userInterface.getMap().getCenter();
+
+            const convertedWindowCenter = CoordinateConverter.convert(windowCenter, this.projection.coordinateSystem);
+
+            const convertedImageProviderBoundingPolygon = CoordinateConverter.convertPolygon(
+                interpolatePolygonEdges(imageProviderBoundingPolygon, 11),
+                this.projection.coordinateSystem
+            );
+
+            const turfImageProviderBoundingPolygon = toTurfPolygon(convertedImageProviderBoundingPolygon);
+
+            // Most likely, the window center is in the bounding polygon, so we can just use that
+            if(booleanPointInPolygon(
+                [convertedWindowCenter.getX(), convertedWindowCenter.getY()],
+                turfImageProviderBoundingPolygon
+            )) {
+                this.setAnchorWorkspaceCoordinate(CoordinateConverter.convert(
+                    windowCenter,
+                    this.workspaceCoordinateSystem
+                ));
+                return true;
+            }
+
+            // The window center is not in the bounding polygon, but a part of the map still may be.
+            // Find any feasible spot to place the cutout
+            const windowBoundingPolygon = this.userInterface.getMap().getBoundingPolygon();
+
+            const convertedWindowBoundingPolygon = CoordinateConverter.convertPolygon(
+                interpolatePolygonEdges(windowBoundingPolygon, 11),
+                this.projection.coordinateSystem
+            );
+
+            const intersectionFeature = intersect(
+                turfImageProviderBoundingPolygon,
+                toTurfPolygon(convertedWindowBoundingPolygon),
+            );
+
+            if(!intersectionFeature || intersectionFeature.geometry.type !== 'Polygon') {
+                return false;
+            }
+
+            const centerFeature = centroid(intersectionFeature.geometry);
+
+            if(!centerFeature || centerFeature.geometry.type !== 'Point') {
+                throw new UserError('Invalid intersection center');
+            }
+
+            const center = centerFeature.geometry.coordinates;
+
+            this.setAnchorWorkspaceCoordinate(CoordinateConverter.convert(
+                this.projection.coordinateSystem.make(center[0], center[1]),
+                this.workspaceCoordinateSystem
+            ));
+            return true;
+        });
     }
 
     print(progressCallback: ((evt) => void)|null = null): Promise<void> {

@@ -13,7 +13,7 @@ export class WGS84System implements CoordinateSystem<WGS84>, LeafletConvertibleC
     readonly code = 'EPSG:4326';
     readonly name = 'WGS 84';
 
-    make(lat: number, lng: number): WGS84 {
+    make(lng: number, lat: number): WGS84 {
         return new WGS84(lat, lng);
     }
 
@@ -22,7 +22,7 @@ export class WGS84System implements CoordinateSystem<WGS84>, LeafletConvertibleC
     }
 
     fromLeaflet(source: L.LatLng): WGS84 {
-        return this.make(source.lat, source.lng);
+        return this.make(source.lng, source.lat);
     }
 
     conversions(): Conversion<WGS84, Coordinate>[] {

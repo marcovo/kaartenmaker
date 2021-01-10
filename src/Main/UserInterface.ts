@@ -201,7 +201,7 @@ export default class UserInterface {
         if(urlWorkspace !== null) {
             (new Serializer()).importFromLink(urlWorkspace, this);
         } else {
-            this.addCutout().then(() => {
+            this.addCutout(false).then(() => {
                 if(this.actionHistory.getLength() === 1) {
                     this.actionHistory.clear();
                 }
@@ -292,23 +292,36 @@ export default class UserInterface {
         $('#shareUrlModal').modal('show');
     }
 
-    addCutoutFromTemplate(cutoutTemplate: CutoutTemplate<any, any, any>): Promise<void> {
-        return cutoutTemplate.makeCutout(this).then((cutout) => {
-            const number = ++this.cutoutCounter;
-            cutout.name = 'Mijn kaart ' + number;
-            cutout.color = this.newColor();
+    addCutoutFromTemplate(cutoutTemplate: CutoutTemplate<any, any, any>, center: boolean = true): Promise<void> {
+        return cutoutTemplate.makeCutout(this)
+            .then((cutout) => {
+                if(center) {
+                    return cutout.moveToWindowCenter().then((success) => {
+                        if(!success) {
+                            alert('De toegevoegde kaart kon niet op een geldige plaats binnen het scherm worden geplaatst. De kaart is op een geldige positie geplaatst buiten het zichtbare scherm.');
+                        }
+                        return cutout;
+                    });
+                } else {
+                    return Promise.resolve(cutout);
+                }
+            })
+            .then((cutout) => {
+                const number = ++this.cutoutCounter;
+                cutout.name = 'Mijn kaart ' + number;
+                cutout.color = this.newColor();
 
-            this.actionHistory.addAction(new AddCutoutAction(
-                cutout,
-                this,
-                this.cutouts.length
-            ));
+                this.actionHistory.addAction(new AddCutoutAction(
+                    cutout,
+                    this,
+                    this.cutouts.length
+                ));
 
-            this.lastAddedCutoutTemplateId = cutoutTemplate.id;
-        });
+                this.lastAddedCutoutTemplateId = cutoutTemplate.id;
+            });
     }
 
-    addCutout(): Promise<void> {
+    addCutout(center: boolean = true): Promise<void> {
         const cutoutTemplates = Container.cutoutTemplateList();
         if(cutoutTemplates.length === 0) {
             throw new Error('No cutout templates');
@@ -328,7 +341,7 @@ export default class UserInterface {
             cutoutTemplate = cutoutTemplates[0];
         }
 
-        return this.addCutoutFromTemplate(cutoutTemplate);
+        return this.addCutoutFromTemplate(cutoutTemplate, center);
     }
 
     public attachCutout(cutout: Cutout<any, any, any>, position: number) {

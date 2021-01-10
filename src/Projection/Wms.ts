@@ -203,6 +203,35 @@ export default class Wms implements MapImageProvider {
         });
     }
 
+    getBoundingPolygon(): Promise<Coordinate[]> {
+        return this.fetchCapabilities().then(() => {
+            const layerNode = this.getLayerNode();
+
+            const coordinateSystem = this.getCoordinateSystem();
+
+            const boundingBoxNode = findChildNode(layerNode, (node: Node) => {
+                return node instanceof Element
+                    && node.tagName === 'BoundingBox'
+                    && node.getAttribute('CRS') === coordinateSystem.code;
+            });
+            if(!(boundingBoxNode instanceof Element)) {
+                throw new UserError('Could not find bounding box');
+            }
+
+            const xMin = parseFloat(boundingBoxNode.getAttribute('minx'));
+            const yMin = parseFloat(boundingBoxNode.getAttribute('miny'));
+            const xMax = parseFloat(boundingBoxNode.getAttribute('maxx'));
+            const yMax = parseFloat(boundingBoxNode.getAttribute('maxy'));
+
+            return <Coordinate[]>[
+                coordinateSystem.make(xMin, yMin),
+                coordinateSystem.make(xMin, yMax),
+                coordinateSystem.make(xMax, yMax),
+                coordinateSystem.make(xMax, yMin),
+            ];
+        });
+    }
+
     downloadLegend() {
         const layerNode = this.getLayerNode();
 

@@ -10,4 +10,6 @@ export default interface MapImageProvider {
     getDefaultGridCoordinateSystem(): CoordinateSystem<Coordinate>;
 
     downloadLegend();
+
+    getBoundingPolygon(): Promise<Coordinate[]>;
 }

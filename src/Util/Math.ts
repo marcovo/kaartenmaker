@@ -2,6 +2,7 @@ import Coordinate from "../Coordinates/Coordinate";
 import CoordinateSystem from "../Coordinates/CoordinateSystem";
 import Conversion from "../Conversion/Conversion";
 import CoordinateConverter from "./CoordinateConverter";
+import * as turfHelpers from "@turf/helpers";
 
 export class PointSystem implements CoordinateSystem<Point> {
     readonly code = '';
@@ -107,6 +108,17 @@ export function interpolatePolygonEdges<C extends Coordinate>(sourcePolygon: C[]
         );
     }
     return interpolatedPolygon;
+}
+
+export function toTurfPolygon(polygon: Coordinate[]): turfHelpers.Feature<turfHelpers.Polygon, turfHelpers.Properties> {
+    const points = <number[][]>[];
+    for(const c of polygon) {
+        points.push([c.getX(), c.getY()]);
+    }
+    if(polygon.length > 0) {
+        points.push([polygon[0].getX(), polygon[0].getY()]);
+    }
+    return turfHelpers.polygon([points]);
 }
 
 export type LineSegment = {from: Point, to: Point};

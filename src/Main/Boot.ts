@@ -12,7 +12,7 @@ import WmtsProjection from "../Projection/WmtsProjection";
 
 CoordinateConverter.registerCoordinateSystem(new WGS84System());
 CoordinateConverter.registerCoordinateSystem(new DutchGridSystem());
-CoordinateConverter.registerCoordinateSystem(new UTMSystem());
+CoordinateConverter.registerCoordinateSystem(new UTMSystem(32, 1));
 
 Container.registerPaper(new A3L());
 Container.registerPaper(new A3P());

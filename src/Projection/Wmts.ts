@@ -5,6 +5,7 @@ import MapImageProvider from "./MapImageProvider";
 import {GridSpec} from "../Main/Grid";
 import UserError from "../Util/UserError";
 import {findChildNode} from "../Util/functions";
+import WGS84 from "../Coordinates/WGS84";
 
 const $ = require( 'jquery' );
 
@@ -173,6 +174,39 @@ export default class Wmts implements MapImageProvider {
         return tileMatrixSetNode;
     }
 
+    private getLayerNode(): Node {
+        const xmlDoc = this.getCapabilitiesOrThrow();
+
+        const capabilitiesNode = findChildNode(xmlDoc.getRootNode(), (node: Node) => {
+            return node instanceof Element && node.tagName === 'Capabilities';
+        });
+        if(capabilitiesNode === null) {
+            throw new UserError('Could not find layer (capabilities)');
+        }
+
+        const contentsNode = findChildNode(capabilitiesNode, (node: Node) => {
+            return node instanceof Element && node.tagName === 'Contents';
+        });
+        if(contentsNode === null) {
+            throw new UserError('Could not find layer (contents)');
+        }
+
+        const layerNode = findChildNode(contentsNode, (node: Node) => {
+            if(!(node instanceof Element && node.tagName === 'Layer')) {
+                return false;
+            }
+            const identifierNode = findChildNode(node, (childNode: Node) => {
+                return childNode instanceof Element && childNode.tagName === 'ows:Identifier';
+            });
+            return identifierNode !== null && identifierNode.textContent === this.params.layer;
+        });
+        if(layerNode === null) {
+            throw new UserError('Could not find layer (layer)');
+        }
+
+        return layerNode;
+    }
+
     getTileMatrixClosestToScale(scale: number): string {
         const tileMatrixSetNode = this.getTileMatrixSetNode();
 
@@ -298,6 +332,55 @@ export default class Wmts implements MapImageProvider {
         }
 
         return tileMatrix;
+    }
+
+    getBoundingPolygon(): Promise<WGS84[]> {
+        return this.fetchCapabilities().then(() => {
+            const layerNode = this.getLayerNode();
+
+            const boundingBoxNode = findChildNode(layerNode, (node: Node) => {
+                return node instanceof Element && node.tagName === 'ows:WGS84BoundingBox';
+            });
+            if(boundingBoxNode === null) {
+                throw new UserError('Could not find bounding box');
+            }
+
+            const lowerCornerNode = findChildNode(boundingBoxNode, (node: Node) => {
+                return node instanceof Element && node.tagName === 'ows:LowerCorner';
+            });
+            if(lowerCornerNode === null) {
+                throw new UserError('Could not find bounding box lower corner');
+            }
+
+            const upperCornerNode = findChildNode(boundingBoxNode, (node: Node) => {
+                return node instanceof Element && node.tagName === 'ows:UpperCorner';
+            });
+            if(upperCornerNode === null) {
+                throw new UserError('Could not find bounding box upper corner');
+            }
+
+            const lowerCornerParts = lowerCornerNode.textContent.split(' ');
+            if(lowerCornerParts.length != 2) {
+                throw new UserError('Invalid lower bounding box corner');
+            }
+
+            const upperCornerParts = upperCornerNode.textContent.split(' ');
+            if(upperCornerParts.length != 2) {
+                throw new UserError('Invalid upper bounding box corner');
+            }
+
+            const lngMin = parseFloat(lowerCornerParts[0]);
+            const latMin = parseFloat(lowerCornerParts[1]);
+            const lngMax = parseFloat(upperCornerParts[0]);
+            const latMax = parseFloat(upperCornerParts[1]);
+
+            return <WGS84[]>[
+                new WGS84(latMin, lngMin),
+                new WGS84(latMin, lngMax),
+                new WGS84(latMax, lngMax),
+                new WGS84(latMax, lngMin),
+            ];
+        });
     }
 
     downloadLegend() {
