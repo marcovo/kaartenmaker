@@ -67,7 +67,7 @@ export default class UserInterface {
         });
 
         $('#clearCacheButton').on('click', () => {
-            if(confirm('De buffer bevat gedownloade kaartstukken. Wil je deze verwijderen?')) {
+            if(confirm('De buffer bevat gedownloade kaartstukken. Wil je deze legen?')) {
                 this.showLoadingIndicator();
                 Container.clearCaches().finally(() => {
                     this.hideLoadingIndicator();
@@ -81,6 +81,15 @@ export default class UserInterface {
                 Container.resetStorage();
                 this.trigger('storage-reset');
                 this.hideLoadingIndicator();
+            }
+        });
+
+        $('#resetApplicationButton').on('click', () => {
+            if(confirm('Wil je alle opgeslagen voorkeuren en buffers volledig verwijderen? Dit kan in sommige browsers even duren.')) {
+                this.showLoadingIndicator();
+                Container.resetApplication().finally(() => {
+                    this.hideLoadingIndicator();
+                });
             }
         });
 

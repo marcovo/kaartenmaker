@@ -138,12 +138,9 @@ export default class Container {
 
     static clearCaches(): Promise<void> {
         return new Promise((resolve, reject) => {
-            if(Container.cache !== null) {
-                Container.cache.close();
-                Container.cache = null;
-            }
-
-            Cache.drop().then(resolve, reject);
+            Container.getCache().then((cache) => {
+                return cache.clear().then(resolve, reject);
+            });
         }).then(() => {
             alert('De buffers zijn geleegd');
         }).catch((...args) => {
@@ -156,5 +153,24 @@ export default class Container {
         window.localStorage.clear();
         Container.customCutoutTemplates = [];
         alert('De voorkeuren zijn gewist');
+    }
+
+    static resetApplication(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            window.localStorage.clear();
+            Container.customCutoutTemplates = [];
+
+            if(Container.cache !== null) {
+                Container.cache.close();
+                Container.cache = null;
+            }
+
+            Cache.drop().then(resolve, reject);
+        }).then(() => {
+            alert('De applicatie is gewist');
+        }).catch((...args) => {
+            console.log(...args);
+            alert('Something went wrong clearing the cache');
+        });
     }
 }
