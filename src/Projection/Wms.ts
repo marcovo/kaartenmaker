@@ -5,6 +5,7 @@ import Container from "../Main/Container";
 import MapImageProvider from "./MapImageProvider";
 import {GridSpec} from "../Main/Grid";
 import UserError from "../Util/UserError";
+import {findChildNode} from "../Util/functions";
 
 const $ = require( 'jquery' );
 
@@ -133,46 +134,93 @@ export default class Wms implements MapImageProvider {
         });
     }
 
+    private getLayerNode(): Node {
+        const xmlDoc = this.getCapabilitiesOrThrow();
+
+        const capabilitiesNode = findChildNode(xmlDoc.getRootNode(), (node: Node) => {
+            return node instanceof Element && node.tagName === 'WMS_Capabilities';
+        });
+        if(capabilitiesNode === null) {
+            throw new UserError('Could not find layer info (wms_capabilities)');
+        }
+
+        const capabilityNode = findChildNode(capabilitiesNode, (node: Node) => {
+            return node instanceof Element && node.tagName === 'Capability';
+        });
+        if(capabilityNode === null) {
+            throw new UserError('Could not find layer info (capability)');
+        }
+
+        const layersNode = findChildNode(capabilityNode, (node: Node) => {
+            return node instanceof Element && node.tagName === 'Layer';
+        });
+        if(layersNode === null) {
+            throw new UserError('Could not find layer info (layers)');
+        }
+
+        const layerNode = findChildNode(layersNode, (node: Node) => {
+            if(!(node instanceof Element && node.tagName === 'Layer')) {
+                return false;
+            }
+            const nameNode = findChildNode(node, (childNode: Node) => {
+                return childNode instanceof Element && childNode.tagName === 'Name';
+            });
+            return nameNode !== null && nameNode.textContent === this.params.layers;
+        });
+        if(layerNode === null) {
+            throw new UserError('Could not find layer info (layer)');
+        }
+
+        return layerNode;
+    }
+
     getSuggestedScaleRange(): Promise<ScaleRange> {
         return this.fetchCapabilities().then((xmlDoc) => {
+            const layerNode = this.getLayerNode();
 
-            let nsResolver = null;
-            const xmlns = xmlDoc.documentElement.getAttribute('xmlns');
-            if(xmlns !== null) {
-                nsResolver = function(prefix) {
-                    if(prefix === 'xx') {
-                        return xmlns;
-                    }
-                }
+            let minNode = findChildNode(layerNode, (childNode: Node) => {
+                return childNode instanceof Element && childNode.tagName === 'MinScaleDenominator';
+            });
+            if(minNode === null) {
+                minNode = findChildNode(layerNode.parentNode, (childNode: Node) => {
+                    return childNode instanceof Element && childNode.tagName === 'MinScaleDenominator';
+                });
             }
 
-            const min = xmlDoc.evaluate('//xx:MinScaleDenominator', xmlDoc, nsResolver, XPathResult.STRING_TYPE).stringValue;
-            const max = xmlDoc.evaluate('//xx:MaxScaleDenominator', xmlDoc, nsResolver, XPathResult.STRING_TYPE).stringValue;
+            let maxNode = findChildNode(layerNode, (childNode: Node) => {
+                return childNode instanceof Element && childNode.tagName === 'MaxScaleDenominator';
+            });
+            if(maxNode === null) {
+                maxNode = findChildNode(layerNode.parentNode, (childNode: Node) => {
+                    return childNode instanceof Element && childNode.tagName === 'MaxScaleDenominator';
+                });
+            }
 
             return <ScaleRange> {
-                min: min.length === 0 ? null : parseFloat(min),
-                max: max.length === 0 ? null : parseFloat(max),
+                min: minNode === null ? null : parseFloat(minNode.textContent),
+                max: maxNode === null ? null : parseFloat(maxNode.textContent),
             };
         });
     }
 
     downloadLegend() {
-        const xmlDoc = this.getCapabilitiesOrThrow();
+        const layerNode = this.getLayerNode();
 
-        let nsResolver = null;
-        const xmlns = xmlDoc.documentElement.getAttribute('xmlns');
-        if(xmlns !== null) {
-            nsResolver = function(prefix) {
-                if(prefix === 'xx') {
-                    return xmlns;
-                }
-            }
-        }
+        const styleNode = findChildNode(layerNode, (childNode: Node) => {
+            return childNode instanceof Element && childNode.tagName === 'Style';
+        });
 
-        const node = xmlDoc.evaluate('//xx:LegendURL/xx:OnlineResource', xmlDoc, nsResolver, XPathResult.ANY_TYPE).iterateNext();
-        if(node) {
+        const legendNode = styleNode === null ? null : findChildNode(styleNode, (childNode: Node) => {
+            return childNode instanceof Element && childNode.tagName === 'LegendURL';
+        });
+
+        const resourceNode = legendNode === null ? null : findChildNode(legendNode, (childNode: Node) => {
+            return childNode instanceof Element && childNode.tagName === 'OnlineResource';
+        });
+
+        if(resourceNode instanceof Element) {
             // @ts-ignore
-            const url = node.attributes['xlink:href'].value;
+            const url = resourceNode.getAttribute('xlink:href').valueOf();
 
             window.open(url);
         } else {
