@@ -1,0 +1,6 @@
+{
+    "MYSQL_HOST": "mariadb-server-10-2",
+    "MYSQL_DATABASE": "kaartenmaker",
+    "MYSQL_USER": "kaartenmaker",
+    "MYSQL_PASSWORD": "secret"
+}
