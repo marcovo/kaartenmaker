@@ -77,7 +77,7 @@ class Server
 
     private function participation()
     {
-        if(!in_array($_GET['choice'], ['0', '1'], true)) {
+        if(!in_array($_GET['choice'] ?? null, ['0', '1'], true)) {
             throw new \Exception('Invalid choice');
         }
 
