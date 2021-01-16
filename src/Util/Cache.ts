@@ -10,6 +10,8 @@ export default class Cache {
     // https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
     private db: IDBDatabase;
 
+    private runningFetchPromises: Map<string, Promise<string>> = new Map();
+
     private static readonly indexedDbName = 'cache_db';
     private static readonly objectStoreName = 'cache_store';
 
@@ -153,11 +155,21 @@ export default class Cache {
                 return value;
             }
 
-            return callback().then((value) => {
+            if(this.runningFetchPromises.has(key)) {
+                return this.runningFetchPromises.get(key);
+            }
+
+            const fetchPromise = callback().then((value) => {
                 return this.set(key, value, ttl).then(() => {
                     return value;
                 });
+            }).finally(() => {
+                this.runningFetchPromises.delete(key);
             });
+
+            this.runningFetchPromises.set(key, fetchPromise);
+
+            return fetchPromise;
         });
     }
 }
