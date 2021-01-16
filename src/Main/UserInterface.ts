@@ -34,6 +34,8 @@ export default class UserInterface {
     readonly actionHistory: ActionHistory;
     private listeners: Record<string, (() => void)[]> = {};
 
+    static readonly LOCALSTORAGE_KEY_STATISTICS_PARTICIPATION = 'statistics_participation';
+
     constructor() {
 
         this.colors = ['blue', 'orange', 'green', 'fuchsia', 'lime', '#f33', '#ee0', 'aqua', 'black', 'maroon', 'navy', 'purple', 'teal', 'olive'];
@@ -136,6 +138,12 @@ export default class UserInterface {
             $('#cutoutListPane').removeClass('minimized');
         });
 
+        $('#participate_statistics').on('change', () => {
+            this.setStatisticsParticipation(
+                $('#participate_statistics').prop('checked')
+            );
+        });
+
         this.cutoutTemplatesWrapper = new Vue({
             el: '#cutoutTemplatesWrapper',
             data: {
@@ -233,6 +241,52 @@ export default class UserInterface {
         for(const listener of this.listeners[key]) {
             listener();
         }
+    }
+
+    getStatisticsParticipation(): boolean|null {
+        const choice = window.localStorage.getItem(UserInterface.LOCALSTORAGE_KEY_STATISTICS_PARTICIPATION);
+        if(choice === '1') return true;
+        if(choice === '0') return false;
+        return null;
+    }
+
+    setStatisticsParticipation(choice: boolean) {
+        window.localStorage.setItem(
+            UserInterface.LOCALSTORAGE_KEY_STATISTICS_PARTICIPATION,
+            choice ? '1' : '0'
+        );
+
+        $('#participate_statistics').prop('checked', choice);
+
+        $.get('server.php', {
+            request: 'participation',
+            choice: choice ? '1' : '0',
+        });
+    }
+
+    checkStatisticsParticipation(): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            const choice = this.getStatisticsParticipation();
+            if(choice === null) {
+                $('#statisticsParticipationsModal').modal('show');
+
+                $('#statisticsParticipationsModalNo, #statisticsParticipationsModalYes').off('click');
+
+                $('#statisticsParticipationsModalNo').on('click', () => {
+                    this.setStatisticsParticipation(false);
+                    $('#statisticsParticipationsModal').modal('hide');
+                    resolve(false);
+                });
+
+                $('#statisticsParticipationsModalYes').on('click', () => {
+                    this.setStatisticsParticipation(true);
+                    $('#statisticsParticipationsModal').modal('hide');
+                    resolve(true);
+                });
+            } else {
+                resolve(choice);
+            }
+        });
     }
 
     openCutoutDropdownMenu(cutout: Cutout<any, any, any>, evt) {

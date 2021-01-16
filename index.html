@@ -426,9 +426,17 @@
                     <p>De ontwikkeling van deze applicatie kan worden gevolgd op <a href="https://github.com/marcovo" target="_blank">de Github-pagina</a>. Eventuele fouten of functionaliteitsverzoeken kunnen daar worden ingezonden.</p>
 
                     <h4 class="underline">Privacyverklaring</h4>
-                    <p>Deze applicatie werkt geheel in je eigen browser - er worden geen gegevens expliciet op een server vastgelegd. IP adressen kunnen op de webserver worden opgeslagen in een toegangslogboek. Er worden geen cookies gebruikt.</p>
+                    <p>Deze applicatie werkt geheel in je eigen browser - voor de werking worden er geen gegevens expliciet op een server vastgelegd. IP adressen kunnen op de webserver worden opgeslagen in een toegangslogboek. Er worden geen cookies gebruikt. Eventueel kan er (met toestemming) data op de webserver worden vastgelegd ter behoeve van statistieken ter verbetering van de applicatie (zie 'Statistieken').</p>
                     <p>Er worden geen persoonsgegevens verwerkt. Er kunnen coördinaten worden opgeslagen bij het gebruik van sjablonen, opgeslagen werkruimtes en deel-links. Ook worden bij het downloaden van een kaartuitsnede de gedownloade kaartstukken in een lokale buffer opgeslagen. Deze gegevens worden lokaal opgeslagen in de opslag van de browser en worden dus niet extern opgeslagen. Deze opgeslagen gegevens worden niet voorzien van extra beveiligingsmaatregelen. Opgeslagen gegevens kunnen ten alle tijde worden verwijderd met de functies 'Buffers legen' en 'Voorkeuren wissen', of door de browser de gegevens te laten wissen.</p>
                     <p>De gepresenteerde kaartdata wordt gedownload van hierboven aangegeven externe bronnen. Bezoek voor de privacyverkaringen van deze bronnen de hierboven opgenomen links.</p>
+
+                    <h4 class="underline">Statistieken</h4>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" id="participate_statistics" type="checkbox" value="1" />
+                            <label class="form-check-label" for="participate_statistics">Ik sta toe dat de applicatie anonieme informatie over kaart downloads naar de webserver stuurt en daar opslaat. Deze gegevens worden opgestuurd op het moment van het downloaden van een kaartuitsnede, en bestaat uit de volledige configuratie van deze kaartuitsnede, exclusief de coördinaten (/locatie) van het te downloaden kaartuitsnede. Deze statistieken worden alleen gebruikt ter verbetering van de applicatie.</label>
+                        </div>
+                    </div>
 
                     <h4 class="underline">Niet gevonden wat je zoekt?</h4>
                     <p>Geen enkele applicatie werkt perfect voor iedereen. Hieronder vindt je een aantal alternatieven en aanvullingen op deze applicatie.</p>
@@ -436,6 +444,39 @@
                         <li><a href="https://scoutingtools.nl/" target="_blank">scoutingtools.nl</a> biedt soortgelijke functionaliteit, met een geheel andere technische implementatie.</li>
                         <li><a href="https://www.gpscoordinaten.nl/converteer-gps-coordinaten.php" target="_blank">gpscoordinaten.nl</a> biedt functionaliteit om GPS coördinaten om te zetten naar rijksdriehoekscoördinaten en vice versa.</li>
                     </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div
+            id="statisticsParticipationsModal"
+            class="modal"
+            tabindex="-1"
+            role="dialog"
+            data-backdrop="false"
+            data-keyboard="false"
+    >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Statistieken</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Om de werking en functionaliteiten van deze applicatie te kunnen verbeteren, is het handig om te weten hoe de applicatie zoal gebruikt wordt. Je kunt hieraan meehelpen door te delen hoe jij de applicatie gebruikt, door middel van anonieme statistieken.</p>
+
+                    <p>Wil je toestaan dat de applicatie anonieme informatie over kaart downloads naar de webserver stuurt en daar opslaat? Deze gegevens worden opgestuurd op het moment van het downloaden van een kaartuitsnede, en bestaat uit de volledige configuratie van deze kaartuitsnede, exclusief de coördinaten (/locatie) van het te downloaden kaartuitsnede. Deze statistieken worden alleen gebruikt ter verbetering van de applicatie.</p>
+
+                    <p>Deze instelling is later ook nog aan te passen in het informatie-venster 'Over'.</p>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex w-100 justify-content-between">
+                        <button type="button" class="btn btn-secondary" id="statisticsParticipationsModalNo">Nee, deel geen statistieken</button>
+                        <button type="button" class="btn btn-primary" id="statisticsParticipationsModalYes">Ja, help de applicatie</button>
+                    </div>
                 </div>
             </div>
         </div>

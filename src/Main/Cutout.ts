@@ -429,7 +429,27 @@ export default class Cutout<
     }
 
     print(progressCallback: ((evt) => void)|null = null): Promise<void> {
-        return (new Printer(this, progressCallback)).print();
+        return this.checkSendPrintStatistics().then(() => {
+            return (new Printer(this, progressCallback)).print();
+        });
+    }
+
+    checkSendPrintStatistics(): Promise<void> {
+        return this.userInterface.checkStatisticsParticipation().then((choice) => {
+            if(choice === true) {
+                try {
+                    const settings = this.serialize();
+                    settings.anchor.x = null;
+                    settings.anchor.y = null;
+                    $.get('server.php', {
+                        request: 'cutout_download',
+                        settings: JSON.stringify(settings),
+                    });
+                } catch(e) {
+                    console.log(e);
+                }
+            }
+        });
     }
 
     mouseover() {
