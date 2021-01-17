@@ -79,4 +79,4 @@ import './Main/Boot';
 // Build the user interface
 const userInterface = new UserInterface();
 
-require('./sandbox');
+// require('./sandbox');
