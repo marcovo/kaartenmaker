@@ -1,427 +1,417 @@
 <template>
   <div
-      class="modal"
+      class="card card-cutout-settings-modal d-none position-absolute"
       tabindex="-1"
-      role="dialog"
       v-bind:id="'cutout_settings_modal_' + cutout.id"
-      data-backdrop="false"
-      data-keyboard="false"
   >
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Kaartinstellingen</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+    <div class="card-header cutout-settings-card-header">
+      <h5 class="card-title mb-0">Kaartinstellingen {{ cutout.name }}</h5>
+      <button type="button" class="close cutout-settings-close" v-bind:id="'csm_' + cutout.id + '_modal_close'" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="card-body d-flex flex-column">
+      <ul class="nav nav-tabs" role="tablist" v-bind:id="'csm_' + cutout.id + '_tabbar-tablist'">
+        <li class="nav-item">
+          <a
+              class="nav-link active"
+              v-bind:id="'csm_' + cutout.id + '_tabbar_general-tab'"
+              role="tab"
+              data-toggle="tab"
+              v-bind:aria-controls="'csm_' + cutout.id + '_tabbar_general'"
+              v-bind:data-target="'#csm_' + cutout.id + '_tabbar_general'"
+              aria-selected="true"
+          >Algemeen</a>
+        </li>
+        <li class="nav-item">
+          <a
+              class="nav-link"
+              v-bind:id="'csm_' + cutout.id + '_tabbar_projection-tab'"
+              role="tab"
+              data-toggle="tab"
+              v-bind:aria-controls="'csm_' + cutout.id + '_tabbar_projection'"
+              v-bind:data-target="'#csm_' + cutout.id + '_tabbar_projection'"
+              aria-selected="false"
+          >Projectie</a>
+        </li>
+        <li class="nav-item">
+          <a
+              class="nav-link"
+              v-bind:id="'csm_' + cutout.id + '_tabbar_grid-tab'"
+              role="tab"
+              data-toggle="tab"
+              v-bind:aria-controls="'csm_' + cutout.id + '_tabbar_grid'"
+              v-bind:data-target="'#csm_' + cutout.id + '_tabbar_grid'"
+              aria-selected="false"
+          >Raster</a>
+        </li>
+        <li class="nav-item">
+          <a
+              class="nav-link"
+              v-bind:id="'csm_' + cutout.id + '_tabbar_frame-tab'"
+              role="tab"
+              data-toggle="tab"
+              v-bind:aria-controls="'csm_' + cutout.id + '_tabbar_frame'"
+              v-bind:data-target="'#csm_' + cutout.id + '_tabbar_frame'"
+              aria-selected="false"
+          >Kader</a>
+        </li>
+      </ul>
+      <div class="tab-content cutout-settings-tab-content">
+        <div
+            class="tab-pane show active"
+            v-bind:id="'csm_' + cutout.id + '_tabbar_general'"
+            role="tabpanel"
+            v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_general-tab'"
+        >
+          <div class="form-group">
+            <label v-bind:for="'csm_' + cutout.id + '_name'">Kaart naam</label>
+            <input type="text" class="form-control" v-bind:id="'csm_' + cutout.id + '_name'" placeholder="Typ een naam..." v-bind:value="cutout.name">
+          </div>
+
+          <div class="form-group">
+            <label v-bind:for="'csm_' + cutout.id + '_paper'">Papier formaat</label>
+            <select class="form-control" v-bind:id="'csm_' + cutout.id + '_paper'">
+              <option
+                  v-for="paper in container.getPaperList()"
+                  v-bind:value="paper.name"
+                  v-bind:selected="cutout.paper.name === paper.name"
+              >{{ paper.title }}</option>
+            </select>
+          </div>
         </div>
-        <div class="modal-body">
-          <ul class="nav nav-tabs" role="tablist" v-bind:id="'csm_' + cutout.id + '_tabbar-tablist'">
-            <li class="nav-item">
-              <a
-                  class="nav-link active"
-                  v-bind:id="'csm_' + cutout.id + '_tabbar_general-tab'"
-                  role="tab"
-                  data-toggle="tab"
-                  v-bind:aria-controls="'csm_' + cutout.id + '_tabbar_general'"
-                  v-bind:data-target="'#csm_' + cutout.id + '_tabbar_general'"
-                  aria-selected="true"
-              >Algemeen</a>
-            </li>
-            <li class="nav-item">
-              <a
-                  class="nav-link"
-                  v-bind:id="'csm_' + cutout.id + '_tabbar_projection-tab'"
-                  role="tab"
-                  data-toggle="tab"
-                  v-bind:aria-controls="'csm_' + cutout.id + '_tabbar_projection'"
-                  v-bind:data-target="'#csm_' + cutout.id + '_tabbar_projection'"
-                  aria-selected="false"
-              >Projectie</a>
-            </li>
-            <li class="nav-item">
-              <a
-                  class="nav-link"
-                  v-bind:id="'csm_' + cutout.id + '_tabbar_grid-tab'"
-                  role="tab"
-                  data-toggle="tab"
-                  v-bind:aria-controls="'csm_' + cutout.id + '_tabbar_grid'"
-                  v-bind:data-target="'#csm_' + cutout.id + '_tabbar_grid'"
-                  aria-selected="false"
-              >Raster</a>
-            </li>
-            <li class="nav-item">
-              <a
-                  class="nav-link"
-                  v-bind:id="'csm_' + cutout.id + '_tabbar_frame-tab'"
-                  role="tab"
-                  data-toggle="tab"
-                  v-bind:aria-controls="'csm_' + cutout.id + '_tabbar_frame'"
-                  v-bind:data-target="'#csm_' + cutout.id + '_tabbar_frame'"
-                  aria-selected="false"
-              >Kader</a>
-            </li>
-          </ul>
-          <div class="tab-content">
-            <div
-                class="tab-pane show active"
-                v-bind:id="'csm_' + cutout.id + '_tabbar_general'"
-                role="tabpanel"
-                v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_general-tab'"
-            >
-              <div class="form-group">
-                <label v-bind:for="'csm_' + cutout.id + '_name'">Kaart naam</label>
-                <input type="text" class="form-control" v-bind:id="'csm_' + cutout.id + '_name'" placeholder="Typ een naam..." v-bind:value="cutout.name">
-              </div>
 
-              <div class="form-group">
-                <label v-bind:for="'csm_' + cutout.id + '_paper'">Papier formaat</label>
-                <select class="form-control" v-bind:id="'csm_' + cutout.id + '_paper'">
-                  <option
-                      v-for="paper in container.getPaperList()"
-                      v-bind:value="paper.name"
-                      v-bind:selected="cutout.paper.name === paper.name"
-                  >{{ paper.title }}</option>
-                </select>
+        <div class="tab-pane"
+             v-bind:id="'csm_' + cutout.id + '_tabbar_projection'"
+             role="tabpanel"
+             v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_projection-tab'"
+        >
+          <div class="alert alert-warning" role="alert" v-bind:id="'csm_' + cutout.id + '_error_suggested_scale'" style="display: none;">
+            De ingevulde combinatie van Schaal en DPI resulteert in een resolutie die mogelijk incompatibel is met het geselecteerde WMS.
+          </div>
+
+          <div class="form-group">
+            <label v-bind:for="'csm_' + cutout.id + '_mip'">Kaartbron</label>
+            <select class="form-control" v-bind:id="'csm_' + cutout.id + '_mip'">
+              <option
+                  v-for="mip in container.mapImageProviderList()"
+                  v-bind:value="mip.name"
+                  v-bind:selected="cutout.projection.mapImageProvider.name === mip.name"
+              >{{ mip.title }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label v-bind:for="'csm_' + cutout.id + '_scale'">Schaal</label>
+
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">1:</span>
               </div>
+              <input type="text" class="form-control" v-bind:id="'csm_' + cutout.id + '_scale'" v-bind:value="cutout.getProjection().getScale()">
             </div>
+          </div>
 
-            <div class="tab-pane"
-                 v-bind:id="'csm_' + cutout.id + '_tabbar_projection'"
-                 role="tabpanel"
-                 v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_projection-tab'"
+          <div class="form-group" v-if="isWmsProjection(cutout.getProjection())">
+            <label v-bind:for="'csm_' + cutout.id + '_dpi'">DPI</label>
+            <input
+                type="text" class="form-control"
+                v-bind:id="'csm_' + cutout.id + '_dpi'"
+                v-bind:value="cutout.getProjection().getDpi()"
+                v-on:change="changeDpi($event, cutout)"
+                v-on:keyup="changeDpi($event, cutout)"
+                v-on:input="changeDpi($event, cutout)"
+                v-on:blur="changeDpi($event, cutout)"
             >
-              <div class="alert alert-warning" role="alert" v-bind:id="'csm_' + cutout.id + '_error_suggested_scale'" style="display: none;">
-                De ingevulde combinatie van Schaal en DPI resulteert in een resolutie die mogelijk incompatibel is met het geselecteerde WMS.
-              </div>
+          </div>
 
+          <div class="form-group" v-if="isWmtsProjection(cutout.getProjection())">
+            <label v-bind:for="'csm_' + cutout.id + '_tile_matrix'">Zoom niveau</label>
+            <select class="form-control" v-bind:id="'csm_' + cutout.id + '_tile_matrix'" v-on:change="changeTileMatrixId($event, cutout)">
+              <option
+                  v-for="tileMatrix in cutout.projection.mapImageProvider.getTileMatrixList()"
+                  v-bind:value="tileMatrix.identifier"
+                  v-bind:selected="cutout.projection.getTileMatrixId() === tileMatrix.identifier"
+              >{{ tileMatrixName(tileMatrix) }} px/km</option>
+            </select>
+          </div>
+
+          <div class="form-group" v-if="isWmtsProjection(cutout.getProjection())">
+            <label v-bind:for="'csm_' + cutout.id + '_dpi_wmts'">DPI</label>
+            <input type="text" disabled class="form-control" v-bind:id="'csm_' + cutout.id + '_dpi_wmts'" v-bind:value="Math.round(cutout.projection.getDpi())">
+          </div>
+        </div>
+
+        <div
+            class="tab-pane"
+            v-bind:id="'csm_' + cutout.id + '_tabbar_grid'"
+            role="tabpanel"
+            v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_grid-tab'"
+        >
+          <div class="form-group">
+            <div class="form-check">
+              <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_draw_grid'" type="checkbox" value="1" v-bind:checked="cutout.options.draw_grid">
+              <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_draw_grid'">Raster tekenen</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="form-check">
+              <input
+                  class="form-check-input"
+                  type="radio"
+                  v-bind:name="'csm_' + cutout.id + '_grid_type'"
+                  v-bind:id="'csm_' + cutout.id + '_grid_type_auto'"
+                  value="auto"
+                  v-bind:checked="cutout.grid.customGridSpec === null"
+              >
+              <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_grid_type_auto'">
+                Automatisch raster
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                  class="form-check-input"
+                  type="radio"
+                  v-bind:name="'csm_' + cutout.id + '_grid_type'"
+                  v-bind:id="'csm_' + cutout.id + '_grid_type_manual'"
+                  value="manual"
+                  v-bind:checked="cutout.grid.customGridSpec !== null"
+              >
+              <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_grid_type_manual'">
+                Handmatig raster
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <table class="table table-sm" v-if="cutout.grid.customGridSpec !== null">
+              <tr>
+                <th>Rasterdefinitie</th>
+                <th>Basis</th>
+                <th>Stapgrootte</th>
+              </tr>
+              <tr>
+                <th>X</th>
+                <td>
+                  <input
+                      type="number" class="form-control"
+                      v-bind:id="'csm_' + cutout.id + '_grid_manual_base_x'"
+                      v-bind:value="cutout.grid.customGridSpec.base_x"
+                      v-on:change="changeManualGrid($event, cutout, 'base_x')"
+                      v-on:keyup="changeManualGrid($event, cutout, 'base_x')"
+                      v-on:input="changeManualGrid($event, cutout, 'base_x')"
+                      v-on:blur="changeManualGrid($event, cutout, 'base_x')"
+                  >
+                </td>
+                <td>
+                  <input
+                      type="number" class="form-control"
+                      v-bind:id="'csm_' + cutout.id + '_grid_manual_delta_x'"
+                      v-bind:value="cutout.grid.customGridSpec.delta_x"
+                      v-on:change="changeManualGrid($event, cutout, 'delta_x')"
+                      v-on:keyup="changeManualGrid($event, cutout, 'delta_x')"
+                      v-on:input="changeManualGrid($event, cutout, 'delta_x')"
+                      v-on:blur="changeManualGrid($event, cutout, 'delta_x')"
+                  >
+                </td>
+              </tr>
+              <tr>
+                <th>Y</th>
+                <td>
+                  <input
+                      type="number" class="form-control"
+                      v-bind:id="'csm_' + cutout.id + '_grid_manual_base_y'"
+                      v-bind:value="cutout.grid.customGridSpec.base_y"
+                      v-on:change="changeManualGrid($event, cutout, 'base_y')"
+                      v-on:keyup="changeManualGrid($event, cutout, 'base_y')"
+                      v-on:input="changeManualGrid($event, cutout, 'base_y')"
+                      v-on:blur="changeManualGrid($event, cutout, 'base_y')"
+                  >
+                </td>
+                <td>
+                  <input
+                      type="number" class="form-control"
+                      v-bind:id="'csm_' + cutout.id + '_grid_manual_delta_y'"
+                      v-bind:value="cutout.grid.customGridSpec.delta_y"
+                      v-on:change="changeManualGrid($event, cutout, 'delta_y')"
+                      v-on:keyup="changeManualGrid($event, cutout, 'delta_y')"
+                      v-on:input="changeManualGrid($event, cutout, 'delta_y')"
+                      v-on:blur="changeManualGrid($event, cutout, 'delta_y')"
+                  >
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div
+            class="tab-pane"
+            v-bind:id="'csm_' + cutout.id + '_tabbar_frame'"
+            role="tabpanel"
+            v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_frame-tab'"
+        >
+          <label>Marges</label>
+          <div class="row">
+            <div class="offset-md-4 col-md-4">
               <div class="form-group">
-                <label v-bind:for="'csm_' + cutout.id + '_mip'">Kaartbron</label>
-                <select class="form-control" v-bind:id="'csm_' + cutout.id + '_mip'">
-                  <option
-                      v-for="mip in container.mapImageProviderList()"
-                      v-bind:value="mip.name"
-                      v-bind:selected="cutout.projection.mapImageProvider.name === mip.name"
-                  >{{ mip.title }}</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label v-bind:for="'csm_' + cutout.id + '_scale'">Schaal</label>
-
+                <div>
+                  <label v-bind:for="'csm_' + cutout.id + '_margin_top_printable'" class="float-left font-italic">Boven</label>
+                  <div class="form-check float-right">
+                    <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_top'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_top">
+                    <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_top'">Coördinaten</label>
+                  </div>
+                </div>
                 <div class="input-group">
                   <div class="input-group-prepend">
-                    <span class="input-group-text">1:</span>
+                    <span class="input-group-text" title="Printbaar">
+                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                      </svg>
+                    </span>
                   </div>
-                  <input type="text" class="form-control" v-bind:id="'csm_' + cutout.id + '_scale'" v-bind:value="cutout.getProjection().getScale()">
+                  <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_top_printable'" v-bind:value="cutout.options.margin_top_printable">
+                  <div class="input-group-append"><span class="input-group-text">mm</span></div>
                 </div>
-              </div>
-
-              <div class="form-group" v-if="isWmsProjection(cutout.getProjection())">
-                <label v-bind:for="'csm_' + cutout.id + '_dpi'">DPI</label>
-                <input
-                    type="text" class="form-control"
-                    v-bind:id="'csm_' + cutout.id + '_dpi'"
-                    v-bind:value="cutout.getProjection().getDpi()"
-                    v-on:change="changeDpi($event, cutout)"
-                    v-on:keyup="changeDpi($event, cutout)"
-                    v-on:input="changeDpi($event, cutout)"
-                    v-on:blur="changeDpi($event, cutout)"
-                >
-              </div>
-
-              <div class="form-group" v-if="isWmtsProjection(cutout.getProjection())">
-                <label v-bind:for="'csm_' + cutout.id + '_tile_matrix'">Zoom niveau</label>
-                <select class="form-control" v-bind:id="'csm_' + cutout.id + '_tile_matrix'" v-on:change="changeTileMatrixId($event, cutout)">
-                  <option
-                      v-for="tileMatrix in cutout.projection.mapImageProvider.getTileMatrixList()"
-                      v-bind:value="tileMatrix.identifier"
-                      v-bind:selected="cutout.projection.getTileMatrixId() === tileMatrix.identifier"
-                  >{{ tileMatrixName(tileMatrix) }} px/km</option>
-                </select>
-              </div>
-
-              <div class="form-group" v-if="isWmtsProjection(cutout.getProjection())">
-                <label v-bind:for="'csm_' + cutout.id + '_dpi_wmts'">DPI</label>
-                <input type="text" disabled class="form-control" v-bind:id="'csm_' + cutout.id + '_dpi_wmts'" v-bind:value="Math.round(cutout.projection.getDpi())">
-              </div>
-            </div>
-
-            <div
-                class="tab-pane"
-                v-bind:id="'csm_' + cutout.id + '_tabbar_grid'"
-                role="tabpanel"
-                v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_grid-tab'"
-            >
-              <div class="form-group">
-                <div class="form-check">
-                  <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_draw_grid'" type="checkbox" value="1" v-bind:checked="cutout.options.draw_grid">
-                  <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_draw_grid'">Raster tekenen</label>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <div class="form-check">
-                  <input
-                      class="form-check-input"
-                      type="radio"
-                      v-bind:name="'csm_' + cutout.id + '_grid_type'"
-                      v-bind:id="'csm_' + cutout.id + '_grid_type_auto'"
-                      value="auto"
-                      v-bind:checked="cutout.grid.customGridSpec === null"
-                  >
-                  <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_grid_type_auto'">
-                    Automatisch raster
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input
-                      class="form-check-input"
-                      type="radio"
-                      v-bind:name="'csm_' + cutout.id + '_grid_type'"
-                      v-bind:id="'csm_' + cutout.id + '_grid_type_manual'"
-                      value="manual"
-                      v-bind:checked="cutout.grid.customGridSpec !== null"
-                  >
-                  <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_grid_type_manual'">
-                    Handmatig raster
-                  </label>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <table class="table table-sm" v-if="cutout.grid.customGridSpec !== null">
-                  <tr>
-                    <th>Rasterdefinitie</th>
-                    <th>Basis</th>
-                    <th>Stapgrootte</th>
-                  </tr>
-                  <tr>
-                    <th>X</th>
-                    <td>
-                      <input
-                          type="number" class="form-control"
-                          v-bind:id="'csm_' + cutout.id + '_grid_manual_base_x'"
-                          v-bind:value="cutout.grid.customGridSpec.base_x"
-                          v-on:change="changeManualGrid($event, cutout, 'base_x')"
-                          v-on:keyup="changeManualGrid($event, cutout, 'base_x')"
-                          v-on:input="changeManualGrid($event, cutout, 'base_x')"
-                          v-on:blur="changeManualGrid($event, cutout, 'base_x')"
-                      >
-                    </td>
-                    <td>
-                      <input
-                          type="number" class="form-control"
-                          v-bind:id="'csm_' + cutout.id + '_grid_manual_delta_x'"
-                          v-bind:value="cutout.grid.customGridSpec.delta_x"
-                          v-on:change="changeManualGrid($event, cutout, 'delta_x')"
-                          v-on:keyup="changeManualGrid($event, cutout, 'delta_x')"
-                          v-on:input="changeManualGrid($event, cutout, 'delta_x')"
-                          v-on:blur="changeManualGrid($event, cutout, 'delta_x')"
-                      >
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Y</th>
-                    <td>
-                      <input
-                          type="number" class="form-control"
-                          v-bind:id="'csm_' + cutout.id + '_grid_manual_base_y'"
-                          v-bind:value="cutout.grid.customGridSpec.base_y"
-                          v-on:change="changeManualGrid($event, cutout, 'base_y')"
-                          v-on:keyup="changeManualGrid($event, cutout, 'base_y')"
-                          v-on:input="changeManualGrid($event, cutout, 'base_y')"
-                          v-on:blur="changeManualGrid($event, cutout, 'base_y')"
-                      >
-                    </td>
-                    <td>
-                      <input
-                          type="number" class="form-control"
-                          v-bind:id="'csm_' + cutout.id + '_grid_manual_delta_y'"
-                          v-bind:value="cutout.grid.customGridSpec.delta_y"
-                          v-on:change="changeManualGrid($event, cutout, 'delta_y')"
-                          v-on:keyup="changeManualGrid($event, cutout, 'delta_y')"
-                          v-on:input="changeManualGrid($event, cutout, 'delta_y')"
-                          v-on:blur="changeManualGrid($event, cutout, 'delta_y')"
-                      >
-                    </td>
-                  </tr>
-                </table>
-              </div>
-            </div>
-
-            <div
-                class="tab-pane"
-                v-bind:id="'csm_' + cutout.id + '_tabbar_frame'"
-                role="tabpanel"
-                v-bind:aria-labelledby="'csm_' + cutout.id + '_tabbar_frame-tab'"
-            >
-              <label>Marges</label>
-              <div class="row">
-                <div class="offset-md-4 col-md-4">
-                  <div class="form-group">
-                    <div>
-                      <label v-bind:for="'csm_' + cutout.id + '_margin_top_printable'" class="float-left font-italic">Boven</label>
-                      <div class="form-check float-right">
-                        <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_top'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_top">
-                        <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_top'">Coördinaten</label>
-                      </div>
-                    </div>
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" title="Printbaar">
-                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
-                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
-                          </svg>
-                        </span>
-                      </div>
-                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_top_printable'" v-bind:value="cutout.options.margin_top_printable">
-                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
-                    </div>
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" title="Onprintbaar">
-                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
-                          </svg>
-                        </span>
-                      </div>
-                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_top_nonprintable'" v-bind:value="cutout.options.margin_top_nonprintable">
-                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
-                    </div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" title="Onprintbaar">
+                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+                      </svg>
+                    </span>
                   </div>
+                  <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_top_nonprintable'" v-bind:value="cutout.options.margin_top_nonprintable">
+                  <div class="input-group-append"><span class="input-group-text">mm</span></div>
                 </div>
-              </div>
-
-              <div class="row">
-                <div class="col-md-4">
-                  <div class="form-group">
-                    <div>
-                      <label v-bind:for="'csm_' + cutout.id + '_margin_left_printable'" class="font-italic">Links</label>
-                      <div class="form-check float-right">
-                        <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_left'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_left">
-                        <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_left'">Coördinaten</label>
-                      </div>
-                    </div>
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" title="Printbaar">
-                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
-                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
-                          </svg>
-                        </span>
-                      </div>
-                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_left_printable'" v-bind:value="cutout.options.margin_left_printable">
-                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
-                    </div>
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" title="Onprintbaar">
-                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
-                          </svg>
-                        </span>
-                      </div>
-                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_left_nonprintable'" v-bind:value="cutout.options.margin_left_nonprintable">
-                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="offset-md-4 col-md-4">
-                  <div class="form-group">
-                    <div>
-                      <label v-bind:for="'csm_' + cutout.id + '_margin_right_printable'" class="font-italic">Rechts</label>
-                      <div class="form-check float-right">
-                        <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_right'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_right">
-                        <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_right'">Coördinaten</label>
-                      </div>
-                    </div>
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" title="Printbaar">
-                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
-                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
-                          </svg>
-                        </span>
-                      </div>
-                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_right_printable'" v-bind:value="cutout.options.margin_right_printable">
-                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
-                    </div>
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" title="Onprintbaar">
-                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
-                          </svg>
-                        </span>
-                      </div>
-                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_right_nonprintable'" v-bind:value="cutout.options.margin_right_nonprintable">
-                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="row">
-                <div class="offset-md-4 col-md-4">
-                  <div class="form-group">
-                    <div>
-                      <label v-bind:for="'csm_' + cutout.id + '_margin_bottom_printable'" class="font-italic">Onder</label>
-                      <div class="form-check float-right">
-                        <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_bottom'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_bottom">
-                        <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_bottom'">Coördinaten</label>
-                      </div>
-                    </div>
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" title="Printbaar">
-                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
-                            <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
-                          </svg>
-                        </span>
-                      </div>
-                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_bottom_printable'" v-bind:value="cutout.options.margin_bottom_printable">
-                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
-                    </div>
-                    <div class="input-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text" title="Onprintbaar">
-                          <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
-                          </svg>
-                        </span>
-                      </div>
-                      <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_bottom_nonprintable'" v-bind:value="cutout.options.margin_bottom_nonprintable">
-                      <div class="input-group-append"><span class="input-group-text">mm</span></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-check">
-                <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_display_name'" type="checkbox" value="1" v-bind:checked="cutout.options.display_name">
-                <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_display_name'">Kaartnaam afdrukken</label>
-              </div>
-
-              <div class="form-check">
-                <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_display_scale'" type="checkbox" value="1" v-bind:checked="cutout.options.display_scale">
-                <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_display_scale'">Schaal-indicatie afdrukken</label>
-              </div>
-
-              <div class="form-check">
-                <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_rotate_y_coords'" type="checkbox" value="1" v-bind:checked="cutout.options.rotate_y_coords">
-                <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_rotate_y_coords'">Coördinaten langs verticale as kwartslag draaien</label>
               </div>
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Ok</button>
+
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <div>
+                  <label v-bind:for="'csm_' + cutout.id + '_margin_left_printable'" class="font-italic">Links</label>
+                  <div class="form-check float-right">
+                    <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_left'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_left">
+                    <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_left'">Coördinaten</label>
+                  </div>
+                </div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" title="Printbaar">
+                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_left_printable'" v-bind:value="cutout.options.margin_left_printable">
+                  <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                </div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" title="Onprintbaar">
+                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_left_nonprintable'" v-bind:value="cutout.options.margin_left_nonprintable">
+                  <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="offset-md-4 col-md-4">
+              <div class="form-group">
+                <div>
+                  <label v-bind:for="'csm_' + cutout.id + '_margin_right_printable'" class="font-italic">Rechts</label>
+                  <div class="form-check float-right">
+                    <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_right'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_right">
+                    <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_right'">Coördinaten</label>
+                  </div>
+                </div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" title="Printbaar">
+                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_right_printable'" v-bind:value="cutout.options.margin_right_printable">
+                  <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                </div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" title="Onprintbaar">
+                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_right_nonprintable'" v-bind:value="cutout.options.margin_right_nonprintable">
+                  <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="offset-md-4 col-md-4">
+              <div class="form-group">
+                <div>
+                  <label v-bind:for="'csm_' + cutout.id + '_margin_bottom_printable'" class="font-italic">Onder</label>
+                  <div class="form-check float-right">
+                    <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_coords_bottom'" type="checkbox" value="1" v-bind:checked="cutout.options.display_coords_bottom">
+                    <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_coords_bottom'">Coördinaten</label>
+                  </div>
+                </div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" title="Printbaar">
+                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_bottom_printable'" v-bind:value="cutout.options.margin_bottom_printable">
+                  <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                </div>
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" title="Onprintbaar">
+                      <svg width="1em" height="1em" viewBox="0 0 16 16" class="align-baseline bi bi-file-text" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4zm0 1h8a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <input type="number" class="form-control" v-bind:id="'csm_' + cutout.id + '_margin_bottom_nonprintable'" v-bind:value="cutout.options.margin_bottom_nonprintable">
+                  <div class="input-group-append"><span class="input-group-text">mm</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_display_name'" type="checkbox" value="1" v-bind:checked="cutout.options.display_name">
+            <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_display_name'">Kaartnaam afdrukken</label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_display_scale'" type="checkbox" value="1" v-bind:checked="cutout.options.display_scale">
+            <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_display_scale'">Schaal-indicatie afdrukken</label>
+          </div>
+
+          <div class="form-check">
+            <input class="form-check-input" v-bind:id="'csm_' + cutout.id + '_rotate_y_coords'" type="checkbox" value="1" v-bind:checked="cutout.options.rotate_y_coords">
+            <label class="form-check-label" v-bind:for="'csm_' + cutout.id + '_rotate_y_coords'">Coördinaten langs verticale as kwartslag draaien</label>
+          </div>
         </div>
       </div>
     </div>
@@ -439,6 +429,7 @@ import Container from "../Main/Container";
 import Cutout from "../Main/Cutout";
 import WmsProjection from "../Projection/WmsProjection";
 import * as $ from "jquery";
+import * as interact from "interactjs/dist/interact";
 import Projection from "../Projection/Projection";
 import Coordinate from "../Coordinates/Coordinate";
 import MapImageProvider from "../Projection/MapImageProvider";
@@ -471,9 +462,95 @@ export default Vue.component('cutout-settings-modal', {
     const cutout = this.cutout;
 
     $(() => {
+      const $modal = $('#cutout_settings_modal_' + cutout.id);
+
       $('#' + this.listenId).on('click', () => {
-        $('#cutout_settings_modal_' + cutout.id).modal();
+        $modal.removeClass('d-none');
       });
+
+      $('#csm_' + cutout.id + '_modal_close').on('click', () => {
+        $modal.addClass('d-none');
+      });
+
+      const width = 700;
+      $modal.css({
+        top: 100,
+        width: width,
+        left: $('body').width()/2 - width/2,
+      });
+
+      // target elements with the "draggable" class
+      interact($modal.find('.card-header')[0])
+          .draggable({
+            // enable inertial throwing
+            inertia: true,
+
+            // keep the element within the area of it's parent
+            modifiers: [
+              interact.modifiers.restrictRect({
+                restriction: 'body',
+                endOnly: true
+              })
+            ],
+
+            listeners: {
+              // call this function on every dragmove event
+              move: function(event) {
+                const target = event.target;
+                const modal = $modal[0];
+                // keep the dragged position in the data-x/data-y attributes
+                const x = (parseFloat(modal.getAttribute('data-x')) || 0) + event.dx;
+                const y = (parseFloat(modal.getAttribute('data-y')) || 0) + event.dy;
+
+                // translate the element
+                modal.style.webkitTransform = modal.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+
+                // update the position attributes
+                modal.setAttribute('data-x', x);
+                modal.setAttribute('data-y', y);
+              },
+            }
+          });
+
+      interact($modal[0])
+          .resizable({
+            // resize from all edges and corners
+            edges: { left: true, right: true, bottom: true, top: true },
+
+            listeners: {
+              move (event) {
+                const modal = event.target;
+                let x = (parseFloat(modal.getAttribute('data-x')) || 0);
+                let y = (parseFloat(modal.getAttribute('data-y')) || 0);
+
+                // update the element's style
+                modal.style.width = event.rect.width + 'px';
+                modal.style.height = event.rect.height + 'px';
+
+                // translate when resizing from top or left edges
+                x += event.deltaRect.left;
+                y += event.deltaRect.top;
+
+                modal.style.webkitTransform = modal.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+
+                modal.setAttribute('data-x', x);
+                modal.setAttribute('data-y', y);
+              }
+            },
+            modifiers: [
+              // keep the edges inside the parent
+              interact.modifiers.restrictEdges({
+                outer: 'body'
+              }),
+
+              // minimum size
+              interact.modifiers.restrictSize({
+                min: { width: 200, height: 100 }
+              })
+            ],
+
+            inertia: true
+          });
 
       $('#csm_' + cutout.id + '_name').on('change keyup input blur', function() {
         const newName = $(this).val();
@@ -633,5 +710,29 @@ export default Vue.component('cutout-settings-modal', {
 </script>
 
 <style scoped>
+.card-cutout-settings-modal {
+  border-color: rgba(0,0,0,.2);
+}
 
+.cutout-settings-tab-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.cutout-settings-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-top: .5rem;
+  padding: .5rem 1rem 1rem;
+  border-bottom: 1px solid #dee2e6;
+  border-top-left-radius: calc(.3rem - 1px);
+  border-top-right-radius: calc(.3rem - 1px);
+  background-color: #ffffff;
+}
+
+.cutout-settings-close {
+  padding: 1rem 1rem;
+  margin: -1rem -1rem -1rem auto;
+}
 </style>

@@ -1,3 +1,7 @@
+body {
+    height: 100vh; /* For resizable settings modal */
+    overflow: hidden; /* For resizable settings modal */
+}
 
 #mapContainer {
     position: absolute;
