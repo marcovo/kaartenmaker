@@ -271,21 +271,21 @@ export default class UserInterface {
         return new Promise<boolean>((resolve, reject) => {
             const choice = this.getStatisticsParticipation();
             if(choice === null) {
-                $('#statisticsParticipationsModal').modal('show').on('hidden.bs.modal', function (e) {
+                $('#statisticsParticipationModal').modal('show').on('hidden.bs.modal', function (e) {
                     reject();
                 });
 
-                $('#statisticsParticipationsModalNo, #statisticsParticipationsModalYes').off('click');
+                $('#statisticsParticipationModalNo, #statisticsParticipationModalYes').off('click');
 
-                $('#statisticsParticipationsModalNo').on('click', () => {
+                $('#statisticsParticipationModalNo').on('click', () => {
                     this.setStatisticsParticipation(false);
-                    $('#statisticsParticipationsModal').off('hidden.bs.modal').modal('hide');
+                    $('#statisticsParticipationModal').off('hidden.bs.modal').modal('hide');
                     resolve(false);
                 });
 
-                $('#statisticsParticipationsModalYes').on('click', () => {
+                $('#statisticsParticipationModalYes').on('click', () => {
                     this.setStatisticsParticipation(true);
-                    $('#statisticsParticipationsModal').off('hidden.bs.modal').modal('hide');
+                    $('#statisticsParticipationModal').off('hidden.bs.modal').modal('hide');
                     resolve(true);
                 });
             } else {
