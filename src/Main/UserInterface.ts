@@ -485,4 +485,20 @@ export default class UserInterface {
         this.cutoutTemplatesWrapper.newCutoutTemplate = sourceCutout.makeTemplate();
     }
 
+    requestErrorReport(errorLog: string) {
+        return new Promise<boolean>((resolve, reject) => {
+            $('#errorModalErrorLog').val(errorLog);
+            $('#errorModalDescription').val('');
+            $('#errorModal').modal('show').on('hidden.bs.modal', function (e) {
+                $('#errorModal').off('hidden.bs.modal');
+                $('#errorModalSubmit').off('click');
+            });
+
+            $('#errorModalSubmit').off('click').on('click', function() {
+                $('#errorModal').modal('hide');
+                resolve($('#errorModalDescription').val());
+            });
+        });
+    }
+
 }

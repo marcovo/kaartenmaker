@@ -20,9 +20,20 @@ require('./components/CoordinatePanel.vue');
             if(typeof error.stack !== 'undefined') message.stack = error.stack;
             message.raw = error;
 
-            $.post('server.php?request=js_error', {
-                message: JSON.stringify(message),
-            });
+            Promise.resolve().then(() => {
+                if(typeof userInterface === 'undefined') {
+                    message.bootError = true;
+                    return;
+                }
+
+                return userInterface.requestErrorReport(JSON.stringify(message)).then((description) => {
+                    message.description = description;
+                });
+            }).then(() => {
+                $.post('server.php?request=js_error', {
+                    message: JSON.stringify(message),
+                });
+            })
         } catch(e) {
             console.log(e);
         }

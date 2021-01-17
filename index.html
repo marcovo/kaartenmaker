@@ -481,5 +481,41 @@
             </div>
         </div>
     </div>
+
+    <div
+            id="errorModal"
+            class="modal"
+            tabindex="-1"
+            role="dialog"
+            data-backdrop="false"
+            data-keyboard="false"
+    >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Oeps, er ging iets mis</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Er is helaas iets misgegaan. Hieronder vind je de fout-log, als je deze opstuurt kunnen we kijken wat er mis ging.</p>
+
+                    <div class="form-group">
+                        <label for="errorModalDescription">Wil je nog een beschrijving toevoegen wat je deed voordat de fout optrad?</label>
+                        <textarea class="form-control" rows="4" id="errorModalDescription" placeholder="Elk beetje extra informatie kan helpen..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="errorModalErrorLog">Op te sturen fout log</label>
+                        <textarea class="form-control" rows="4" disabled id="errorModalErrorLog"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="errorModalSubmit">Stuur foutrapport</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
