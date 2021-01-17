@@ -77,7 +77,7 @@ class Server
 
     private function participation()
     {
-        if(!in_array($_GET['choice'] ?? null, ['0', '1'], true)) {
+        if(!in_array($_POST['choice'] ?? null, ['0', '1'], true)) {
             throw new \Exception('Invalid choice');
         }
 
@@ -90,12 +90,12 @@ class Server
 
         $pdo = $this->getPdo();
         $stmt = $pdo->prepare('INSERT INTO participation(choice, created_at) VALUES (?, NOW())');
-        $stmt->execute([($_GET['choice'] === '1') ? 'YES' : 'NO']);
+        $stmt->execute([($_POST['choice'] === '1') ? 'YES' : 'NO']);
     }
 
     private function cutout_download()
     {
-        if(empty($_GET['settings'])) {
+        if(empty($_POST['settings'])) {
             throw new \Exception('Empty settings');
         }
 
@@ -108,7 +108,7 @@ class Server
 
         $pdo = $this->getPdo();
         $stmt = $pdo->prepare('INSERT INTO cutout_download(settings, created_at) VALUES (?, NOW())');
-        $stmt->execute([$_GET['settings']]);
+        $stmt->execute([$_POST['settings']]);
     }
 }
 

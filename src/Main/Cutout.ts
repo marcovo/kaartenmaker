@@ -441,8 +441,7 @@ export default class Cutout<
                     const settings = this.serialize();
                     settings.anchor.x = null;
                     settings.anchor.y = null;
-                    $.get('server.php', {
-                        request: 'cutout_download',
+                    $.post('server.php?request=cutout_download', {
                         settings: JSON.stringify(settings),
                     });
                 } catch(e) {

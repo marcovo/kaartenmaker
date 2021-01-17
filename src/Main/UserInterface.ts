@@ -258,29 +258,34 @@ export default class UserInterface {
 
         $('#participate_statistics').prop('checked', choice);
 
-        $.get('server.php', {
-            request: 'participation',
-            choice: choice ? '1' : '0',
-        });
+        try {
+            $.post('server.php?request=participation', {
+                choice: choice ? '1' : '0',
+            });
+        } catch(e) {
+            console.log(e);
+        }
     }
 
     checkStatisticsParticipation(): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             const choice = this.getStatisticsParticipation();
             if(choice === null) {
-                $('#statisticsParticipationsModal').modal('show');
+                $('#statisticsParticipationsModal').modal('show').on('hidden.bs.modal', function (e) {
+                    reject();
+                });
 
                 $('#statisticsParticipationsModalNo, #statisticsParticipationsModalYes').off('click');
 
                 $('#statisticsParticipationsModalNo').on('click', () => {
                     this.setStatisticsParticipation(false);
-                    $('#statisticsParticipationsModal').modal('hide');
+                    $('#statisticsParticipationsModal').off('hidden.bs.modal').modal('hide');
                     resolve(false);
                 });
 
                 $('#statisticsParticipationsModalYes').on('click', () => {
                     this.setStatisticsParticipation(true);
-                    $('#statisticsParticipationsModal').modal('hide');
+                    $('#statisticsParticipationsModal').off('hidden.bs.modal').modal('hide');
                     resolve(true);
                 });
             } else {
