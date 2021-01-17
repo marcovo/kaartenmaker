@@ -33,7 +33,7 @@ require('./components/CoordinatePanel.vue');
                 $.post('server.php?request=js_error', {
                     message: JSON.stringify(message),
                 });
-            })
+            });
         } catch(e) {
             console.log(e);
         }
