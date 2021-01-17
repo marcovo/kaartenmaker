@@ -18,6 +18,12 @@ require('./components/CoordinatePanel.vue');
             if(typeof error.columnNumber !== 'undefined') message.columnNumber = error.columnNumber;
             if(typeof error.message !== 'undefined') message.message = error.message;
             if(typeof error.stack !== 'undefined') message.stack = error.stack;
+
+            message.navigator = <Record<string, any>>{};
+            for(const key of ['appCodeName', 'appName', 'appVersion', 'cookieEnabled', 'language', 'onLine', 'platform', 'userAgent']) {
+                message.navigator[key] = navigator[key];
+            }
+
             message.raw = error;
 
             Promise.resolve().then(() => {
