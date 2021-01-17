@@ -11,6 +11,29 @@ import {formatCm, formatMeters} from "../Util/functions";
 export type PdfCoordinateDrawSide = 'top' | 'left' | 'right' | 'bottom';
 type DrawBox = {top: number, bottom: number, left: number, right: number};
 
+export class JsPdfGenerator {
+    private jsPdf: jsPDF|null = null;
+
+    public addPage(paper: Paper): jsPDF {
+        if(this.jsPdf === null) {
+            this.jsPdf = new jsPDF({
+                orientation: (paper.width >= paper.height) ? 'landscape' : 'portrait',
+                format: [paper.width, paper.height],
+            });
+        } else {
+            this.jsPdf.addPage(
+                [paper.width, paper.height],
+                (paper.width >= paper.height) ? 'landscape' : 'portrait'
+            );
+        }
+        return this.jsPdf;
+    }
+
+    public getJsPdf(): jsPDF {
+        return this.jsPdf;
+    }
+}
+
 export default class Printer {
 
     private paper: Paper;
@@ -40,20 +63,17 @@ export default class Printer {
         this.drawnBoxes.push(drawBox);
     }
 
-    print(): Promise<void> {
+    print(jsPdfGenerator: JsPdfGenerator): Promise<void> {
         return Container.getCache().then((cache) => {
-            return this.buildAndPrint(cache).then(() => {
+            const doc = jsPdfGenerator.addPage(this.paper);
+
+            return this.buildPrint(cache, doc).then(() => {
                 return cache.clean();
             });
         });
     }
 
-    private buildAndPrint(cache: Cache): Promise<void> {
-
-        const doc = new jsPDF({
-            orientation: (this.paper.width >= this.paper.height) ? 'landscape' : 'portrait',
-            format: [this.paper.width, this.paper.height],
-        });
+    private buildPrint(cache: Cache, doc: jsPDF): Promise<void> {
 
         return this.cutout.getProjection().projectToPdf(doc, this.paper, cache, this.progressCallback).then(() => {
 
@@ -77,12 +97,6 @@ export default class Printer {
             }
 
             this.drawFrameCoordinates(doc, edgeIntersections);
-
-            let filename = this.cutout.name.replace(/[^0-9a-zA-Z]+/g, '-');
-            if(filename === '') {
-                filename = 'map-'+this.cutout.id;
-            }
-            doc.save(filename + ".pdf");
         });
     }
 

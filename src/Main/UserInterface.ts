@@ -11,6 +11,7 @@ import Serializer from "./Serializer";
 import Bookmarks from "./Bookmarks";
 import {WGS84System} from "../Coordinates/WGS84";
 import {copyInput} from "../Util/functions";
+import {JsPdfGenerator} from "./Printer";
 require('../Lib/LeafletDrag');
 
 export default class UserInterface {
@@ -58,6 +59,12 @@ export default class UserInterface {
 
         $('#shareButton').on('click', () => {
             this.displayShareModal((new Serializer()).createWorkspaceLink(this));
+        });
+
+        $('#printAllButton').on('click', () => {
+            if(confirm('Weet je zeker dat je een PDF van alle zichtbare kaartuitsnedes wilt downloaden?')) {
+                this.printAllVisible();
+            }
         });
 
         $('#shareUrlModalCopy').on('click', () => {
@@ -453,11 +460,60 @@ export default class UserInterface {
             this.cutoutLoading(cutout, evt.done / evt.total);
         };
 
-        cutout.print(progressCallback).catch((e) => {
+        cutout.printAndDownload(progressCallback).catch((e) => {
             console.log(e);
             alert('Something went wrong while printing');
         }).finally(() => {
             this.cutoutLoading(cutout, null);
+        });
+    }
+
+    printAllVisible(): void {
+        const cutouts = [];
+        for(const cutout of this.cutouts) {
+            if(cutout.visibleOnMap) {
+                cutouts.push(cutout);
+            }
+        }
+
+        if(cutouts.length === 0) {
+            alert('Geen zichtbare kaartuitsnedes.');
+            return;
+        }
+
+        const jsPdfGenerator = new JsPdfGenerator();
+
+        const processCutout = (i: number): Promise<void> => {
+            const cutout = cutouts[i];
+
+            const progressCallback = (evt) => {
+                this.cutoutLoading(cutout, evt.done / evt.total);
+            };
+
+            return cutout.printOnNewPage(jsPdfGenerator, progressCallback).then(() => {
+                this.cutoutLoading(cutout, null);
+
+                if(i + 1 < cutouts.length) {
+                    return processCutout(i + 1);
+                } else {
+                    return Promise.resolve();
+                }
+            });
+        };
+
+        for(const cutout of cutouts) {
+            this.cutoutLoading(cutout, 0);
+        }
+
+        processCutout(0).then(() => {
+            jsPdfGenerator.getJsPdf().save('maps.pdf');
+        }).catch((e) => {
+            console.log(e);
+            alert('Something went wrong while printing');
+        }).finally(() => {
+            for(const cutout of cutouts) {
+                this.cutoutLoading(cutout, null);
+            }
         });
     }
 

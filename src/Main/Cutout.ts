@@ -13,7 +13,7 @@ import UserInterface from "./UserInterface";
 import CoordinateConverter from "../Util/CoordinateConverter";
 import Grid from "./Grid";
 import MoveCutoutAction from "../ActionHistory/MoveCutoutAction";
-import Printer from "./Printer";
+import Printer, {JsPdfGenerator} from "./Printer";
 import MapImageProvider from "../Projection/MapImageProvider";
 import {Serialization} from "./Serializer";
 import Container from "./Container";
@@ -428,9 +428,20 @@ export default class Cutout<
         });
     }
 
-    print(progressCallback: ((evt) => void)|null = null): Promise<void> {
+    printAndDownload(progressCallback: ((evt) => void)|null = null): Promise<void> {
+        const jsPdfGenerator = new JsPdfGenerator();
+        return this.printOnNewPage(jsPdfGenerator, progressCallback).then(() => {
+            let filename = this.name.replace(/[^0-9a-zA-Z]+/g, '-');
+            if(filename === '') {
+                filename = 'map-'+this.id;
+            }
+            jsPdfGenerator.getJsPdf().save(filename + '.pdf');
+        });
+    }
+
+    printOnNewPage(jsPdfGenerator: JsPdfGenerator, progressCallback: ((evt) => void)|null = null): Promise<void> {
         return this.checkSendPrintStatistics().then(() => {
-            return (new Printer(this, progressCallback)).print();
+            return (new Printer(this, progressCallback)).print(jsPdfGenerator);
         });
     }
 
