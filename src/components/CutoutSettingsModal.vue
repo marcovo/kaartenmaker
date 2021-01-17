@@ -465,7 +465,7 @@ export default Vue.component('cutout-settings-modal', {
       const $modal = $('#cutout_settings_modal_' + cutout.id);
 
       $('#' + this.listenId).on('click', () => {
-        $modal.removeClass('d-none');
+        $modal.toggleClass('d-none');
       });
 
       $('#csm_' + cutout.id + '_modal_close').on('click', () => {
@@ -545,7 +545,7 @@ export default Vue.component('cutout-settings-modal', {
 
               // minimum size
               interact.modifiers.restrictSize({
-                min: { width: 200, height: 100 }
+                min: { width: 400, height: 250 }
               })
             ],
 
@@ -725,9 +725,6 @@ export default Vue.component('cutout-settings-modal', {
   justify-content: space-between;
   margin-top: .5rem;
   padding: .5rem 1rem 1rem;
-  border-bottom: 1px solid #dee2e6;
-  border-top-left-radius: calc(.3rem - 1px);
-  border-top-right-radius: calc(.3rem - 1px);
   background-color: #ffffff;
 }
 
