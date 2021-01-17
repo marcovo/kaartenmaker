@@ -1,4 +1,5 @@
 import UserInterface from "./Main/UserInterface";
+import * as $ from "jquery";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './style.css';
@@ -9,10 +10,30 @@ require('./components/Bookmarks.vue');
 require('./components/CoordinatePanel.vue');
 
 (() => {
+    const logError = function(error) {
+        try {
+            const message = <Record<string, any>>{};
+            if(typeof error.fileName !== 'undefined') message.fileName = error.fileName;
+            if(typeof error.lineNumber !== 'undefined') message.lineNumber = error.lineNumber;
+            if(typeof error.columnNumber !== 'undefined') message.columnNumber = error.columnNumber;
+            if(typeof error.message !== 'undefined') message.message = error.message;
+            if(typeof error.stack !== 'undefined') message.stack = error.stack;
+            message.raw = error;
+
+            $.post('server.php?request=js_error', {
+                message: JSON.stringify(message),
+            });
+        } catch(e) {
+            console.log(e);
+        }
+    }
+
     window.addEventListener('error', function(event) {
         if(event.error && event.error.isUserError) {
             alert(event.error.message);
             event.preventDefault();
+        } else {
+            logError(event.error);
         }
     });
 
@@ -20,6 +41,8 @@ require('./components/CoordinatePanel.vue');
         if(event.reason.isUserError) {
             alert(event.reason.message);
             event.preventDefault();
+        } else {
+            logError(event.reason);
         }
     })
 
@@ -27,6 +50,7 @@ require('./components/CoordinatePanel.vue');
         if(error.isUserError) {
             alert(error.message);
         } else {
+            logError(error);
             throw error;
         }
     }

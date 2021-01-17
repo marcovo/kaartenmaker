@@ -16,6 +16,9 @@ class Server
             case 'cutout_download':
                 $instance->cutout_download();
                 break;
+            case 'js_error':
+                $instance->js_error();
+                break;
             default:
                 throw new \Exception('Invalid request');
         }
@@ -109,6 +112,19 @@ class Server
         $pdo = $this->getPdo();
         $stmt = $pdo->prepare('INSERT INTO cutout_download(settings, created_at) VALUES (?, NOW())');
         $stmt->execute([$_POST['settings']]);
+    }
+
+    private function js_error()
+    {
+        if(empty($_POST['message'])) {
+            throw new \Exception('Empty message');
+        }
+
+        $this->checkThrottle('js_error');
+
+        $pdo = $this->getPdo();
+        $stmt = $pdo->prepare('INSERT INTO js_error(message, created_at) VALUES (?, NOW())');
+        $stmt->execute([$_POST['message']]);
     }
 }
 

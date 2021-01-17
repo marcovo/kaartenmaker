@@ -56,10 +56,6 @@ export default class UserInterface {
     onLoad() {
         this.map = new Map('map-canvas');
 
-        $('#addButton').on('click', () => {
-            this.addCutout();
-        });
-
         $('#shareButton').on('click', () => {
             this.displayShareModal((new Serializer()).createWorkspaceLink(this));
         });

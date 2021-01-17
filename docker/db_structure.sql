@@ -15,3 +15,11 @@ CREATE TABLE IF NOT EXISTS `participation` (
     KEY `created_at` (`created_at`),
     KEY `choice` (`choice`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `js_error` (
+    `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `message` text NOT NULL,
+    `created_at` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `created_at` (`created_at`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
