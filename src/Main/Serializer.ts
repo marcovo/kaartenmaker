@@ -49,6 +49,7 @@ export default class Serializer {
 
     private serialize(cutouts: Cutout<any, any, any>[], userInterface: UserInterface): Serialization {
         const serialized = {
+            serializationVersion: 1,
             cutouts: [],
         };
 
